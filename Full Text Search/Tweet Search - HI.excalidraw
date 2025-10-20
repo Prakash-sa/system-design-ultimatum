@@ -1,12 +1,12 @@
 {
   "type": "excalidraw",
   "version": 2,
-  "source": "https://app.excalidraw.com",
+  "source": "https://marketplace.visualstudio.com/items?itemName=pomdtr.excalidraw-editor",
   "elements": [
     {
       "type": "text",
-      "version": 418,
-      "versionNonce": 970851219,
+      "version": 419,
+      "versionNonce": 559435122,
       "isDeleted": false,
       "id": "A64tQgAjHZfG2-wrCFTKP",
       "fillStyle": "cross-hatch",
@@ -26,7 +26,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1706148142881,
+      "updated": 1760931887250,
       "link": null,
       "locked": false,
       "fontSize": 36,
@@ -36,12 +36,14 @@
       "verticalAlign": "top",
       "containerId": null,
       "originalText": "Design Tweet Search",
-      "lineHeight": 1.2777777777777777
+      "lineHeight": 1.2777777777777777,
+      "index": "a0",
+      "autoResize": true
     },
     {
       "type": "text",
-      "version": 2669,
-      "versionNonce": 1571025693,
+      "version": 2670,
+      "versionNonce": 2033384110,
       "isDeleted": false,
       "id": "CQ8PZec5CKrebTUz-O9L0",
       "fillStyle": "cross-hatch",
@@ -63,7 +65,7 @@
         "type": 2
       },
       "boundElements": [],
-      "updated": 1706148142881,
+      "updated": 1760931887250,
       "link": null,
       "locked": false,
       "fontSize": 33.23791410279167,
@@ -73,12 +75,14 @@
       "verticalAlign": "top",
       "containerId": null,
       "originalText": "✨",
-      "lineHeight": 1.3538755729626375
+      "lineHeight": 1.3538755729626375,
+      "index": "a1",
+      "autoResize": true
     },
     {
       "type": "text",
-      "version": 3472,
-      "versionNonce": 891164979,
+      "version": 3473,
+      "versionNonce": 596758322,
       "isDeleted": false,
       "id": "7o6BqptDM248e4pmL8h_R",
       "fillStyle": "solid",
@@ -98,7 +102,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1706148142881,
+      "updated": 1760931887250,
       "link": null,
       "locked": false,
       "fontSize": 16,
@@ -108,12 +112,14 @@
       "verticalAlign": "top",
       "containerId": null,
       "originalText": "Functional Requirements",
-      "lineHeight": 1.25
+      "lineHeight": 1.25,
+      "index": "a2",
+      "autoResize": true
     },
     {
       "type": "line",
-      "version": 1770,
-      "versionNonce": 1179748221,
+      "version": 1771,
+      "versionNonce": 1922790638,
       "isDeleted": false,
       "id": "Nl6qhfqG8Wckhn1dW9i8v",
       "fillStyle": "hachure",
@@ -135,7 +141,7 @@
         "type": 2
       },
       "boundElements": [],
-      "updated": 1706148142881,
+      "updated": 1760931887250,
       "link": null,
       "locked": false,
       "startBinding": null,
@@ -152,12 +158,13 @@
           165.2005648542745,
           0.8295616012067057
         ]
-      ]
+      ],
+      "index": "a3"
     },
     {
       "type": "text",
-      "version": 1797,
-      "versionNonce": 654998227,
+      "version": 1798,
+      "versionNonce": 783620338,
       "isDeleted": false,
       "id": "sXnkM5ufatqmozgXBHQ4i",
       "fillStyle": "solid",
@@ -177,7 +184,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1706148142881,
+      "updated": 1760931887250,
       "link": null,
       "locked": false,
       "fontSize": 20,
@@ -187,12 +194,14 @@
       "verticalAlign": "top",
       "containerId": null,
       "originalText": "1. Users should be able to search for tweets\nby keyword\n2. Users should be able to sort by either\nPopularity (likes) or Chronologically (time).\n3. Users should be able to access results in\npages, up to 100.",
-      "lineHeight": 1.25
+      "lineHeight": 1.25,
+      "index": "a4",
+      "autoResize": true
     },
     {
       "type": "rectangle",
-      "version": 2340,
-      "versionNonce": 17666013,
+      "version": 2341,
+      "versionNonce": 360359726,
       "isDeleted": false,
       "id": "SN8-VYC0NwF17Xv8-GEzL",
       "fillStyle": "solid",
@@ -212,14 +221,15 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1706148142881,
+      "updated": 1760931887250,
       "link": null,
-      "locked": false
+      "locked": false,
+      "index": "a5"
     },
     {
       "type": "text",
-      "version": 2686,
-      "versionNonce": 736726077,
+      "version": 2687,
+      "versionNonce": 306784946,
       "isDeleted": false,
       "id": "1eAsRSbtd0XzZJr9VKdp5",
       "fillStyle": "cross-hatch",
@@ -241,7 +251,7 @@
         "type": 2
       },
       "boundElements": [],
-      "updated": 1706148142881,
+      "updated": 1760931887250,
       "link": null,
       "locked": false,
       "fontSize": 33.23791410279167,
@@ -251,12 +261,14 @@
       "verticalAlign": "top",
       "containerId": null,
       "originalText": "✨",
-      "lineHeight": 1.3538755729626375
+      "lineHeight": 1.3538755729626375,
+      "index": "a6",
+      "autoResize": true
     },
     {
       "type": "text",
-      "version": 3495,
-      "versionNonce": 175251987,
+      "version": 3496,
+      "versionNonce": 1916375406,
       "isDeleted": false,
       "id": "k522nUTg1RVDLkFg-eXJ6",
       "fillStyle": "solid",
@@ -276,7 +288,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1706148142881,
+      "updated": 1760931887250,
       "link": null,
       "locked": false,
       "fontSize": 16,
@@ -286,12 +298,14 @@
       "verticalAlign": "top",
       "containerId": null,
       "originalText": "Non-Functional Requirements",
-      "lineHeight": 1.25
+      "lineHeight": 1.25,
+      "index": "a7",
+      "autoResize": true
     },
     {
       "type": "line",
-      "version": 1788,
-      "versionNonce": 650575005,
+      "version": 1789,
+      "versionNonce": 351601778,
       "isDeleted": false,
       "id": "J1e6JK7acWN4Bvyd-LYsZ",
       "fillStyle": "hachure",
@@ -313,7 +327,7 @@
         "type": 2
       },
       "boundElements": [],
-      "updated": 1706148142881,
+      "updated": 1760931887250,
       "link": null,
       "locked": false,
       "startBinding": null,
@@ -330,12 +344,13 @@
           165.2005648542745,
           0.8295616012067057
         ]
-      ]
+      ],
+      "index": "a8"
     },
     {
       "type": "text",
-      "version": 2002,
-      "versionNonce": 1252681651,
+      "version": 2003,
+      "versionNonce": 606155694,
       "isDeleted": false,
       "id": "3w3Otn-TbgUS5rE0THlOY",
       "fillStyle": "solid",
@@ -355,7 +370,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1706148142881,
+      "updated": 1760931887250,
       "link": null,
       "locked": false,
       "fontSize": 20,
@@ -365,12 +380,14 @@
       "verticalAlign": "top",
       "containerId": null,
       "originalText": "1. The system must be fast, median queries\nshould return < 500ms\n2. The system must support a high volume \nof requests\n3. New tweets must be searchable in a short\namount of time < 30s.\n4. All tweets must be discoverable, especially old\nor unpopular tweets may take longer to return\n5. The system should be highly available\n\n",
-      "lineHeight": 1.25
+      "lineHeight": 1.25,
+      "index": "a9",
+      "autoResize": true
     },
     {
       "type": "rectangle",
-      "version": 2439,
-      "versionNonce": 229314141,
+      "version": 2440,
+      "versionNonce": 276801074,
       "isDeleted": false,
       "id": "48rBZ3_1P46nZG25uUB23",
       "fillStyle": "solid",
@@ -390,14 +407,15 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1706148927803,
+      "updated": 1760931887250,
       "link": null,
-      "locked": false
+      "locked": false,
+      "index": "aA"
     },
     {
       "type": "text",
-      "version": 5377,
-      "versionNonce": 1441353821,
+      "version": 5378,
+      "versionNonce": 1968868846,
       "isDeleted": false,
       "id": "yi9e_FvYZBq9OoTZupnzc",
       "fillStyle": "hachure",
@@ -417,7 +435,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1706148700292,
+      "updated": 1760931887250,
       "link": null,
       "locked": false,
       "fontSize": 20,
@@ -427,12 +445,14 @@
       "verticalAlign": "top",
       "containerId": null,
       "originalText": "Tweets created: 100m * 1 tweet/day = \n1k tweets/second\n\nLikes created: 100m * 10 likes/day  = \n10k likes/second\n\nSearches: 100m * 1 search/day = 1k searches\n/second\n\n100m * 365 * 10 = 36b tweets\n\n36B * 1kb/tweet = 36tb (not that much tbh)\n",
-      "lineHeight": 1.3
+      "lineHeight": 1.3,
+      "index": "aB",
+      "autoResize": true
     },
     {
       "type": "text",
-      "version": 4031,
-      "versionNonce": 402864019,
+      "version": 4032,
+      "versionNonce": 231739378,
       "isDeleted": false,
       "id": "7OctKDgIgM1eENuEHiVG4",
       "fillStyle": "solid",
@@ -452,7 +472,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1706148202124,
+      "updated": 1760931887250,
       "link": null,
       "locked": false,
       "fontSize": 16,
@@ -462,12 +482,14 @@
       "verticalAlign": "top",
       "containerId": null,
       "originalText": "Scale",
-      "lineHeight": 1.25
+      "lineHeight": 1.25,
+      "index": "aC",
+      "autoResize": true
     },
     {
       "type": "line",
-      "version": 2224,
-      "versionNonce": 8178995,
+      "version": 2225,
+      "versionNonce": 49193006,
       "isDeleted": false,
       "id": "yPCyegk3vukYdfp1QnjY_",
       "fillStyle": "hachure",
@@ -489,7 +511,7 @@
         "type": 2
       },
       "boundElements": [],
-      "updated": 1706148202124,
+      "updated": 1760931887250,
       "link": null,
       "locked": false,
       "startBinding": null,
@@ -506,12 +528,13 @@
           263.6620648633493,
           -1.238537448047282
         ]
-      ]
+      ],
+      "index": "aD"
     },
     {
       "type": "rectangle",
-      "version": 2334,
-      "versionNonce": 1185991699,
+      "version": 2335,
+      "versionNonce": 1626161586,
       "isDeleted": false,
       "id": "wi0BTBeyGUkrtJ96-KuOP",
       "fillStyle": "solid",
@@ -531,14 +554,15 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1706148704563,
+      "updated": 1760931887250,
       "link": null,
-      "locked": false
+      "locked": false,
+      "index": "aE"
     },
     {
       "type": "text",
-      "version": 3075,
-      "versionNonce": 1853578355,
+      "version": 3076,
+      "versionNonce": 1623616110,
       "isDeleted": false,
       "id": "W1UFXLBKPY_AflFNh7Htf",
       "fillStyle": "cross-hatch",
@@ -560,7 +584,7 @@
         "type": 2
       },
       "boundElements": [],
-      "updated": 1706148202124,
+      "updated": 1760931887250,
       "link": null,
       "locked": false,
       "fontSize": 36.30380479462411,
@@ -570,12 +594,14 @@
       "verticalAlign": "top",
       "containerId": null,
       "originalText": "📈",
-      "lineHeight": 1.353875572962637
+      "lineHeight": 1.353875572962637,
+      "index": "aF",
+      "autoResize": true
     },
     {
       "type": "rectangle",
-      "version": 3471,
-      "versionNonce": 696085213,
+      "version": 3472,
+      "versionNonce": 1157512050,
       "isDeleted": false,
       "id": "u5JFlcG-znVdlzx2_D91F",
       "fillStyle": "solid",
@@ -595,14 +621,15 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1706148979074,
+      "updated": 1760931887250,
       "link": null,
-      "locked": false
+      "locked": false,
+      "index": "aG"
     },
     {
       "type": "text",
-      "version": 5404,
-      "versionNonce": 1636096125,
+      "version": 5405,
+      "versionNonce": 1034611886,
       "isDeleted": false,
       "id": "adhzijpVYnCnjLILMmWTZ",
       "fillStyle": "hachure",
@@ -622,7 +649,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1706149017046,
+      "updated": 1760931887250,
       "link": null,
       "locked": false,
       "fontSize": 16,
@@ -632,12 +659,14 @@
       "verticalAlign": "top",
       "containerId": null,
       "originalText": "API\n\nGET /search?query=THE_QUERY&sort_order=LIKES|TIME\n\n\nData Model\n{\n    tweetId: string,\n    content: string,\n    creationDate: long,\n    likes: int,\n    replies: int\n}",
-      "lineHeight": 1.1875
+      "lineHeight": 1.1875,
+      "index": "aH",
+      "autoResize": true
     },
     {
       "type": "rectangle",
-      "version": 2523,
-      "versionNonce": 257376915,
+      "version": 2524,
+      "versionNonce": 2018114866,
       "isDeleted": false,
       "id": "7k6wGxN0NTy9qoTW3wQGz",
       "fillStyle": "solid",
@@ -657,14 +686,15 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1706149126065,
+      "updated": 1760931887250,
       "link": null,
-      "locked": false
+      "locked": false,
+      "index": "aI"
     },
     {
       "type": "text",
-      "version": 2880,
-      "versionNonce": 655849523,
+      "version": 2881,
+      "versionNonce": 121972462,
       "isDeleted": false,
       "id": "7V_8Ap4P8lrly5aGxSojs",
       "fillStyle": "cross-hatch",
@@ -686,7 +716,7 @@
         "type": 2
       },
       "boundElements": [],
-      "updated": 1706149126065,
+      "updated": 1760931887250,
       "link": null,
       "locked": false,
       "fontSize": 33.23791410279167,
@@ -696,12 +726,14 @@
       "verticalAlign": "top",
       "containerId": null,
       "originalText": "✨",
-      "lineHeight": 1.3538755729626375
+      "lineHeight": 1.3538755729626375,
+      "index": "aJ",
+      "autoResize": true
     },
     {
       "type": "text",
-      "version": 3739,
-      "versionNonce": 1887435219,
+      "version": 3740,
+      "versionNonce": 1480034034,
       "isDeleted": false,
       "id": "wZUH9QK1PNm62n8J7aEnb",
       "fillStyle": "solid",
@@ -721,7 +753,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1706149126065,
+      "updated": 1760931887250,
       "link": null,
       "locked": false,
       "fontSize": 16,
@@ -731,12 +763,14 @@
       "verticalAlign": "top",
       "containerId": null,
       "originalText": "High Level Design",
-      "lineHeight": 1.25
+      "lineHeight": 1.25,
+      "index": "aK",
+      "autoResize": true
     },
     {
       "type": "line",
-      "version": 1981,
-      "versionNonce": 682051443,
+      "version": 1982,
+      "versionNonce": 236853550,
       "isDeleted": false,
       "id": "ShlFtLxjsF_F8IpW9SyMh",
       "fillStyle": "hachure",
@@ -758,7 +792,7 @@
         "type": 2
       },
       "boundElements": [],
-      "updated": 1706149126065,
+      "updated": 1760931887250,
       "link": null,
       "locked": false,
       "startBinding": null,
@@ -775,12 +809,13 @@
           165.2005648542745,
           0.8295616012067057
         ]
-      ]
+      ],
+      "index": "aL"
     },
     {
       "type": "text",
-      "version": 2203,
-      "versionNonce": 991760189,
+      "version": 2204,
+      "versionNonce": 2102253746,
       "isDeleted": false,
       "id": "Q2Am8ec0mauuigqNn1S0u",
       "fillStyle": "solid",
@@ -800,7 +835,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1706150008294,
+      "updated": 1760931887250,
       "link": null,
       "locked": false,
       "fontSize": 20,
@@ -810,12 +845,14 @@
       "verticalAlign": "top",
       "containerId": null,
       "originalText": "Problems:\n\n1) Indexing our tweets so we can quickly search for them by keyword.\n\nGood Solution: Build a reverse index from scratch\n- need to tokenize our tweets. This is non-trivial problem\n- large volume of writes to our system\n\nGreat Solutions: Off the shelf solution like ElasticSearch or a fulltext index on a\nrelational database\n- Complex system and requires a lot of configuration to get right\n- Distributed system and requires a lot of operational overhead to maintain\n\n2) Handling the large volume of writes to our system\n\nGood solution: batch likes before writing to db\n- Won't drastically reduce volume of writes overall since those tweets are in the minority\n(most tweets aren't viral I guess)\n\nGreat Solution: Two stage architecture w/ ingestion service and reranking service\n\n",
-      "lineHeight": 1.3
+      "lineHeight": 1.3,
+      "index": "aM",
+      "autoResize": true
     },
     {
       "type": "image",
-      "version": 61,
-      "versionNonce": 224373725,
+      "version": 72,
+      "versionNonce": 1977391218,
       "isDeleted": false,
       "id": "ECpn4vEre2vLeafcwD1VX",
       "fillStyle": "solid",
@@ -824,8 +861,8 @@
       "roughness": 1,
       "opacity": 100,
       "angle": 0,
-      "x": 1284.286110473582,
-      "y": 497.4142991766083,
+      "x": 1321.2581262979447,
+      "y": 370.3683356606484,
       "strokeColor": "transparent",
       "backgroundColor": "transparent",
       "width": 1092,
@@ -835,7 +872,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1706149286618,
+      "updated": 1760931957417,
       "link": null,
       "locked": false,
       "status": "saved",
@@ -843,11 +880,15 @@
       "scale": [
         1,
         1
-      ]
+      ],
+      "index": "aN",
+      "crop": null
     }
   ],
   "appState": {
-    "gridSize": null,
+    "gridSize": 20,
+    "gridStep": 5,
+    "gridModeEnabled": false,
     "viewBackgroundColor": "#ffffff"
   },
   "files": {
