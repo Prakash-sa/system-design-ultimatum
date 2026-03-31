@@ -1334,3 +1334,626 @@ nodetool repair -pr user_keyspace
 6. What queries must I support (design tables)?
 7. Can I handle operational complexity?
 
+---
+
+## Cassandra — Practical Guide & Deep Dive
+
+Apache Cassandra is an open-source, distributed NoSQL database originally built by Facebook for inbox search. It implements a partitioned **wide-column** storage model with **eventually consistent** semantics. Cassandra combines elements of **Dynamo** (partitioning, replication) and **Bigtable** (column-oriented storage) to handle massive data footprints, query volume, and flexible storage requirements.
+
+Used by Discord, Netflix, Apple, and Bloomberg — Cassandra is here to stay.
+
+---
+
+### Cassandra Basics
+
+#### Data Model
+
+| Concept | Description |
+|---|---|
+| **Keyspace** | Top-level unit (like a "database"). Defines replication strategies and owns UDTs |
+| **Table** | Lives within a keyspace. Organizes data into rows with a defined schema |
+| **Row** | Single record identified by a primary key |
+| **Column** | Data storage unit with name, type, value, and timestamp metadata. Columns can vary per row (wide-column) |
+
+At a basic level, Cassandra's data looks like nested JSON:
+
+```json
+{
+  "keyspace1": {
+    "table1": {
+      "row1": { "col1": 1, "col2": "2" },
+      "row2": { "col1": 10, "col3": 3.0 },
+      "row3": { "col4": { "company": "Hello Interview", "city": "Seattle" } }
+    }
+  }
+}
+```
+
+> **Wide-column flexibility:** Unlike relational databases that require an entry for every column per row (even NULL), Cassandra allows columns to vary per row.
+
+> **Conflict resolution:** Every column has a timestamp. Write conflicts between replicas are resolved via **"last write wins"**.
+
+#### Primary Key
+
+Every row is uniquely identified by a **primary key** consisting of:
+
+| Component | Purpose |
+|---|---|
+| **Partition Key** | One or more columns determining which partition stores the row |
+| **Clustering Key** | Zero or more columns determining sorted order within a partition |
+
+```sql
+-- Partition key: a, no clustering keys
+CREATE TABLE t (a text, b text, c text, PRIMARY KEY (a));
+
+-- Partition key: a, clustering key: b ascending
+CREATE TABLE t (a text, b text, c text, PRIMARY KEY ((a), b))
+WITH CLUSTERING ORDER BY (b ASC);
+
+-- Composite partition key: a+b, clustering key: c
+CREATE TABLE t (a text, b text, c text, d text, PRIMARY KEY ((a, b), c));
+
+-- Partition key: a, clustering keys: b+c
+CREATE TABLE t (a text, b text, c text, d text, PRIMARY KEY ((a), b, c));
+```
+
+---
+
+### Key Concepts
+
+#### Partitioning — Consistent Hashing
+
+Cassandra achieves horizontal scalability by partitioning data across nodes using **consistent hashing**.
+
+**Traditional hashing problem:** `hash(value) % num_nodes` causes massive data remapping when nodes are added/removed, and can produce uneven distribution.
+
+**Consistent hashing solution:**
+- Values are hashed to positions on a **ring** of integers
+- Walking clockwise from the hash position finds the first node → that node stores the data
+- Adding/removing a node only affects the adjacent node's data
+
+**Virtual nodes (vnodes):** To address uneven load, Cassandra maps multiple **virtual nodes** on the ring to physical nodes. Benefits:
+- More even distribution across the cluster
+- Larger physical machines can own more vnodes
+- Adding a node redistributes load from many existing nodes (not just one)
+
+#### Replication
+
+Keyspaces specify replication configuration. Cassandra replicates by scanning clockwise from the assigned vnode to find additional replica nodes (skipping vnodes on the same physical node).
+
+| Strategy | Description |
+|---|---|
+| **SimpleStrategy** | Scans clockwise for replicas. Good for testing/simple deployments |
+| **NetworkTopologyStrategy** | Data-center and rack aware. Recommended for production. Ensures replicas span physical failure domains |
+
+```sql
+-- SimpleStrategy: 3 replicas
+ALTER KEYSPACE hello_interview
+WITH REPLICATION = { 'class': 'SimpleStrategy', 'replication_factor': 3 };
+
+-- NetworkTopologyStrategy: 3 replicas in dc1, 2 in dc2
+ALTER KEYSPACE hello_interview
+WITH REPLICATION = { 'class': 'NetworkTopologyStrategy', 'dc1': 3, 'dc2': 2 };
+```
+
+#### Consistency
+
+Cassandra gives users flexibility over consistency levels for reads and writes — a tunable **consistency vs. availability trade-off**.
+
+> **No ACID guarantees.** Cassandra only supports atomic and isolated writes at the row level within a partition.
+
+| Consistency Level | Behavior |
+|---|---|
+| **ONE** | Single replica must respond |
+| **QUORUM** | Majority (n/2 + 1) of replicas must respond |
+| **ALL** | All replicas must respond |
+
+**QUORUM on both reads and writes** guarantees that writes are visible to reads because at least one overlapping node participates in both operations. With 3 replicas: `3/2 + 1 = 2` nodes must participate in each operation.
+
+Cassandra aims for **eventual consistency** — all replicas converge to the latest data given enough time.
+
+#### Query Routing
+
+**Any node can be a coordinator.** Cassandra nodes know about other alive nodes via **gossip protocol**. When a client issues a query:
+
+1. Client selects a node → it becomes the coordinator
+2. Coordinator determines which nodes store the data (consistent hashing + replication strategy)
+3. Coordinator issues queries to relevant replica nodes
+4. Responses are returned to the client
+
+#### Storage Model — LSM Tree
+
+Cassandra uses a **Log Structured Merge Tree (LSM tree)** instead of a B-tree, favoring **write speed over read speed**.
+
+**Key insight:** Every create/update/delete is a new entry. Cassandra uses ordering of entries to determine row state. Deletes write a **tombstone** marker.
+
+**Three core constructs:**
+
+| Construct | Description |
+|---|---|
+| **Commit Log** | Write-ahead log for durability |
+| **Memtable** | In-memory sorted structure (sorted by primary key) |
+| **SSTable** | Immutable on-disk file flushed from Memtable |
+
+**Write path:**
+1. Write is issued to a node
+2. Written to **commit log** (durability guarantee)
+3. Written to **Memtable** (in-memory)
+4. When Memtable reaches threshold → flushed to disk as immutable **SSTable**
+5. Corresponding commit log entries are removed
+
+**Read path:**
+1. Check **Memtable** first (latest data)
+2. If not found, use **bloom filter** to identify candidate SSTables
+3. Read SSTables newest-to-oldest to find latest data (sorted by primary key)
+
+**Compaction:** Periodically merges SSTables to consolidate updates and remove tombstones, keeping read performance healthy.
+
+**SSTable Indexing:** Files mapping keys to byte offsets in SSTables for fast on-disk retrieval.
+
+#### Gossip Protocol
+
+Cassandra nodes communicate cluster information via **peer-to-peer gossip**:
+- Nodes track generation (bootstrap timestamp) and version (logical clock) for each known node
+- These form a **vector clock** — nodes ignore stale state information
+- **Seed nodes** act as guaranteed gossip hotspots, preventing cluster fragmentation
+- Every node being aware of the cluster eliminates single points of failure
+
+#### Fault Tolerance
+
+**Failure detection:** **Phi Accrual Failure Detector** — each node independently decides if another node is available. Nodes aren't considered truly "down" unless an admin decommissions them.
+
+**Hinted handoffs:** When a coordinator can't reach a replica node:
+1. Coordinator temporarily stores the write data as a **hint**
+2. Write proceeds successfully
+3. When the offline node comes back, hints are forwarded to it
+
+> Hinted handoffs are short-term. Long-offline nodes require **read repairs** or rebuilds.
+
+---
+
+### Data Modeling for Cassandra
+
+Cassandra data modeling is **query-driven** (not entity-relationship-driven like relational DBs).
+
+**Key principles:**
+- No JOINs, no foreign keys, no referential integrity
+- Design tables around **access patterns** first
+- **Denormalize** data across tables as needed
+- Consider: partition key choice, partition size limits, clustering key ordering
+
+#### Example: Discord Messages
+
+Discord uses Cassandra for message storage. Access pattern: users query recent messages for a channel.
+
+**First iteration:**
+
+```sql
+CREATE TABLE messages (
+  channel_id bigint,
+  message_id bigint,
+  author_id bigint,
+  content text,
+  PRIMARY KEY (channel_id, message_id)
+) WITH CLUSTERING ORDER BY (message_id DESC);
+```
+
+- **Partition key:** `channel_id` → single partition per channel, efficient reads
+- **Clustering key:** `message_id` DESC → reverse chronological order
+- Uses **Snowflake IDs** (chronologically sortable UUIDs) instead of timestamps to avoid collisions
+
+**Problem:** Busy channels create huge partitions → performance degradation. Partitions grow monotonically.
+
+**Solution — Time bucketing:**
+
+```sql
+CREATE TABLE messages (
+  channel_id bigint,
+  bucket int,
+  message_id bigint,
+  author_id bigint,
+  content text,
+  PRIMARY KEY ((channel_id, bucket), message_id)
+) WITH CLUSTERING ORDER BY (message_id DESC);
+```
+
+- `bucket` represents 10-day windows aligned to Discord's epoch
+- Limits partition size even for busiest channels
+- Most queries hit a single partition (latest bucket)
+- New buckets created automatically as time progresses
+
+#### Example: Ticketmaster Ticket Browsing
+
+Access pattern: users view event venue sections, then drill into individual seats.
+
+**First iteration (all seats per event):**
+
+```sql
+CREATE TABLE tickets (
+  event_id bigint,
+  seat_id bigint,
+  price bigint,
+  PRIMARY KEY (event_id, seat_id)
+);
+```
+
+**Problem:** Events with 10k+ tickets → large partitions, expensive aggregations for section summaries.
+
+**Better design — partition by section:**
+
+```sql
+CREATE TABLE tickets (
+  event_id bigint,
+  section_id bigint,
+  seat_id bigint,
+  price bigint,
+  PRIMARY KEY ((event_id, section_id), seat_id)
+);
+```
+
+**Denormalized summary table for venue overview:**
+
+```sql
+CREATE TABLE event_sections (
+  event_id bigint,
+  section_id bigint,
+  num_tickets bigint,
+  price_floor bigint,
+  PRIMARY KEY (event_id, section_id)
+);
+```
+
+- Venue overview → query `event_sections` (single partition, < 100 sections)
+- Section detail → query `tickets` (single partition per section)
+- Section stats don't need to be exact (Ticketmaster shows "100+" not exact counts)
+
+---
+
+### Advanced Features
+
+| Feature | Description |
+|---|---|
+| **Storage Attached Indexes (SAI)** | Global secondary indexes on columns. Flexible querying with good (not optimal) performance. Avoids excess denormalization for infrequent queries |
+| **Materialized Views** | Cassandra automatically materializes denormalized tables from a source table. Reduces application-level complexity for multi-table writes |
+| **Search Indexing** | Wire up to Elasticsearch or Apache Solr via plugins (e.g., Stratio Lucene Index) |
+
+---
+
+### Cassandra in an Interview
+
+**When to use:**
+- Systems prioritizing **availability over consistency**
+- **High write throughput** needs (LSM tree optimized writes)
+- **High scalability** requirements (linear horizontal scaling)
+- **Flexible/sparse schemas** (wide-column model)
+- Clear, well-defined **access patterns** the schema can revolve around
+
+**When NOT to use:**
+- Strict consistency requirements (financial transactions, inventory)
+- Complex query patterns (multi-table JOINs, ad-hoc aggregations)
+- Small datasets that don't need distributed scaling
+- Rapidly evolving query patterns (each new query may need a new table)
+
+---
+
+## Additional Interview Questions & Answers
+
+### Q6: Explain consistent hashing and virtual nodes. Why does Cassandra use them?
+
+**Answer:**
+
+**Consistent hashing** maps both data and nodes onto a ring of integers. Data is stored on the first node encountered when walking clockwise from the data's hash position.
+
+**Why not traditional hashing (`hash % num_nodes`)?**
+- Adding/removing a node remaps ~all data (catastrophic in a distributed DB)
+- Consistent hashing: adding/removing a node only affects adjacent nodes' data
+
+**Virtual nodes (vnodes):**
+- Each physical node owns multiple positions on the ring (default: 256 vnodes per node)
+- Benefits:
+  - **Even distribution** — more ring positions = more uniform data spread
+  - **Heterogeneous hardware** — larger machines can own more vnodes
+  - **Faster rebalancing** — adding a node takes small slices from many nodes instead of a large chunk from one
+  - **Faster rebuilds** — data streams from many nodes in parallel
+
+**Interview tip:** Consistent hashing is useful beyond Cassandra — apply it to cache distribution, load balancing, or any sharding problem.
+
+---
+
+### Q7: How does Cassandra's write path differ from a traditional relational database? Why is Cassandra faster for writes?
+
+**Answer:**
+
+| Aspect | Relational DB (B-tree) | Cassandra (LSM tree) |
+|---|---|---|
+| **Write pattern** | Random I/O (find and update in-place) | Sequential I/O (append to commit log + memtable) |
+| **On-disk structure** | Mutable B-tree pages | Immutable SSTables |
+| **Write amplification** | Low per write, but random seeks are slow | Higher (compaction), but writes themselves are fast |
+| **Read performance** | Optimized (B-tree lookups) | Requires checking memtable + multiple SSTables |
+
+**Why Cassandra is faster for writes:**
+1. **Commit log** is append-only → sequential disk I/O (fastest possible disk operation)
+2. **Memtable** is in-memory → no disk I/O for the actual data write
+3. No need to read-before-write (no in-place updates)
+4. SSTable flushes are sequential bulk writes
+5. No locking or transaction overhead
+
+**Tradeoff:** Reads may need to check multiple SSTables → bloom filters and compaction mitigate this.
+
+---
+
+### Q8: What are tombstones in Cassandra? Why can they be problematic?
+
+**Answer:**
+
+**Tombstones** are markers that Cassandra writes when data is deleted. Since SSTables are immutable, Cassandra can't remove data in-place — instead it writes a tombstone that says "this data is deleted."
+
+**How they work:**
+1. Delete issued → tombstone written to memtable → flushed to SSTable
+2. During reads, tombstones override earlier versions of the data
+3. During **compaction**, tombstoned data is permanently removed (after `gc_grace_seconds`, default 10 days)
+
+**Why they're problematic:**
+- **Read performance degradation** — reads must scan through tombstones before finding live data
+- **Memory pressure** — tombstones consume memory during reads
+- **"Tombstone storm"** — deleting many rows at once creates massive numbers of tombstones
+- If `gc_grace_seconds` is too short, deleted data can **resurrect** via repair from a replica that missed the delete
+
+**Best practices:**
+- Avoid frequent deletes — use TTLs for time-expiring data instead
+- Use appropriate compaction strategies (e.g., `TimeWindowCompactionStrategy` for time-series data with TTLs)
+- Monitor tombstone counts per read (`TombstoneScannedHistogram`)
+- Don't set `gc_grace_seconds` lower than your repair cycle
+
+---
+
+### Q9: How would you model a time-series IoT sensor system in Cassandra?
+
+**Answer:**
+
+**Requirements:** Millions of sensors, each reporting every few seconds. Query patterns: latest readings per sensor, readings in a time range.
+
+**Schema:**
+
+```sql
+CREATE TABLE sensor_readings (
+  sensor_id uuid,
+  day date,
+  reading_time timestamp,
+  temperature double,
+  humidity double,
+  pressure double,
+  PRIMARY KEY ((sensor_id, day), reading_time)
+) WITH CLUSTERING ORDER BY (reading_time DESC)
+  AND default_time_to_live = 2592000;  -- 30-day TTL
+```
+
+**Design decisions:**
+
+| Decision | Reasoning |
+|---|---|
+| **Partition key: `(sensor_id, day)`** | Bounds partition size to one day per sensor; prevents unbounded growth |
+| **Clustering key: `reading_time` DESC** | Latest readings returned first (most common query pattern) |
+| **TTL: 30 days** | Auto-expiration avoids tombstone accumulation from manual deletes |
+| **Compaction: `TimeWindowCompactionStrategy`** | Optimized for time-series data where entire windows expire together |
+
+**Query examples:**
+
+```sql
+-- Latest readings for sensor today
+SELECT * FROM sensor_readings
+WHERE sensor_id = ? AND day = '2026-03-30'
+LIMIT 10;
+
+-- Readings in a time range
+SELECT * FROM sensor_readings
+WHERE sensor_id = ? AND day = '2026-03-30'
+AND reading_time >= '2026-03-30 10:00:00'
+AND reading_time <= '2026-03-30 12:00:00';
+```
+
+**Scaling:** With 1M sensors reporting every 5 seconds = 200k writes/sec. At ~100 bytes per reading, daily storage ≈ 1.7 TB. Cassandra handles this comfortably with a well-sized cluster (10-15 nodes).
+
+---
+
+### Q10: Compare Cassandra vs DynamoDB. When would you choose each?
+
+**Answer:**
+
+| Feature | Cassandra | DynamoDB |
+|---|---|---|
+| **Deployment** | Self-managed or managed (Astra DB) | Fully managed (AWS) |
+| **Data model** | Wide-column (flexible schema) | Key-value + document |
+| **Primary key** | Partition key + clustering key | Partition key + sort key |
+| **Consistency** | Tunable (ONE to ALL) | Eventually consistent or strongly consistent |
+| **Scaling** | Manual (add nodes, rebalance) | Automatic (on-demand or provisioned) |
+| **Multi-region** | NetworkTopologyStrategy | Global Tables |
+| **Secondary indexes** | SAI, materialized views | GSI, LSI |
+| **Cost model** | Infrastructure + ops team | Pay-per-request or provisioned capacity |
+| **Vendor lock-in** | None (open source) | AWS only |
+| **Throughput** | Very high (you control hardware) | High (AWS manages limits) |
+
+**Choose Cassandra when:**
+- You need vendor independence
+- You want full control over tuning and infrastructure
+- Your team has operational expertise
+- You need extreme write throughput with custom hardware
+
+**Choose DynamoDB when:**
+- You want zero operational overhead
+- You're already in the AWS ecosystem
+- You need automatic scaling without capacity planning
+- Your team is small and can't dedicate resources to DB operations
+
+---
+
+### Q11: Explain Cassandra's gossip protocol. How does it prevent split-brain?
+
+**Answer:**
+
+**Gossip** is Cassandra's peer-to-peer protocol for sharing cluster state:
+
+1. Every second, each node randomly selects 1-3 other nodes to gossip with
+2. Nodes exchange **heartbeat state** — generation (bootstrap timestamp) + version (incrementing counter)
+3. These form a **vector clock** — newer information supersedes older
+4. Nodes probabilistically bias gossip toward **seed nodes**
+
+**Why seed nodes matter:**
+- Seed nodes are guaranteed gossip targets that prevent cluster fragmentation
+- Without them, sub-clusters could form where groups of nodes only know about each other
+- New nodes use seed nodes for initial cluster discovery
+
+**Split-brain prevention:**
+- Cassandra doesn't use leader election (no single point of failure)
+- Every node can serve requests independently
+- **Phi Accrual Failure Detector** provides probabilistic failure detection (not binary up/down)
+- Nodes don't make irreversible decisions about cluster membership — a "convicted" node simply re-enters the cluster when it starts heartbeating again
+- **Hinted handoffs** ensure writes aren't lost during temporary network partitions
+
+**Key difference from consensus-based systems (Raft/Paxos):** Cassandra favors availability — it doesn't require quorum agreement for cluster membership changes. This makes it more resilient to network partitions but means it relies on eventual consistency.
+
+---
+
+### Q12: How would you handle a "hot partition" in Cassandra?
+
+**Answer:**
+
+**Hot partition:** A single partition receives disproportionate read/write traffic, overloading the node(s) hosting it.
+
+**Detection:**
+- Monitor `org.apache.cassandra.metrics:type=Table` metrics per table
+- Look for uneven load across nodes (`nodetool tablehistograms`)
+- Client-side latency spikes for specific partition keys
+
+**Solutions:**
+
+| Strategy | How It Works | Tradeoff |
+|---|---|---|
+| **Add bucketing to partition key** | Split `(user_id)` into `(user_id, bucket)` where bucket = `hash(timestamp) % N` | Reads must query N buckets and merge |
+| **Application-level caching** | Cache hot partition data in Redis/Memcached | Added infrastructure, cache invalidation complexity |
+| **Scatter-gather with salt** | Add random salt to partition key, fan-out reads | Higher read latency, more complex application logic |
+| **Redesign data model** | Re-examine access patterns; maybe the partition key choice is wrong | May require migration |
+| **Rate limiting** | Throttle writes/reads to hot keys at application layer | May degrade user experience |
+
+**Prevention (at design time):**
+- Avoid low-cardinality partition keys (e.g., `country` for a global app)
+- Estimate max partition size and access frequency during data modeling
+- Use compound partition keys to distribute load (like Discord's `(channel_id, bucket)`)
+
+---
+
+### Q13: What compaction strategies does Cassandra offer and when should you use each?
+
+**Answer:**
+
+| Strategy | Best For | How It Works |
+|---|---|---|
+| **SizeTieredCompactionStrategy (STCS)** | Write-heavy workloads | Merges similarly-sized SSTables. Simple but can cause temporary space amplification (needs 2x disk) |
+| **LeveledCompactionStrategy (LCS)** | Read-heavy workloads | Organizes SSTables into levels of increasing size. Guarantees at most 1 SSTable per partition per level. Better read performance, higher write amplification |
+| **TimeWindowCompactionStrategy (TWCS)** | Time-series data with TTL | Groups SSTables by time window. Entire windows drop when all data expires. Very efficient for TTL-based expiration |
+| **UnifiedCompactionStrategy (UCS)** | General purpose (Cassandra 5.0+) | Adaptive strategy that combines benefits of STCS and LCS based on workload characteristics |
+
+**Decision guide:**
+
+```
+Write-heavy, rarely read → STCS
+Read-heavy, frequent updates → LCS
+Time-series with TTL → TWCS
+Not sure / mixed workload → UCS (if available)
+```
+
+**Interview tip:** Mentioning compaction strategy shows deep understanding. The key insight is that compaction is the price Cassandra pays for fast writes — it defers the "cleanup" work to background processes.
+
+---
+
+### Q14: How does Cassandra compare to MongoDB for a system design interview?
+
+**Answer:**
+
+| Feature | Cassandra | MongoDB |
+|---|---|---|
+| **Data model** | Wide-column (rows with varying columns) | Document (JSON/BSON) |
+| **Query language** | CQL (SQL-like, limited) | MQL (rich query language, aggregation pipeline) |
+| **Schema** | Defined per table (flexible columns) | Schema-less (flexible documents) |
+| **Consistency** | Tunable (eventual by default) | Strong by default (single-document ACID) |
+| **Scaling** | Peer-to-peer (no single point of failure) | Primary-secondary (primary handles writes) |
+| **Write performance** | Excellent (LSM tree, sequential I/O) | Good (WiredTiger B-tree) |
+| **JOINs** | Not supported | Not native (use `$lookup` for basic joins) |
+| **Secondary indexes** | SAI (limited) | Rich secondary indexes |
+| **Multi-region** | Native (NetworkTopologyStrategy) | Atlas Global Clusters |
+
+**Choose Cassandra when:**
+- Availability > consistency
+- Extreme write throughput
+- Well-defined, predictable access patterns
+- Multi-datacenter replication is critical
+
+**Choose MongoDB when:**
+- Flexible/evolving query patterns
+- Rich querying and aggregation needed
+- Single-document transactions suffice
+- Developer productivity is a priority (richer query language)
+
+---
+
+### Q15: Design a Cassandra schema for a social media feed (like Twitter/X timeline).
+
+**Answer:**
+
+**Access patterns:**
+1. View a user's own posts (profile page)
+2. View a user's home timeline (posts from people they follow)
+3. Post a new message
+
+**Schema:**
+
+```sql
+-- User's own posts (profile view)
+CREATE TABLE user_posts (
+  user_id bigint,
+  post_id bigint,        -- Snowflake ID (chronologically sortable)
+  content text,
+  media_urls list<text>,
+  like_count counter,     -- Separate counter table in practice
+  PRIMARY KEY (user_id, post_id)
+) WITH CLUSTERING ORDER BY (post_id DESC);
+
+-- Home timeline (fan-out on write)
+CREATE TABLE home_timeline (
+  user_id bigint,
+  post_id bigint,
+  author_id bigint,
+  content text,
+  author_name text,       -- Denormalized for read efficiency
+  PRIMARY KEY (user_id, post_id)
+) WITH CLUSTERING ORDER BY (post_id DESC);
+```
+
+**Fan-out on write strategy:**
+1. User posts a message → write to `user_posts`
+2. Look up all followers of the user
+3. For each follower, write a copy to their `home_timeline`
+
+**Design considerations:**
+
+| Concern | Solution |
+|---|---|
+| **Celebrity fan-out** | Hybrid approach — fan-out on write for normal users, fan-out on read for celebrities (> 1M followers) |
+| **Partition size** | Use TTL or bucketing `(user_id, bucket)` to prevent unbounded timeline growth |
+| **Stale denormalized data** | Author name changes are infrequent; eventual consistency is acceptable |
+| **Timeline truncation** | Only keep latest 1000 posts per timeline; older posts fetched on-demand |
+
+**Query:**
+
+```sql
+-- Home timeline (latest 20 posts)
+SELECT * FROM home_timeline
+WHERE user_id = ?
+LIMIT 20;
+
+-- Pagination via search_after
+SELECT * FROM home_timeline
+WHERE user_id = ? AND post_id < ?
+LIMIT 20;
+```
+

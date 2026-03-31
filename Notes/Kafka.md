@@ -1506,3 +1506,536 @@ General:
 5. Can my consumers be idempotent?
 6. Do I need global or per-partition ordering?
 7. Is cross-region failover required?
+
+---
+
+## Kafka — Practical Guide & Motivating Examples
+
+There is a good chance you've heard of Kafka. According to their website, it's used by **80% of the Fortune 100**. Apache Kafka is an open-source distributed event streaming platform that can be used either as a **message queue** or as a **stream processing system**. It excels in delivering high performance, scalability, and durability — engineered to handle vast volumes of data in real-time.
+
+---
+
+### A Motivating Example: The World Cup
+
+Imagine running a website providing real-time stats for World Cup matches. Each goal, booking, or substitution generates an event.
+
+**Step 1 — Basic Queue:**
+- **Producer** puts events on a queue
+- **Consumer** reads events and updates the website
+
+**Step 2 — Scaling (1000 teams, all games simultaneously):**
+- Single server can't keep up → distribute the queue across servers
+- **Problem:** How to maintain event ordering?
+- **Solution:** Partition by game ID → all events for one game stay on the same queue (partition)
+
+**Step 3 — Consumer Scaling:**
+- Single consumer is overwhelmed → add more consumers
+- **Consumer groups** ensure each partition is assigned to exactly one consumer in the group
+- Under normal operation, each event is delivered to a single consumer
+- In failure scenarios, Kafka's default **at-least-once** semantics mean a message could be reprocessed
+
+**Step 4 — Multiple Sports:**
+- Soccer events shouldn't go to the basketball website
+- **Topics** separate event streams — consumers subscribe to specific topics
+
+---
+
+### Basic Terminology and Architecture
+
+| Concept | Description |
+|---|---|
+| **Cluster** | Multiple brokers working together |
+| **Broker** | Individual server storing data and serving clients |
+| **Partition** | Ordered, immutable, append-only sequence of messages (like a log file) |
+| **Topic** | Logical grouping of partitions — how you publish/subscribe to data |
+| **Producer** | Writes data to topics |
+| **Consumer** | Reads data from topics |
+| **Consumer Group** | Set of consumers where each partition is assigned to exactly one member |
+
+> **Topic vs Partition:** A topic is a *logical* grouping; a partition is a *physical* grouping. A topic can have multiple partitions across different brokers.
+
+**Queue vs Stream mode:**
+- **Message queue:** Each message processed by one consumer in a group, then effectively "consumed"
+- **Stream:** Log is retained and can be replayed; multiple consumer groups read independently; continuous processing
+
+---
+
+### How Kafka Works
+
+#### Message Structure
+
+A Kafka message (record) has four fields (all technically optional):
+
+| Field | Purpose |
+|---|---|
+| **Value** | The payload |
+| **Key** | Determines which partition the message goes to |
+| **Timestamp** | When the message was created/ingested (ordering is by offsets, not timestamps) |
+| **Headers** | Key-value metadata pairs |
+
+#### Producer Example (kafkajs)
+
+```javascript
+const kafka = new Kafka({
+  clientId: 'my-app',
+  brokers: ['localhost:9092']
+});
+
+const producer = kafka.producer();
+
+await producer.connect();
+await producer.send({
+  topic: 'my_topic',
+  messages: [
+    { key: 'key1', value: 'Hello, Kafka with key!' },
+    { key: 'key2', value: 'Another message with a different key' }
+  ],
+});
+```
+
+#### Partition Determination (Two-Step Process)
+
+1. **Partition selection:** Hash the message key → `partition = hash(key) % num_partitions`. Without a key, modern clients use a "sticky" partitioner (batches to one partition, then rotates)
+2. **Broker assignment:** Cluster metadata maps partitions to brokers; producer sends directly to the correct broker
+
+#### Append-Only Log Benefits
+
+| Benefit | Why |
+|---|---|
+| **Immutability** | Simplifies replication, speeds recovery, avoids consistency issues |
+| **Efficiency** | Minimizes disk seek times (sequential writes only) |
+| **Scalability** | Simple mechanism enables horizontal scaling |
+
+Each message gets a unique **offset** — a sequential ID indicating position in the partition. Consumers commit offsets to track progress and resume after failures.
+
+> **Default delivery:** At-least-once. If a consumer crashes after processing but before committing, the message will be reprocessed. Exactly-once requires idempotent producers + transactional APIs.
+
+#### Replication Model
+
+| Component | Role |
+|---|---|
+| **Leader replica** | Handles all writes and (by default) reads for a partition |
+| **Follower replicas** | Passively replicate from leader; ready for promotion on failure |
+| **ISR (In-Sync Replicas)** | Followers that are fully caught up with the leader |
+| **Controller** | Monitors broker health; manages leadership and replication dynamics |
+
+Kafka 2.4+ supports **consumer reads from follower replicas** for latency optimization.
+
+#### Consumer Example (kafkajs)
+
+```javascript
+const consumer = kafka.consumer({ groupId: 'my-group' });
+
+await consumer.connect();
+await consumer.subscribe({ topic: 'my_topic' });
+
+await consumer.run({
+  eachMessage: async ({ topic, partition, message }) => {
+    console.log({
+      value: message.value?.toString(),
+      key: message.key?.toString()
+    });
+  },
+});
+```
+
+Kafka uses a **pull-based model** — consumers actively poll for new messages. This lets consumers control their rate, simplifies failure handling, prevents overwhelming slow consumers, and enables efficient batching.
+
+---
+
+### When to Use Kafka in Your Interview
+
+**As a message queue when:**
+- Processing can be done **asynchronously** (e.g., YouTube video transcoding — upload SD immediately, transcode via Kafka)
+- Messages must be processed **in order** (e.g., Ticketmaster virtual waiting queue)
+- You need to **decouple** producer and consumer for independent scaling
+
+**As a stream when:**
+- You need **continuous real-time processing** (e.g., Ad Click Aggregator)
+- Messages need **multiple consumers** simultaneously (e.g., FB Live Comments as pub/sub)
+
+---
+
+### Scalability Deep Dive
+
+#### Single Broker Limits
+
+- No hard limit on message size (configurable via `message.max.bytes`), but keep under **1MB** for optimal performance
+- Good hardware: ~**1TB storage**, up to **1M messages/second**
+
+> **Anti-pattern:** Don't store large blobs (videos, files) in Kafka. Store them in S3 and put a pointer message in Kafka.
+
+#### Scaling Strategies
+
+1. **Horizontal scaling:** Add more brokers. Ensure topics have sufficient partitions to utilize new brokers
+2. **Partitioning strategy:** The main decision — choose keys that distribute evenly. `partition = hash(key) % num_partitions` (murmur2 by default)
+
+#### Handling Hot Partitions
+
+Example: An Ad Click Aggregator partitioned by ad ID. Nike launches a Lebron James ad → that partition is overwhelmed.
+
+| Strategy | How It Works | Tradeoff |
+|---|---|---|
+| **No key (default)** | Sticky partitioner distributes roughly evenly | Lose ordering guarantees |
+| **Random salting** | Add random suffix to key (e.g., `ad_123_7`) | Complicates consumer-side aggregation |
+| **Compound key** | Combine ad ID with region/user segment | Better distribution if attributes vary independently |
+| **Back pressure** | Slow down the producer when lag is too high | Reduces throughput |
+
+---
+
+### Fault Tolerance and Durability
+
+**Replication:** Each partition replicated across multiple brokers. `acks=all` ensures message is acknowledged only when all ISRs have received it (strongest guarantee). Replication factor of 3 is common (1 leader + 2 followers).
+
+> "Kafka is always available, sometimes consistent." Asking "what if Kafka goes down?" isn't very realistic — focus on **consumer failure** instead.
+
+**When a consumer goes down:**
+
+1. **Offset management:** Consumer restarts, reads last committed offset, resumes from there. Messages may be reprocessed if crash happened before commit (at-least-once)
+2. **Rebalancing:** Consumer group redistributes partitions among remaining consumers
+
+> **Key tradeoff:** When to commit offsets? In a Web Crawler, don't commit until raw HTML is stored in blob storage. Keep consumer work small to minimize redo on failure.
+
+#### Producer Retries
+
+```javascript
+const producer = kafka.producer({
+  retry: {
+    retries: 5,
+    initialRetryTime: 100,
+  },
+  idempotent: true, // Avoid duplicates on retry
+});
+```
+
+#### Consumer Retries
+
+Kafka doesn't support consumer retries out of the box (AWS SQS does). Common pattern:
+
+1. Failed messages → **retry topic**
+2. Separate consumer processes retry topic
+3. After N retries → **dead letter queue (DLQ)** for investigation
+
+---
+
+### Performance Optimizations
+
+| Technique | Description |
+|---|---|
+| **Batching** | Send multiple messages in a single `send()` call; use `sendBatch()` across topics |
+| **Compression** | GZIP, Snappy, LZ4 — reduces message size for faster transmission |
+| **Partition key design** | Maximize parallelism with even distribution across partitions |
+
+```javascript
+const { CompressionTypes } = require('kafkajs');
+
+await producer.send({
+  topic: 'my_topic',
+  compression: CompressionTypes.GZIP,
+  messages: [{ key: 'key1', value: 'Hello, Kafka!' }],
+});
+```
+
+### Retention Policies
+
+Default: **7 days** (configurable via `retention.ms` and `retention.bytes`). Longer retention = higher storage costs. Consider this tradeoff in your interview.
+
+---
+
+## Additional Interview Questions & Answers
+
+### Q6: How does Kafka guarantee message ordering? What are the limitations?
+
+**Answer:** Kafka guarantees ordering **only within a single partition**, not across partitions.
+
+**How it works:**
+- Messages with the same key always go to the same partition (`hash(key) % num_partitions`)
+- Within a partition, messages are assigned sequential offsets
+- Consumers read messages in offset order
+
+**Limitations:**
+- No global ordering across partitions — if you need total ordering, you need a single partition (sacrificing parallelism)
+- Adding partitions breaks existing key-to-partition mappings (messages with the same key may go to a different partition)
+- Rebalancing can cause brief ordering disruptions during consumer group membership changes
+
+**Interview approach:** Choose partition keys that group related messages together. For a payment system, partition by `account_id` so all transactions for one account are ordered. For an event aggregator, partition by `entity_id`.
+
+---
+
+### Q7: What's the difference between Kafka and a traditional message queue like RabbitMQ or SQS?
+
+**Answer:**
+
+| Feature | Kafka | RabbitMQ / SQS |
+|---|---|---|
+| **Model** | Distributed commit log | Message broker / queue |
+| **Retention** | Retains messages after consumption (configurable) | Messages deleted after consumption |
+| **Replay** | Consumers can replay from any offset | No replay (once consumed, gone) |
+| **Consumer groups** | Multiple independent groups read same data | Typically one consumer per message |
+| **Ordering** | Per-partition ordering guaranteed | RabbitMQ: per-queue; SQS: best-effort (FIFO available) |
+| **Throughput** | Very high (1M+ msg/sec per broker) | Lower (tens of thousands/sec) |
+| **Consumer retries** | Must implement yourself | Built-in (SQS: visibility timeout, DLQ) |
+| **Complexity** | Higher (cluster management, partitioning) | Lower (managed services available) |
+
+**When to choose Kafka:** High throughput, event sourcing, stream processing, multiple consumers, data replay.
+
+**When to choose SQS/RabbitMQ:** Simple async processing, built-in retry/DLQ, lower operational overhead, no replay needed.
+
+---
+
+### Q8: Explain consumer group rebalancing. What triggers it and what are the implications?
+
+**Answer:**
+
+**Triggers:**
+- Consumer joins or leaves the group
+- Consumer crashes (missed heartbeat)
+- New partitions added to a subscribed topic
+- Consumer subscription changes
+
+**Process:**
+1. Group coordinator (a broker) detects membership change
+2. All consumers in the group pause consumption
+3. Partitions are reassigned using a **partition assignment strategy** (Range, RoundRobin, Sticky, or CooperativeSticky)
+4. Each consumer receives its new assignment and resumes
+
+**Implications:**
+- **Stop-the-world pause** — no messages processed during rebalancing (traditional protocol)
+- **Duplicate processing** — uncommitted offsets may be reprocessed after rebalancing
+- **Latency spike** — consumers need to rebuild local state after reassignment
+
+**Mitigations:**
+- Use **CooperativeSticky** assignor (incremental rebalancing, minimizes disruption)
+- Tune `session.timeout.ms` and `heartbeat.interval.ms` to detect failures faster
+- Use **static group membership** (`group.instance.id`) to avoid rebalances on transient restarts
+- Keep consumer processing fast to commit offsets frequently
+
+---
+
+### Q9: How would you design Kafka for exactly-once processing in an e-commerce order system?
+
+**Answer:**
+
+**The problem:** Orders must not be duplicated (double-charging) or lost (order never fulfilled).
+
+**Kafka's exactly-once components:**
+
+1. **Idempotent producer** (`enable.idempotence=true`)
+   - Assigns a sequence number to each message per partition
+   - Broker deduplicates retries using `<producer_id, partition, sequence_number>`
+
+2. **Transactional producer** (`transactional.id` set)
+   - Groups multiple writes (across partitions/topics) into an atomic transaction
+   - Either all messages are committed or none
+
+3. **Consumer with `read_committed` isolation**
+   - Only reads messages from committed transactions
+   - Skips messages from aborted transactions
+
+**End-to-end design:**
+
+```
+Order Service → Kafka (orders topic) → Order Processor → Kafka (fulfillment topic) → Fulfillment Service
+                                         ↓
+                                    PostgreSQL (order state)
+```
+
+- Order Processor uses **consume-transform-produce** pattern within a Kafka transaction
+- Offset commits are part of the same transaction as the output messages
+- Downstream consumers use `isolation.level=read_committed`
+
+**Caveats:**
+- Exactly-once is within Kafka only — external side effects (DB writes, API calls) need application-level idempotency
+- Use a **deduplication key** (order ID) in the database with a unique constraint
+- Transactions add latency (~10-50ms overhead)
+
+---
+
+### Q10: What is log compaction and when would you use it?
+
+**Answer:**
+
+**Log compaction** retains only the **latest value for each key** in a topic, rather than retaining all messages for a time period.
+
+**How it works:**
+- Kafka periodically scans the log in the background
+- For each key, it keeps only the most recent message
+- Older messages with the same key are deleted
+- A message with a `null` value (tombstone) signals deletion of that key
+
+**Before compaction:**
+```
+offset 0: key=A, value=1
+offset 1: key=B, value=2
+offset 2: key=A, value=3    ← latest for A
+offset 3: key=B, value=4    ← latest for B
+```
+
+**After compaction:**
+```
+offset 2: key=A, value=3
+offset 3: key=B, value=4
+```
+
+**Use cases:**
+- **Changelog/CDC streams** — maintain latest state of each database row
+- **Configuration distribution** — latest config for each service
+- **User profile/session state** — latest state per user
+- **KTable in Kafka Streams** — materialized view of a compacted topic
+
+**Configuration:**
+```
+cleanup.policy=compact           # Enable compaction
+min.compaction.lag.ms=0          # Minimum time before eligible for compaction
+delete.retention.ms=86400000     # How long tombstones are retained
+```
+
+> **Not suitable for:** Event logs where you need the full history, audit trails, or time-series data.
+
+---
+
+### Q11: How does Kafka handle backpressure? What happens when consumers can't keep up?
+
+**Answer:**
+
+Kafka's **pull-based model** provides natural backpressure — consumers only fetch what they can handle.
+
+**Indicators that consumers are falling behind:**
+- **Consumer lag** — difference between latest offset and consumer's committed offset
+- Monitor via `kafka-consumer-groups.sh --describe` or JMX metrics
+
+**Strategies when consumers can't keep up:**
+
+| Strategy | Description |
+|---|---|
+| **Add consumers** | Add more consumers to the group (up to # of partitions) |
+| **Add partitions** | Increase parallelism (requires key remapping consideration) |
+| **Optimize processing** | Reduce per-message processing time; batch DB writes |
+| **Increase `fetch.max.bytes`** | Fetch more data per poll to reduce overhead |
+| **Separate fast/slow paths** | Route time-sensitive messages to a fast topic; batch the rest |
+| **Drop/sample** | For analytics, sample messages rather than processing all |
+
+**What Kafka does NOT do:**
+- Does not slow down producers (messages keep flowing)
+- Does not drop messages (retained per retention policy)
+- Does not push messages to consumers
+
+**Worst case:** If lag grows beyond retention period, messages are deleted before consumption → **data loss**. Monitor lag alerts and set retention appropriately.
+
+---
+
+### Q12: Compare Kafka with Redis Streams for event processing.
+
+**Answer:**
+
+| Feature | Kafka | Redis Streams |
+|---|---|---|
+| **Storage** | Disk-based (log segments) | In-memory (with optional persistence) |
+| **Throughput** | Very high (1M+ msg/sec) | High but memory-bound |
+| **Retention** | Configurable (hours to forever) | Memory-limited, must `XTRIM` manually |
+| **Consumer groups** | Yes (sophisticated rebalancing) | Yes (simpler model with `XREADGROUP`) |
+| **Ordering** | Per-partition | Per-stream |
+| **Replay** | Full replay from any offset | Replay from any ID |
+| **Partitioning** | Built-in (topic partitions) | Manual (one stream per key) |
+| **Exactly-once** | Yes (with transactions) | No native support |
+| **Ecosystem** | Rich (Connect, Schema Registry, ksqlDB, Streams API) | Lightweight |
+| **Operational complexity** | High (cluster management) | Low (single Redis cluster) |
+
+**Choose Kafka when:** High throughput, long retention, complex stream processing, exactly-once requirements, or rich ecosystem needed.
+
+**Choose Redis Streams when:** Low-latency requirements, lightweight event processing, already using Redis, volume fits in memory, simpler operational model.
+
+---
+
+### Q13: What is the role of ZooKeeper in Kafka and why is it being replaced by KRaft?
+
+**Answer:**
+
+**ZooKeeper's role (traditional):**
+- **Broker registration** — tracks which brokers are alive
+- **Controller election** — selects which broker is the cluster controller
+- **Topic/partition metadata** — stores topic configs, partition assignments, ISR lists
+- **Consumer group coordination** (older versions) — tracked consumer offsets (now stored in Kafka's `__consumer_offsets` topic)
+
+**Why KRaft (Kafka Raft) replaces ZooKeeper:**
+
+| Aspect | ZooKeeper | KRaft |
+|---|---|---|
+| **Architecture** | Separate system to deploy and manage | Built into Kafka brokers |
+| **Metadata propagation** | Through ZooKeeper → async push to brokers | Direct Raft consensus among controllers |
+| **Scaling** | ZooKeeper becomes bottleneck at ~200k partitions | Supports millions of partitions |
+| **Recovery time** | Slow (full metadata reload on controller failover) | Fast (Raft log replay) |
+| **Operational complexity** | Two systems to manage, monitor, secure | Single system |
+
+**KRaft architecture:**
+- Some brokers designated as **controllers** (typically 3)
+- Controllers form a Raft quorum for metadata consensus
+- One controller is the **active controller**; others are standby
+- Metadata stored as an internal Kafka log (replicated via Raft)
+
+> KRaft has been production-ready since Kafka 3.3 and ZooKeeper is being removed entirely in Kafka 4.0.
+
+---
+
+### Q14: How would you partition a Kafka topic for a social media notification system?
+
+**Answer:**
+
+**Requirements:** Deliver notifications (likes, comments, follows, mentions) to users in order per user, at high throughput.
+
+**Partition key choice: `user_id`**
+
+**Why `user_id`:**
+- All notifications for one user land on the same partition → ordered delivery
+- Users are many and varied → even distribution across partitions
+- Consumer can maintain per-user state (unread count, batching) locally
+
+**Sizing:**
+- Estimate: 100k notifications/sec, each consumer handles 5k/sec
+- Need ~20 consumers → need at least **20 partitions** (can't have more consumers than partitions)
+- Over-provision to ~50 partitions for headroom
+
+**Hot user problem** (celebrity with millions of followers):
+- A single user generating millions of notifications could skew load
+- **Solution 1:** Fan-out at application layer before Kafka — break celebrity notifications into batches with compound keys (`user_id:batch_num`)
+- **Solution 2:** Separate "high-volume" topic with more partitions for celebrity notifications
+- **Solution 3:** Rate-limit notification generation for any single source event
+
+**Consumer design:**
+- Each consumer in the group handles a subset of users
+- Batch notifications by user for efficient delivery (e.g., "You have 5 new likes")
+- Commit offsets after successful delivery to notification service
+
+---
+
+### Q15: What are Kafka Connect and Schema Registry? When would you use them?
+
+**Answer:**
+
+#### Kafka Connect
+
+A framework for streaming data **between Kafka and external systems** without writing custom code.
+
+| Component | Description |
+|---|---|
+| **Source connectors** | Pull data into Kafka (e.g., from PostgreSQL, MongoDB, S3) |
+| **Sink connectors** | Push data from Kafka to external systems (e.g., to Elasticsearch, HDFS, Snowflake) |
+| **Workers** | JVM processes that run connectors (distributed or standalone mode) |
+
+**When to use:** CDC pipelines, database-to-warehouse ETL, syncing Kafka with search indexes (Elasticsearch), log shipping.
+
+**Example:** Debezium (a Kafka Connect source connector) captures row-level changes from PostgreSQL's WAL and streams them to Kafka topics.
+
+#### Schema Registry
+
+A centralized service for managing and enforcing **message schemas** (Avro, Protobuf, JSON Schema).
+
+**How it works:**
+1. Producer registers a schema with the registry before sending messages
+2. Messages include a schema ID in the header (not the full schema)
+3. Consumer fetches the schema from registry to deserialize
+4. Registry enforces **compatibility rules** (backward, forward, full) to prevent breaking changes
+
+**When to use:** Multi-team environments, long-lived topics, data contracts between services, preventing schema evolution from breaking consumers.
+
+**Interview tip:** Mentioning Schema Registry shows awareness of real-world Kafka operations. It's especially relevant for CDC and data pipeline designs where schema changes in the source database must not break downstream consumers.

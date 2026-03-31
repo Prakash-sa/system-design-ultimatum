@@ -1442,3 +1442,758 @@ Failover process:
 5. What's my availability SLA?
 6. Can I afford downtime for rebalancing?
 7. What's my budget for clusters (storage, compute)?
+
+---
+
+## Elasticsearch — Practical Usage Guide
+
+System designs can involve a dizzying array of different technologies, concepts and patterns, but one technology stands out for search and retrieval: **Elasticsearch**. While most database systems are pretty good at search (e.g. Postgres with a full-text index is sufficient for many problems!), at a certain scale or level of sophistication you'll want a purpose-built system.
+
+From an interview perspective, there are two angles:
+
+1. **How to use Elasticsearch** — gives you a powerful tool for product architecture interviews
+2. **How Elasticsearch works under the hood** — important for infra-heavy roles, especially at cloud companies
+
+---
+
+### Basic Concepts
+
+The important concepts from a client perspective are **documents**, **indices**, **mappings**, and **fields**.
+
+#### Documents
+
+Documents are the individual units of data you're searching over. Think of them as JSON objects:
+
+```json
+{
+  "id": "XYZ123",
+  "title": "The Great Gatsby",
+  "author": "F. Scott Fitzgerald",
+  "price": 10.99,
+  "createdAt": "2024-01-01T00:00:00.000Z"
+}
+```
+
+#### Indices
+
+An index is a collection of documents. Each document is associated with a unique ID and a set of fields. Think of an index as a database table. Searches happen against indices and return matching document results.
+
+> **Note:** This terminology overloads the general term "index" used for auxiliary data structures that make searches faster.
+
+#### Mappings and Fields
+
+A mapping is the **schema** of the index. It defines the fields, their data types, and how they are processed and indexed.
+
+```json
+{
+  "properties": {
+    "id": { "type": "keyword" },
+    "title": { "type": "text" },
+    "author": { "type": "text" },
+    "price": { "type": "float" },
+    "createdAt": { "type": "date" }
+  }
+}
+```
+
+**Key distinctions:**
+
+- `keyword` — treated as a whole value (think: hash table lookup)
+- `text` — tokenized for full-text search (think: inverted index)
+
+**Performance implication:** If you include lots of fields in your mapping that aren't used in search, this increases memory overhead. If a User object has 10 fields but you only search by 2, mapping all 10 wastes memory.
+
+---
+
+### Basic Operations
+
+Elasticsearch has a clean REST API for all operations.
+
+#### Create an Index
+
+```
+PUT /books
+{
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 1
+  }
+}
+```
+
+#### Set a Mapping
+
+```
+PUT /books/_mapping
+{
+  "properties": {
+    "title": { "type": "text" },
+    "author": { "type": "keyword" },
+    "description": { "type": "text" },
+    "price": { "type": "float" },
+    "publish_date": { "type": "date" },
+    "categories": { "type": "keyword" },
+    "reviews": {
+      "type": "nested",
+      "properties": {
+        "user": { "type": "keyword" },
+        "rating": { "type": "integer" },
+        "comment": { "type": "text" }
+      }
+    }
+  }
+}
+```
+
+> **Nested vs separate index:** If reviews are infrequently updated and frequently queried, nest them within book documents. Otherwise, create a separate index. This is analogous to the normalization/denormalization tradeoff in SQL databases.
+
+#### Add Documents
+
+```
+POST /books/_doc
+{
+  "title": "The Great Gatsby",
+  "author": "F. Scott Fitzgerald",
+  "description": "A novel about the American Dream in the Jazz Age",
+  "price": 9.99,
+  "publish_date": "1925-04-10",
+  "categories": ["Classic", "Fiction"],
+  "reviews": [
+    { "user": "reader1", "rating": 5, "comment": "A masterpiece!" },
+    { "user": "reader2", "rating": 4, "comment": "Beautifully written, but a bit sad." }
+  ]
+}
+```
+
+Response includes a `_version` field used for atomic updates:
+
+```json
+{
+  "_index": "books",
+  "_id": "kLEHMYkBq7V9x4qGJOnh",
+  "_version": 1,
+  "result": "created",
+  "_shards": { "total": 2, "successful": 1, "failed": 0 }
+}
+```
+
+#### Updating Documents
+
+**Full replacement:**
+
+```
+PUT /books/_doc/kLEHMYkBq7V9x4qGJOnh
+{ ... full document ... }
+```
+
+**Optimistic concurrency control** — only update if version matches:
+
+```
+PUT /books/_doc/kLEHMYkBq7V9x4qGJOnh?version=1
+{ ... }
+```
+
+**Partial update:**
+
+```
+POST /books/_update/kLEHMYkBq7V9x4qGJOnh
+{
+  "doc": { "price": 14.99 }
+}
+```
+
+---
+
+### Search
+
+#### Basic Match Query
+
+```
+GET /books/_search
+{
+  "query": {
+    "match": { "title": "Great" }
+  }
+}
+```
+
+#### Boolean Query (AND conditions)
+
+```
+GET /books/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "title": "Great" } },
+        { "range": { "price": { "lte": 15 } } }
+      ]
+    }
+  }
+}
+```
+
+#### Nested Field Search
+
+```
+GET /books/_search
+{
+  "query": {
+    "nested": {
+      "path": "reviews",
+      "query": {
+        "bool": {
+          "must": [
+            { "match": { "reviews.comment": "excellent" } },
+            { "range": { "reviews.rating": { "gte": 4 } } }
+          ]
+        }
+      }
+    }
+  }
+}
+```
+
+Results include document IDs, relevance scores (`_score`), and source documents.
+
+---
+
+### Geospatial Search
+
+Elasticsearch supports two primary geospatial field types:
+
+| Type | Use Case |
+|---|---|
+| `geo_point` | Single lat/lon pair — restaurant locations, user check-ins |
+| `geo_shape` | Arbitrary geometries — delivery zones, city boundaries |
+
+**Mapping:**
+
+```json
+{
+  "properties": {
+    "name": { "type": "text" },
+    "location": { "type": "geo_point" },
+    "delivery_zone": { "type": "geo_shape" }
+  }
+}
+```
+
+**Distance query:**
+
+```
+GET /restaurants/_search
+{
+  "query": {
+    "geo_distance": {
+      "distance": "5km",
+      "location": { "lat": 40.7128, "lon": -74.0060 }
+    }
+  }
+}
+```
+
+Under the hood, Elasticsearch uses **geohashes**, **BKD trees** (variant of k-d trees optimized for block storage), and **R-tree-like structures** for fast geospatial queries across millions of documents.
+
+---
+
+### Sorting
+
+#### Basic Sort
+
+```
+GET /books/_search
+{
+  "sort": [
+    { "price": "asc" },
+    { "publish_date": "desc" }
+  ],
+  "query": { "match_all": {} }
+}
+```
+
+#### Script-Based Sort
+
+```
+GET /books/_search
+{
+  "sort": [{
+    "_script": {
+      "type": "number",
+      "script": { "source": "doc['price'].value * 0.9" },
+      "order": "asc"
+    }
+  }],
+  "query": { "match_all": {} }
+}
+```
+
+#### Nested Field Sort
+
+```
+GET /books/_search
+{
+  "sort": [{
+    "reviews.rating": {
+      "order": "desc",
+      "mode": "max",
+      "nested": { "path": "reviews" }
+    }
+  }],
+  "query": { "match_all": {} }
+}
+```
+
+#### Relevance-Based Sorting
+
+Without a specified sort, Elasticsearch sorts by relevance score (`_score`). The default scoring algorithm is closely related to **TF-IDF** (Term Frequency-Inverse Document Frequency).
+
+---
+
+### Pagination
+
+#### From/Size Pagination
+
+```
+GET /my_index/_search
+{
+  "from": 0,
+  "size": 10,
+  "query": { "match": { "title": "elasticsearch" } }
+}
+```
+
+**Limitation:** Becomes inefficient beyond ~10,000 results — the cluster must retrieve and sort all preceding documents on each request.
+
+#### Search After (Keyset Pagination)
+
+More efficient for deep pagination. Uses sort values of the last result as the starting point:
+
+```
+GET /my_index/_search
+{
+  "size": 10,
+  "query": { "match": { "title": "elasticsearch" } },
+  "sort": [
+    { "date": "desc" },
+    { "_id": "desc" }
+  ],
+  "search_after": [1463538857, "654323"]
+}
+```
+
+**Pros:** Efficient for deep pagination, no duplicates
+**Cons:** Forward-only, requires client-side state, may miss prior-page updates
+
+#### Cursors (Point in Time / PIT)
+
+Provides a **consistent snapshot** of data across paginated requests:
+
+```
+POST /my_index/_pit?keep_alive=1m          # Create PIT → returns PIT ID
+
+GET /_search                                # Use PIT in search
+{
+  "size": 10,
+  "pit": { "id": "46To...", "keep_alive": "1m" },
+  "sort": [{ "_score": "desc" }, { "_id": "asc" }],
+  "search_after": [1.0, "1234"]
+}
+
+DELETE /_pit                                # Close PIT when done
+{ "id": "46To..." }
+```
+
+---
+
+### How Elasticsearch Works Under the Hood
+
+Elasticsearch = high-level orchestration framework for **Apache Lucene** (the optimized low-level search library). Elasticsearch handles distributed systems (cluster coordination, APIs, aggregations, real-time capabilities) while Lucene handles the "heart" of search.
+
+#### Node Types
+
+| Node Type | Responsibility |
+|---|---|
+| **Master** | Cluster coordination — add/remove nodes, create/delete indices |
+| **Data** | Store data and execute search operations |
+| **Coordinating** | Receive client requests, distribute to appropriate nodes, merge results |
+| **Ingest** | Data transformation and preparation for indexing |
+| **Machine Learning** | ML tasks |
+
+Each instance can be multiple types. In sophisticated deployments, dedicated hosts per type (e.g. CPU-heavy ingest nodes, memory-heavy data nodes).
+
+**Cluster startup:** Seed nodes (master-eligible) perform leader election. Only one active master at a time; others on standby.
+
+#### Data Nodes — The Search Engine
+
+Data nodes separate raw `_source` data from **Lucene indexes** used in search. Requests proceed in two phases:
+
+1. **Query phase** — identify relevant documents using optimized index structures
+2. **Fetch phase** — (optionally) pull document IDs from nodes
+
+**Hierarchy:** Index → Shards → Lucene Indexes → Lucene Segments
+
+- **Shards** split data across hosts for parallel search
+- **Replicas** provide HA and increased throughput (X TPS × Y replicas)
+- Elasticsearch shards are 1:1 with Lucene indexes
+
+#### Lucene Segments — Immutable Architecture
+
+Segments are **immutable** containers of indexed data.
+
+| Operation | How It Works |
+|---|---|
+| **Insert** | Added to buffer, flushed as a new segment |
+| **Delete** | Segment maintains a deleted-IDs set; cleaned up on merge |
+| **Update** | Soft-delete old document + insert new one; cleaned up on merge |
+| **Merge** | Multiple segments combined into one, deleted docs cleaned up |
+
+**Benefits of immutability:**
+- Fast writes (no modification of existing segments)
+- Safe caching (no consistency worries)
+- Simplified concurrency (data doesn't change mid-query)
+- Easier crash recovery
+- Better compression
+- Faster searches
+
+> **Tradeoff:** Updates have worse performance than inserts due to soft-deletion bookkeeping. This is why Elasticsearch isn't ideal for rapidly updating data.
+
+#### Inverted Index
+
+The heart of Lucene. Maps content (words, numbers) to document locations.
+
+**Example:** The word "lazy" maps to documents #12 and #53. Instead of scanning all 1 billion documents (O(n)), look up the inverted index for O(1) retrieval.
+
+#### Doc Values
+
+Columnar, contiguous representation of a single field across all documents in a segment. Used for **sorting** and **aggregations**.
+
+- Inverted index → "which documents match?"
+- Doc values → "what are the values for sorting/aggregation?"
+
+#### Coordinating Nodes — Query Planning
+
+The query planner determines the most efficient execution strategy by keeping statistics on field types, keyword popularity, and document lengths.
+
+**Example:** Searching for "bill nye" — "bill" has millions of entries, "nye" has hundreds. The planner starts with the smaller set ("nye") to minimize work.
+
+---
+
+### Using Elasticsearch in Your Interview
+
+**When to use it:**
+- Complex search requirements (full-text, faceting, ranking, geospatial)
+- Read-heavy workloads at scale
+- Typically attached via **Change Data Capture (CDC)** to an authoritative store (Postgres, DynamoDB)
+
+**When NOT to use it:**
+- As your primary database (consistency/durability issues)
+- Write-heavy systems (rapidly updating fields like like-counts)
+- Small datasets (< 100k documents) — a simple DB query may suffice
+- When you can't tolerate eventual consistency
+
+**Key principles:**
+- Denormalize data for efficient search queries
+- Keep Elasticsearch in sync with underlying data (drift is a common bug source)
+- Aim for results from 1-2 queries
+
+### Lessons from Elasticsearch for System Design
+
+1. **Immutability** — enhances caching, compression, and eliminates synchronization issues
+2. **Separation of concerns** — query execution (coordinating nodes) vs storage (data nodes) can be optimized independently
+3. **Indexing strategies** — inverted indexes for search, doc values for sorting/aggregation; structure data for common query patterns
+4. **Distributed trade-offs** — scalability and fault tolerance come with consistency complexity (CAP theorem)
+5. **Efficient data structures** — skip lists, finite state transducers, BKD trees show how tailored structures dramatically improve specific use cases
+
+---
+
+## Additional Interview Questions & Answers
+
+### Q6: What is an inverted index and why is it crucial for Elasticsearch?
+
+**Answer:** An inverted index is a data structure that maps content (words, tokens) to the documents that contain them — the reverse of a normal index that maps documents to their content.
+
+**How it works:**
+1. During indexing, each document's text fields are **analyzed** (tokenized, lowercased, stemmed, etc.)
+2. Each unique token is stored as a key, with a posting list of document IDs as the value
+3. At search time, the query is analyzed the same way, and the matching posting lists are retrieved and intersected
+
+**Example:**
+```
+"lazy" → [doc #12, doc #53]
+"fox"  → [doc #12, doc #99, doc #150]
+```
+
+Searching for "lazy fox" intersects both lists → doc #12.
+
+**Why it's crucial:**
+- Turns O(n) full-text scan into O(1) lookup per term
+- Enables boolean queries (AND/OR/NOT) via set operations on posting lists
+- Supports phrase queries, proximity searches, and fuzzy matching
+- Each Lucene segment maintains its own inverted index
+
+---
+
+### Q7: Explain the difference between `keyword` and `text` field types. When would you use each?
+
+**Answer:**
+
+| Aspect | `text` | `keyword` |
+|---|---|---|
+| **Analysis** | Tokenized, lowercased, stemmed | Stored as-is, no analysis |
+| **Use case** | Full-text search ("find books about cats") | Exact match, filtering, sorting, aggregations |
+| **Index structure** | Inverted index with analyzed tokens | Inverted index with exact values |
+| **Examples** | Book descriptions, comments, articles | IDs, email addresses, status codes, categories |
+
+**Common pattern:** Use both via multi-fields:
+```json
+{
+  "title": {
+    "type": "text",
+    "fields": {
+      "raw": { "type": "keyword" }
+    }
+  }
+}
+```
+This lets you full-text search on `title` and sort/aggregate on `title.raw`.
+
+---
+
+### Q8: How does Elasticsearch handle consistency? What are the implications?
+
+**Answer:** Elasticsearch is **eventually consistent** by design.
+
+**Write path:**
+1. Document is written to the primary shard's **translog** (write-ahead log)
+2. Document is buffered in memory
+3. Every ~1 second (configurable `refresh_interval`), the buffer is flushed to a new Lucene segment — only then is it **searchable**
+4. Periodically, segments are fsynced to disk
+
+**Implications:**
+- There's a **~1 second delay** between writing a document and being able to search for it
+- `GET /index/_doc/{id}` is **real-time** (reads from translog), but `_search` is not
+- You can force a refresh with `POST /index/_refresh` but this is expensive at scale
+- Replica synchronization adds further delay
+
+**Interview tip:** Always acknowledge this gap. If the user writes a review and immediately searches for it, they might not see it. Solutions include:
+- Read-your-own-writes at the application layer
+- Using the `?refresh=wait_for` parameter (with caution)
+- Returning the written document directly without searching
+
+---
+
+### Q9: What is the difference between `from/size`, `search_after`, and PIT-based pagination?
+
+**Answer:**
+
+| Method | Mechanism | Deep Pagination | Consistency | Random Access |
+|---|---|---|---|---|
+| **from/size** | Skip + limit | Poor (O(from+size) per request) | None | Yes |
+| **search_after** | Keyset after last result's sort values | Good (only fetches next page) | None (data can shift) | No (forward-only) |
+| **PIT + search_after** | Snapshot + keyset | Good | Yes (frozen view) | No (forward-only) |
+
+**When to use each:**
+- **from/size** — simple UIs with < 10k results, where users rarely go past page 5
+- **search_after** — infinite scroll, large result sets, acceptable if underlying data shifts
+- **PIT + search_after** — export/ETL jobs, audit trails, or any case requiring a consistent snapshot
+
+---
+
+### Q10: How do shards work and how do you decide the number of shards?
+
+**Answer:**
+
+**How shards work:**
+- An index is split into N shards (set at index creation, hard to change later)
+- Each shard is a complete Lucene index
+- Documents are routed to shards via `hash(routing_key) % num_shards` (default routing key is `_id`)
+- Searches query all shards in parallel; coordinating node merges results
+
+**Sizing guidelines:**
+
+| Factor | Recommendation |
+|---|---|
+| **Shard size** | 10–50 GB per shard (sweet spot) |
+| **Shard count per node** | ~20 shards per GB of heap |
+| **Too few shards** | Can't parallelize, single node bottleneck |
+| **Too many shards** | Overhead per shard (memory, file handles, thread pools), slow cluster state updates |
+
+**Practical approach:**
+1. Estimate total data size
+2. Target 20–40 GB per shard
+3. Ensure shard count allows distribution across nodes
+4. For time-series data, use **index-per-time-period** (daily/weekly) with ILM policies
+
+---
+
+### Q11: How would you keep Elasticsearch in sync with a primary database?
+
+**Answer:** The standard approach is **Change Data Capture (CDC)**:
+
+```
+Primary DB → CDC (e.g., Debezium) → Message Queue (Kafka) → ES Consumer → Elasticsearch
+```
+
+**Options ranked by reliability:**
+
+| Approach | Pros | Cons |
+|---|---|---|
+| **CDC + Kafka** | Reliable, ordered, replayable | Operational complexity |
+| **Dual writes** | Simple | Risk of inconsistency if one write fails |
+| **Application-level events** | Flexible | Tight coupling, easy to miss updates |
+| **Periodic batch sync** | Simple, self-healing | Stale data between syncs |
+
+**Handling drift:**
+- Periodic **reconciliation jobs** compare DB and ES counts/checksums
+- Use **version fields** or timestamps to detect and fix inconsistencies
+- Implement **dead letter queues** for failed indexing attempts
+
+**Interview tip:** Always mention that Elasticsearch should NOT be the source of truth. The primary database is authoritative; ES is a read-optimized projection.
+
+---
+
+### Q12: Explain TF-IDF and how Elasticsearch uses it for relevance scoring.
+
+**Answer:**
+
+**TF-IDF** = Term Frequency × Inverse Document Frequency
+
+| Component | Formula | Meaning |
+|---|---|---|
+| **TF** | `count(term in doc) / total terms in doc` | How often the term appears in this document |
+| **IDF** | `log(total docs / docs containing term)` | How rare the term is across all documents |
+| **TF-IDF** | `TF × IDF` | Terms that are frequent in a document but rare overall score highest |
+
+**Example:** Searching for "elasticsearch" across 1M documents:
+- A doc mentioning "elasticsearch" 10 times scores high TF
+- If only 1000 docs mention "elasticsearch", IDF is high
+- A doc mentioning "the" 50 times has high TF but very low IDF (common word)
+
+**Elasticsearch specifics:**
+- Modern versions use **BM25** (an evolution of TF-IDF) as the default
+- BM25 adds **saturation** (diminishing returns for repeated terms) and **document length normalization**
+- Scores can be customized via `function_score`, `boost`, or custom similarity plugins
+
+---
+
+### Q13: What are the main differences between Elasticsearch and a relational database for search?
+
+**Answer:**
+
+| Aspect | Elasticsearch | Relational DB (e.g., Postgres) |
+|---|---|---|
+| **Data model** | Denormalized documents (JSON) | Normalized tables with relations |
+| **Search** | Built-in full-text, fuzzy, geo, semantic | Full-text possible but bolt-on (tsvector) |
+| **Scoring/Ranking** | Native relevance scoring (BM25) | Manual implementation |
+| **Joins** | Expensive/limited (nested, parent-child) | Native and optimized |
+| **Consistency** | Eventual | Strong (ACID) |
+| **Write performance** | Moderate (immutable segments, merges) | Good (in-place updates) |
+| **Aggregations** | Very fast (doc values, columnar) | Slower at scale (row-oriented) |
+| **Schema** | Flexible (dynamic mapping) | Rigid (migrations) |
+
+**Rule of thumb:** Use a relational DB as your source of truth. Add Elasticsearch when you need full-text search, complex filtering/faceting, or relevance ranking at scale that your DB can't handle efficiently.
+
+---
+
+### Q14: How does Elasticsearch handle node failures and data recovery?
+
+**Answer:**
+
+**Detection:**
+- Nodes send heartbeats to the master node
+- If a node misses heartbeats for a configurable timeout, the master marks it as failed
+
+**Recovery — Data node failure:**
+1. Master identifies which shards were on the failed node
+2. For shards that have replicas on other nodes, a replica is **promoted to primary**
+3. New replicas are allocated to other nodes to restore the replication factor
+4. The new replicas are built by **copying data from the primary shard**
+
+**Recovery — Master node failure:**
+1. Master-eligible nodes detect the master is gone
+2. A new master is **elected** from the remaining master-eligible nodes
+3. The new master rebuilds the cluster state
+
+**Split-brain prevention:**
+- Elasticsearch requires a **quorum** of master-eligible nodes to elect a master
+- The `discovery.zen.minimum_master_nodes` setting (or automatic in 7.x+) prevents two halves of a cluster from independently electing masters
+
+**Data durability:**
+- The **translog** (write-ahead log) ensures that acknowledged writes survive node restarts
+- On recovery, unfinished operations are replayed from the translog
+
+---
+
+### Q15: Design a search system for a food delivery app (like Uber Eats / DoorDash). What role does Elasticsearch play?
+
+**Answer:**
+
+**Requirements:** Search restaurants by name, cuisine, location, rating, delivery time, price range.
+
+**Architecture:**
+
+```
+User → API Gateway → Search Service → Elasticsearch
+                                    ↑
+Restaurant DB → CDC (Debezium) → Kafka → ES Indexer
+```
+
+**Elasticsearch index mapping:**
+
+```json
+{
+  "properties": {
+    "name": { "type": "text" },
+    "cuisine": { "type": "keyword" },
+    "location": { "type": "geo_point" },
+    "rating": { "type": "float" },
+    "avg_delivery_time_min": { "type": "integer" },
+    "price_range": { "type": "keyword" },
+    "is_open": { "type": "boolean" },
+    "menu_items": {
+      "type": "nested",
+      "properties": {
+        "name": { "type": "text" },
+        "price": { "type": "float" }
+      }
+    }
+  }
+}
+```
+
+**Example query** — "Pizza near me, rating > 4, within 3km":
+
+```json
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "name": "pizza" } },
+        { "range": { "rating": { "gte": 4.0 } } },
+        { "geo_distance": { "distance": "3km", "location": { "lat": 40.71, "lon": -74.00 } } },
+        { "term": { "is_open": true } }
+      ]
+    }
+  },
+  "sort": [
+    { "_geo_distance": { "location": { "lat": 40.71, "lon": -74.00 }, "order": "asc" } },
+    { "rating": "desc" }
+  ]
+}
+```
+
+**Key design decisions:**
+- **Denormalize** restaurant + menu data into one index for single-query results
+- Use **CDC** to keep ES in sync with the restaurant database
+- `is_open` updated via a lightweight scheduled job (not full CDC)
+- **Hot key mitigation** — popular restaurants cached at the application layer
+- **Pagination** — `search_after` for infinite scroll
+
+---
+
+### References
+
+- [Full Text Search over Postgres: Elasticsearch vs. Alternatives](https://www.elastic.co/)
+- [Exploring Apache Lucene - Part 1: The Index](https://www.lucenetutorial.com/)
+- [BKD Trees, Used in Elasticsearch](https://users.cs.duke.edu/~pankaj/publications/papers/bkd-sstd.pdf)

@@ -1757,3 +1757,570 @@ Failover:
 6. What's my data retention (TTL auto-cleanup)?
 7. Cost: provisioned vs on-demand?
 
+---
+
+## DynamoDB — Practical Guide & Deep Dive
+
+DynamoDB is a **fully-managed, highly scalable, key-value** service provided by AWS.
+
+- **Fully-Managed** — AWS handles hardware provisioning, configuration, patching, and scaling
+- **Highly Scalable** — automatically scales up/down without downtime
+- **Key-value** — NoSQL database with flexible data storage and retrieval
+
+DynamoDB supports transactions (neutralizing a past criticism), has just about everything you'd need from a database for system design interviews, and is incredibly easy to use.
+
+> **"Can I use DynamoDB in an interview?"** — Simply ask your interviewer. Many say yes; others prefer open-source alternatives to avoid vendor lock-in.
+
+---
+
+### The Data Model
+
+| Concept | Description |
+|---|---|
+| **Tables** | Top-level structure. Defined by mandatory primary key. Support secondary indexes |
+| **Items** | Rows in the table. Must have primary key. Up to 400KB including all attributes |
+| **Attributes** | Key-value pairs. Scalar types (strings, numbers, booleans), set types, nested objects |
+
+DynamoDB is **schema-less** — items in the same table can have different sets of attributes. New attributes can be added at any point without affecting existing items.
+
+```json
+{
+  "PersonID": 101,
+  "LastName": "Smith",
+  "FirstName": "Fred",
+  "Phone": "555-4321"
+},
+{
+  "PersonID": 102,
+  "LastName": "Jones",
+  "FirstName": "Mary",
+  "Address": { "Street": "123 Main", "City": "Anytown", "State": "OH", "ZIPCode": 12345 }
+},
+{
+  "PersonID": 103,
+  "LastName": "Stephens",
+  "FirstName": "Howard",
+  "FavoriteColor": "Blue"
+}
+```
+
+> Notice how `FavoriteColor` exists only on one item — DynamoDB's flexibility in action.
+
+#### Partition Key and Sort Key
+
+| Component | Description |
+|---|---|
+| **Partition Key** | Hashed to determine physical storage location. Required |
+| **Sort Key** (optional) | Combined with partition key for composite primary key. Enables range queries and sorting within a partition |
+
+**Example:** Group chat app → `chat_id` as partition key, `message_id` as sort key. Efficiently query all messages for a chat, sorted chronologically.
+
+> Use **monotonically increasing IDs** (Snowflake, UUID v7, ULID) rather than timestamps for sort keys — timestamps don't guarantee uniqueness.
+
+**Under the hood:**
+1. **Hash partitioning** — partition key is hashed; a partition metadata service maps it to the correct storage node
+2. **B-trees for sort keys** — within each partition, items are organized in a B-tree indexed by sort key
+3. **Composite key operations** — find the node via partition key hash, then traverse B-tree via sort key
+
+### Secondary Indexes
+
+| Feature | Global Secondary Index (GSI) | Local Secondary Index (LSI) |
+|---|---|---|
+| **Definition** | Different partition key than main table | Same partition key, different sort key |
+| **When to use** | Query on non-primary-key attributes | Additional sort keys within same partition |
+| **Size limit** | No restrictions | 10 GB per partition key |
+| **Throughput** | Separate read/write capacity | Shares base table capacity |
+| **Consistency** | Eventually consistent only | Supports strong consistency |
+| **Creation** | Can be added/removed anytime | Must be defined at table creation |
+| **Max count** | 20 per table | 5 per table |
+
+**GSI example:** Chat table with `chat_id` partition key. Need "show all messages a user sent across all chats" → create GSI with `user_id` as partition key, `message_id` as sort key.
+
+**LSI example:** Within a chat, find messages with most attachments → create LSI on `num_attachments`.
+
+**Under the hood:**
+- GSIs are **separate internal tables** with their own partition scheme, updated **asynchronously**
+- LSIs are **co-located** with the base table, maintaining a separate B-tree within each partition, updated **synchronously**
+
+---
+
+### Accessing Data
+
+| Operation | Description | When to Use |
+|---|---|---|
+| **Query** | Retrieves items by primary key or secondary index. Efficient | Always prefer this |
+| **Scan** | Reads every item in a table. Paginated | Avoid if possible (expensive) |
+
+```javascript
+// Query (efficient)
+const params = {
+  TableName: 'users',
+  KeyConditionExpression: 'user_id = :id',
+  ExpressionAttributeValues: { ':id': 101 }
+};
+dynamodb.query(params);
+
+// Scan (avoid for large tables)
+dynamodb.scan({ TableName: 'users' });
+```
+
+> **Important:** DynamoDB reads the entire item from storage even with `ProjectionExpression` — you're charged full RCU based on item size. Normalize data appropriately to avoid reading more than necessary.
+
+**Example:** Designing Yelp — don't store reviews inside the business item. Separate `reviews` table with `business_id` as partition key. Otherwise, every business read pulls all reviews.
+
+---
+
+### CAP Theorem & Consistency
+
+DynamoDB supports **per-request** consistency choice (not table-level):
+
+| Mode | Behavior | Cost | Supported On |
+|---|---|---|---|
+| **Eventually Consistent** (default) | Might not see most recent write | 0.5 RCU per 4KB | Base table, GSI, LSI |
+| **Strongly Consistent** (`ConsistentRead=true`) | Reflects all prior writes | 1 RCU per 4KB | Base table, LSI only |
+
+DynamoDB also supports **ACID transactions** via `TransactWriteItems` and `TransactGetItems` — serializable isolation across up to 100 items spanning multiple tables.
+
+**Under the hood:**
+- Each partition has 3 replicas (1 leader + 2 followers) using **Multi-Paxos consensus**
+- Writes go through leader → WAL entry → quorum (2 of 3) → acknowledged
+- Strongly consistent reads are routed to the leader
+- Eventually consistent reads can be served by any replica
+
+---
+
+### Architecture and Scalability
+
+**Auto-sharding:** When a partition reaches capacity (size or throughput), DynamoDB automatically splits and redistributes data.
+
+**Partition limits:**
+- Up to **3,000 RCU** and **1,000 WCU** per partition
+- 3,000 RCU = 12 MB/sec reads; 1,000 WCU = 1 MB/sec writes
+
+**Global Tables** — real-time replication across AWS regions for local read/write operations worldwide. Simply mention this in your interview for cross-region replication.
+
+**Fault tolerance:** Data automatically replicated across 3 Availability Zones within a region (not user-configurable). Encryption at rest by default, TLS enforced for all API calls.
+
+---
+
+### Pricing Model
+
+| Unit | Cost | Details |
+|---|---|---|
+| **RCU** | ~$1.12 per million reads (4KB each) | 1 strongly consistent or 2 eventually consistent reads/sec |
+| **WCU** | ~$5.62 per million writes (1KB each) | 1 write/sec for items up to 1KB |
+
+**Back-of-envelope example:** YouTube views at 10M writes/sec:
+- Each write ≥ 1 WCU (minimum 1KB)
+- Need ~10,000 partitions (1,000 WCU each)
+- Provisioned: ~$156,000/day. On-demand: significantly higher.
+
+> Understanding pricing helps gut-check whether your design is cost-feasible.
+
+---
+
+### Advanced Features
+
+#### DAX (DynamoDB Accelerator)
+
+Purpose-built **in-memory cache** — microsecond response times for read-heavy workloads. No need for separate Redis/Memcached.
+
+- **Read-through and write-through** cache
+- Two caches: **item cache** (GetItem/BatchGetItem) and **query cache** (Query/Scan)
+- Does **not** cache strongly consistent reads (passes through to DynamoDB)
+- Only auto-invalidates for writes that go through DAX itself
+
+> **Caveat:** Direct DynamoDB writes bypassing DAX leave stale cache entries until TTL/eviction.
+
+#### DynamoDB Streams (CDC)
+
+Built-in **Change Data Capture** — captures inserts, updates, deletes as stream records.
+
+| Use Case | How |
+|---|---|
+| **Elasticsearch sync** | Stream changes to keep search index consistent |
+| **Real-time analytics** | Enable Kinesis Data Streams → Firehose → S3/Redshift |
+| **Change notifications** | Trigger Lambda functions on data changes |
+
+---
+
+### DynamoDB in an Interview
+
+**When to use:**
+- Almost any persistence layer (highly scalable, durable, supports transactions)
+- Single-digit millisecond latencies (microsecond with DAX)
+- Simple key-value or document storage patterns
+- When your interviewer allows AWS services
+
+**When NOT to use:**
+- **Cost** — high-volume workloads (hundreds of thousands of writes/sec) get expensive fast
+- **Complex queries** — no JOINs, limited ad-hoc aggregation
+- **Data modeling constraints** — if you need many GSIs/LSIs, consider PostgreSQL
+- **Vendor lock-in** — some interviewers require vendor-neutral solutions
+
+---
+
+## Additional Interview Questions & Answers
+
+### Q6: Explain the difference between partition key and sort key. How do they affect data distribution and query patterns?
+
+**Answer:**
+
+**Partition key:**
+- Hashed to determine which physical partition stores the item
+- All items with the same partition key are stored together on the same node
+- Must be specified in every query — you cannot query without the partition key (except via scan)
+
+**Sort key:**
+- Orders items within a partition (B-tree index)
+- Enables range queries: `begins_with`, `between`, `>`, `<`, `>=`, `<=`
+- Combined with partition key forms a composite primary key
+
+**Data distribution impact:**
+- High-cardinality partition keys → even distribution (good)
+- Low-cardinality partition keys → hot partitions (bad)
+- Sort key doesn't affect distribution — it only affects ordering within a partition
+
+**Query pattern examples:**
+
+```
+# Partition key only: exact lookup
+PK = "user_123"
+
+# Composite key: range query
+PK = "user_123" AND SK begins_with("order#2026")
+
+# Composite key: between query
+PK = "chat_456" AND SK BETWEEN "msg#1000" AND "msg#2000"
+```
+
+**Single-table design pattern:** Use prefixed sort keys to store multiple entity types in one table:
+- `PK=USER#123, SK=PROFILE` → user profile
+- `PK=USER#123, SK=ORDER#001` → user's order
+- `PK=USER#123, SK=ORDER#002` → another order
+
+---
+
+### Q7: What are DynamoDB's item size limits and how do you work around them?
+
+**Answer:**
+
+**Hard limit:** 400 KB per item (including attribute names, values, and overhead).
+
+**Strategies when items might exceed 400 KB:**
+
+| Strategy | Description |
+|---|---|
+| **Store large data in S3** | Keep a pointer (S3 URL) in DynamoDB; fetch from S3 when needed |
+| **Compress attributes** | Gzip large text/JSON before storing as binary attribute |
+| **Split into multiple items** | Store metadata in one item, chunks in others (e.g., `PK=doc#1, SK=chunk#0`) |
+| **Normalize data** | Move large nested collections (reviews, comments) to separate items/tables |
+| **Use document DB** | If items are frequently > 100 KB with complex nesting, consider MongoDB |
+
+**Practical example — Yelp reviews:**
+- Don't embed all reviews in the business item (could exceed 400 KB, wastes RCU)
+- Separate `reviews` table: `PK=business_id, SK=review_id`
+- Business item stays small and cheap to read
+
+---
+
+### Q8: How does DynamoDB handle hot partitions? What strategies prevent them?
+
+**Answer:**
+
+**What causes hot partitions:**
+- Uneven access patterns (one partition key gets far more traffic than others)
+- Low-cardinality partition keys (e.g., `status` with only 3 values)
+- Time-based keys where all current writes go to the same partition
+
+**DynamoDB's built-in mitigation:**
+- **Adaptive capacity** — DynamoDB automatically reallocates unused capacity from cold partitions to hot ones
+- **Burst capacity** — partitions can temporarily exceed their allocation using reserved burst credits
+
+**Design-level strategies:**
+
+| Strategy | Example |
+|---|---|
+| **Write sharding** | Append random suffix: `PK = "popular_item#" + random(0, N)`. Read with N parallel queries and merge |
+| **Composite keys** | Add high-cardinality attribute to partition key: `(date, user_id)` instead of just `(date)` |
+| **Caching (DAX)** | Cache hot reads to reduce DynamoDB load |
+| **Time-bucketing** | For time-series: `PK = sensor_id + "#" + date` instead of just `sensor_id` |
+| **Separate tables** | Move hot entities to their own table with dedicated capacity |
+
+**Back-of-envelope:** Single partition = 1,000 WCU = 1,000 writes/sec. If one key gets 10,000 writes/sec, you need to shard into at least 10 logical partitions.
+
+---
+
+### Q9: Compare DynamoDB Streams vs Kafka for event-driven architectures.
+
+**Answer:**
+
+| Feature | DynamoDB Streams | Kafka |
+|---|---|---|
+| **Source** | CDC from DynamoDB tables only | Any producer |
+| **Ordering** | Per-partition-key ordered | Per-partition ordered |
+| **Retention** | 24 hours (fixed) | Configurable (hours to forever) |
+| **Consumer model** | Lambda triggers or Kinesis adapter | Consumer groups (pull-based) |
+| **Throughput** | Tied to DynamoDB table throughput | Independent, very high (1M+ msg/sec) |
+| **Replay** | Limited (24-hour window) | Full replay from any offset |
+| **Multi-consumer** | Via Kinesis Data Streams adapter | Native (multiple consumer groups) |
+| **Operational overhead** | Zero (fully managed) | High (cluster management) |
+
+**Choose DynamoDB Streams when:**
+- You need CDC from DynamoDB specifically
+- Simple event processing (trigger Lambda)
+- Low operational overhead is priority
+
+**Choose Kafka when:**
+- Events come from multiple sources
+- You need long retention / replay
+- High-throughput stream processing
+- Multiple independent consumer groups
+
+**Common pattern:** DynamoDB Streams → Lambda → Kafka (bridge DynamoDB CDC into a broader event-driven architecture).
+
+---
+
+### Q10: How do DynamoDB transactions work? What are the limitations?
+
+**Answer:**
+
+DynamoDB supports **ACID transactions** via two APIs:
+
+```javascript
+// TransactWriteItems — atomic writes across tables
+await dynamodb.transactWriteItems({
+  TransactItems: [
+    { Put: { TableName: 'orders', Item: { order_id: '001', status: 'confirmed' } } },
+    { Update: { TableName: 'inventory', Key: { item_id: 'A1' },
+                 UpdateExpression: 'SET stock = stock - :qty',
+                 ExpressionAttributeValues: { ':qty': 1 } } },
+    { Delete: { TableName: 'cart', Key: { user_id: 'U1', item_id: 'A1' } } }
+  ]
+});
+```
+
+**Properties:**
+- **Serializable isolation** — transactions appear to execute sequentially
+- **All-or-nothing** — all operations succeed or all are rolled back
+- Span **multiple tables** (up to 100 items per transaction)
+
+**Limitations:**
+
+| Limitation | Detail |
+|---|---|
+| **100 items max** | Per transaction (combined reads + writes) |
+| **4 MB max** | Total size of all items in transaction |
+| **25 WCU per item** | Each transactional write costs 2x normal WCU |
+| **No cross-region** | Transactions are single-region only |
+| **No cross-account** | Cannot span multiple AWS accounts |
+| **Conflict handling** | Transaction fails if any item is modified concurrently (optimistic locking) |
+
+**When to use:**
+- Order placement (decrement inventory + create order + clear cart)
+- Account transfers (debit one account + credit another)
+- Conditional multi-item updates
+
+**When NOT to use:**
+- High-contention scenarios (frequent conflicts → retries → cost)
+- Simple single-item updates (use condition expressions instead)
+
+---
+
+### Q11: Explain DynamoDB's single-table design pattern. When is it appropriate?
+
+**Answer:**
+
+**Single-table design** stores multiple entity types in one DynamoDB table using carefully designed partition and sort keys.
+
+**Example — E-commerce:**
+
+| PK | SK | Attributes |
+|---|---|---|
+| `USER#123` | `PROFILE` | name, email, created_at |
+| `USER#123` | `ORDER#2026-001` | total, status, items |
+| `USER#123` | `ORDER#2026-002` | total, status, items |
+| `ORDER#2026-001` | `ITEM#A1` | product_name, qty, price |
+| `PRODUCT#A1` | `METADATA` | name, category, price |
+| `PRODUCT#A1` | `REVIEW#R1` | rating, comment, user_id |
+
+**Benefits:**
+- Fetch related data in **one query** (user + their orders in a single request)
+- Reduces table count and GSI overhead
+- Mimics JOINs via careful key design
+
+**Drawbacks:**
+- Complex to design and maintain
+- Harder to evolve as access patterns change
+- GSI overloading can be confusing
+- Not suitable when entities have very different access patterns or scaling needs
+
+**When appropriate:**
+- Well-understood, stable access patterns
+- Need to minimize read operations (cost/latency)
+- Microservice with bounded context (few entity types)
+
+**When to avoid:**
+- Rapidly evolving query patterns
+- Team unfamiliar with DynamoDB data modeling
+- Many entity types with independent scaling needs
+
+---
+
+### Q12: How would you design a URL shortener (like bit.ly) using DynamoDB?
+
+**Answer:**
+
+**Requirements:** Create short URLs, redirect to original URL, track click analytics.
+
+**Table design:**
+
+```
+Table: urls
+PK: short_code (string)    — e.g., "abc123"
+Attributes: long_url, created_at, user_id, click_count, ttl
+
+GSI: user-urls-index
+PK: user_id, SK: created_at
+```
+
+**Operations:**
+
+| Operation | DynamoDB Call |
+|---|---|
+| **Create short URL** | `PutItem` with condition `attribute_not_exists(short_code)` to prevent overwrites |
+| **Redirect** | `GetItem(short_code)` → return `long_url` (strongly consistent for accuracy) |
+| **List user's URLs** | `Query` on GSI `user-urls-index` with `user_id` |
+| **Track clicks** | `UpdateItem` with `ADD click_count :1` (atomic increment) |
+| **Auto-expire** | Set `ttl` attribute → DynamoDB TTL auto-deletes expired items |
+
+**Scaling considerations:**
+- Short codes are high-cardinality → excellent partition distribution
+- Hot URLs (viral links): use **DAX** to cache popular redirects (microsecond latency)
+- Click analytics at high volume: write to **DynamoDB Streams** → Lambda → analytics pipeline (avoid hot partition on popular URLs)
+
+**Cost estimate:**
+- 10M redirects/day = ~116 reads/sec average (burst much higher)
+- With DAX: most reads served from cache, minimal RCU needed
+- Storage: 1KB per URL × 100M URLs = ~100 GB
+
+---
+
+### Q13: What is TTL in DynamoDB and how does it work under the hood?
+
+**Answer:**
+
+**TTL (Time to Live)** automatically deletes expired items from a table at no additional cost (no WCU consumed).
+
+**How to use:**
+1. Enable TTL on a table, specifying which attribute holds the expiration timestamp
+2. Set the attribute to a Unix epoch timestamp (seconds) on each item
+3. DynamoDB periodically scans and deletes items past their TTL
+
+```javascript
+// Set item with TTL (expires in 30 days)
+const item = {
+  user_id: 'U123',
+  session_token: 'abc...',
+  ttl: Math.floor(Date.now() / 1000) + (30 * 86400) // 30 days from now
+};
+```
+
+**Under the hood:**
+- Background process scans for expired items (not instant — can take up to 48 hours after expiration)
+- Expired items may still appear in queries/scans until actually deleted
+- Deletions are captured in DynamoDB Streams (with `eventName: "REMOVE"`)
+- No WCU cost for TTL deletions
+
+**Use cases:**
+- Session management (expire inactive sessions)
+- Temporary data (OTPs, verification codes)
+- Log/event data retention
+- Shopping cart expiration
+
+**Gotcha:** Don't rely on TTL for time-critical deletions. If you need items gone immediately at expiration, implement application-level filtering (`WHERE ttl > current_time`) in queries.
+
+---
+
+### Q14: How do Global Tables work and what are the consistency implications?
+
+**Answer:**
+
+**Global Tables** provide **multi-region, fully replicated** DynamoDB tables with active-active configuration.
+
+**How it works:**
+- Create a table in one region, then add replicas in other regions
+- DynamoDB automatically replicates writes to all regions (typically < 1 second)
+- Each region can serve both reads AND writes independently
+
+**Consistency implications:**
+
+| Scenario | Behavior |
+|---|---|
+| Write in us-east-1, read in us-east-1 | Strongly consistent read available |
+| Write in us-east-1, read in eu-west-1 | Eventually consistent only (replication lag) |
+| Concurrent writes to same item in different regions | **Last writer wins** (based on timestamp) |
+
+**Conflict resolution:** DynamoDB uses **last-writer-wins** reconciliation based on the item's timestamp. There's no built-in conflict detection or merge logic — the most recent write (by wall clock) overwrites previous versions.
+
+**When to use:**
+- Global user base needing low-latency reads/writes
+- Disaster recovery (automatic failover)
+- Read-heavy workloads that benefit from local replicas
+
+**Pitfalls:**
+- Cross-region write conflicts can silently overwrite data
+- Strongly consistent reads are **region-local only** — can't guarantee cross-region consistency
+- Cost: pay for replicated WCU in each region
+- **Transactions are single-region only** — cannot span global table replicas
+
+---
+
+### Q15: Design a leaderboard system using DynamoDB. How does it compare to using Redis?
+
+**Answer:**
+
+**Challenge:** DynamoDB doesn't have a native sorted set like Redis. You need to design around this.
+
+**Approach 1 — GSI with score as sort key:**
+
+```
+Table: leaderboard
+PK: game_id
+SK: user_id
+Attributes: score, username, updated_at
+
+GSI: game-score-index
+PK: game_id
+SK: score
+```
+
+- Top 10: `Query GSI WHERE game_id = X ORDER BY score DESC LIMIT 10`
+- Update score: `UpdateItem SET score = :new_score`
+- User's rank: Not efficiently queryable (must scan all items with higher scores)
+
+**Approach 2 — Write sharding for high-write games:**
+
+```
+PK: game_id#shard_N (N = hash(user_id) % 10)
+SK: score#user_id
+```
+
+- Parallel query 10 shards, merge top results client-side
+
+**DynamoDB vs Redis for leaderboards:**
+
+| Aspect | DynamoDB | Redis (Sorted Sets) |
+|---|---|---|
+| **Top-N query** | GSI query (ms latency) | `ZREVRANGE` (sub-ms) |
+| **Get rank** | Expensive (scan/count) | `ZREVRANK` O(log N) |
+| **Update score** | UpdateItem + GSI async update | `ZADD` atomic O(log N) |
+| **Durability** | Built-in (3 AZ replication) | Requires persistence config |
+| **Scale** | Automatic partitioning | Manual sharding for large sets |
+| **Cost** | Pay per operation | Pay for memory |
+
+**Recommendation:**
+- **Redis** for real-time leaderboards needing rank lookups and sub-millisecond latency
+- **DynamoDB** when leaderboard is part of a larger DynamoDB-based system and rank queries are infrequent
+- **Hybrid:** Redis for hot leaderboard data, DynamoDB for persistence and historical records
+
