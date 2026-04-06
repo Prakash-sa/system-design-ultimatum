@@ -4,6 +4,8 @@
 
 The original **Tradeoffs.md** file has been reorganized into 8 focused markdown files, each covering a specific topic in depth. All original content has been preserved and enhanced with **interview questions and answers** for each section.
 
+In addition, the notes now include a dedicated **HPC track** covering fundamentals, Slurm, MPI, storage/networking, AWS ParallelCluster, system design, and interview preparation.
+
 ## File Structure
 
 <details>
@@ -19,7 +21,13 @@ Notes/
 ├── 05-Communication-Patterns.md     # Sync vs Async, polling, message queues
 ├── 06-Scalability-Reliability.md    # Vertical vs Horizontal, CAP, circuit breakers
 ├── 07-Data-Processing.md            # Batch vs Stream, Lambda vs Kappa
-└── 08-Architecture-Patterns.md      # Monolith vs Microservices
+├── 08-Architecture-Patterns.md      # Monolith vs Microservices
+├── HPC.md                           # Master HPC guide
+├── HPC-01-Fundamentals.md           # Core HPC concepts and workload types
+├── HPC-02-Slurm-MPI.md              # Slurm scheduler and MPI runtime
+├── HPC-03-Storage-Networking-Operations.md # Storage, network, and ops
+├── HPC-04-Cloud-ParallelCluster.md  # Cloud HPC and AWS ParallelCluster
+└── HPC-05-Interviews.md             # HPC interview prep
 ```
 
 </details>
@@ -105,6 +113,12 @@ Notes/
   - Netflix microservices structure
   - Deployment time analysis
 
+### 9. HPC Track (HPC.md + HPC-01 to HPC-05)
+- **Added**: Ground-up HPC guide from fundamentals to system design
+- **Added**: Slurm, MPI, OpenMP, GPU, storage, and network coverage
+- **Added**: AWS ParallelCluster and cloud HPC design guidance
+- **Added**: 50-question interview bank, model answers, mock prompts, and revision sheets
+
 ---
 
 ## Usage Guide
@@ -151,14 +165,15 @@ Notes/
 6. **Scalability**: Database scaling, Netflix resilience, multi-region failover
 7. **Data Processing**: Real-time fraud detection, analytics pipelines, recommendations
 8. **Architecture**: Monolith vs microservices, data consistency, service design
+9. **HPC**: Slurm vs Kubernetes, MPI scaling, cloud HPC, ParallelCluster, GPU cluster design
 
 ---
 
 ## Statistics
 
-- **Total files**: 9 (master index + 8 topic files)
-- **Total lines of content**: ~4,500+
-- **Interview Q&A**: 40+ questions with detailed answers
+- **Core topic files**: 14 (8 tradeoff files + 6 HPC files)
+- **Total lines of content**: ~7,000+
+- **Interview Q&A**: 90+ questions with detailed answers/model answers
 - **Code examples**: 50+ practical implementations
 - **Real company examples**: 20+ companies cited
 - **Decision matrices**: 15+ comparison tables
@@ -180,6 +195,12 @@ Notes/
 [Scalability & Reliability](./06-Scalability-Reliability.md)
 [Data Processing](./07-Data-Processing.md)
 [Architecture Patterns](./08-Architecture-Patterns.md)
+[HPC Master Guide](./HPC.md)
+[HPC Fundamentals](./HPC-01-Fundamentals.md)
+[HPC Slurm and MPI](./HPC-02-Slurm-MPI.md)
+[HPC Storage, Networking, and Operations](./HPC-03-Storage-Networking-Operations.md)
+[Cloud HPC and AWS ParallelCluster](./HPC-04-Cloud-ParallelCluster.md)
+[HPC Interview Prep](./HPC-05-Interviews.md)
 ```
 
 </details>
@@ -198,4 +219,3 @@ Notes/
 **For reference**: Bookmark the master index and search as needed
 
 Happy studying! 🚀
-
