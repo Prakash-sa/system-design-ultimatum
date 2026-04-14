@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -26,6 +27,31 @@ const docsDir = './docs';
 if (!fs.existsSync(docsDir)) {
   fs.mkdirSync(docsDir, { recursive: true });
 }
+
+// ─── Asset pipeline ─────────────────────────────────────────────────────────
+
+function loadAssets() {
+  const sources = [
+    { src: path.join(__dirname, 'assets', 'site.css'), ext: '.css' },
+    { src: path.join(__dirname, 'assets', 'site.js'),  ext: '.js'  },
+  ];
+  const outDir = path.join(docsDir, 'assets');
+  fs.mkdirSync(outDir, { recursive: true });
+
+  const result = {};
+  for (const { src, ext } of sources) {
+    const content = fs.readFileSync(src);
+    const hash = crypto.createHash('sha1').update(content).digest('hex').slice(0, 8);
+    const outName = `site.${hash}${ext}`;
+    fs.writeFileSync(path.join(outDir, outName), content);
+    if (ext === '.css') result.cssHref = `assets/${outName}`;
+    if (ext === '.js')  result.jsHref  = `assets/${outName}`;
+  }
+  return result;
+}
+
+const ASSETS = loadAssets();
+console.log(`  Assets: ${ASSETS.cssHref}, ${ASSETS.jsHref}`);
 
 // ─── Markdown to HTML (with heading IDs + TOC extraction) ───────────────────
 
@@ -490,553 +516,6 @@ function getCategoryInfo(folderName) {
   return { icon: 'folder', color: '#64748b', desc: 'System design topics' };
 }
 
-// ─── CSS Design System ──────────────────────────────────────────────────────
-
-const globalStyles = `
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-
-:root {
-  --bg: #ffffff;
-  --bg-secondary: #f8fafc;
-  --bg-tertiary: #f1f5f9;
-  --text: #1e293b;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
-  --border: #e2e8f0;
-  --border-light: #f1f5f9;
-  --accent: #6366f1;
-  --accent-light: #818cf8;
-  --accent-bg: rgba(99, 102, 241, 0.08);
-  --accent-border: rgba(99, 102, 241, 0.2);
-  --teal: #14b8a6;
-  --teal-bg: rgba(20, 184, 166, 0.08);
-  --amber: #f59e0b;
-  --sidebar-bg: #fafbfc;
-  --sidebar-width: 300px;
-  --content-max: 860px;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-  --shadow-lg: 0 12px 32px rgba(0,0,0,0.1);
-  --radius: 8px;
-  --radius-lg: 12px;
-}
-
-[data-theme="dark"] {
-  --bg: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-tertiary: #334155;
-  --text: #e2e8f0;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --border: #334155;
-  --border-light: #1e293b;
-  --accent: #818cf8;
-  --accent-light: #a5b4fc;
-  --accent-bg: rgba(129, 140, 248, 0.12);
-  --accent-border: rgba(129, 140, 248, 0.25);
-  --teal: #2dd4bf;
-  --teal-bg: rgba(45, 212, 191, 0.1);
-  --amber: #fbbf24;
-  --sidebar-bg: #0f172a;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
-  --shadow-lg: 0 12px 32px rgba(0,0,0,0.4);
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  line-height: 1.65;
-  color: var(--text);
-  background: var(--bg);
-  display: flex;
-  min-height: 100vh;
-  transition: background 0.3s, color 0.3s;
-}
-
-/* ── Reading Progress Bar ── */
-.progress-bar {
-  position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 200;
-  background: transparent;
-}
-.progress-bar .progress-fill {
-  height: 100%; width: 0%;
-  background: linear-gradient(90deg, var(--accent), var(--teal));
-  transition: width 0.1s linear;
-}
-
-/* ── Sidebar ── */
-.sidebar {
-  position: fixed; left: 0; top: 0; width: var(--sidebar-width); height: 100vh;
-  background: var(--sidebar-bg);
-  border-right: 1px solid var(--border);
-  display: flex; flex-direction: column; z-index: 100;
-  transition: background 0.3s, border-color 0.3s;
-}
-
-.nav-header {
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
-}
-
-.nav-brand {
-  color: var(--text); text-decoration: none;
-  font-size: 0.95rem; font-weight: 700; letter-spacing: -0.3px;
-}
-.nav-brand:hover { color: var(--accent); }
-
-.nav-actions {
-  display: flex; align-items: center; gap: 0.4rem;
-}
-
-.theme-toggle, .nav-close {
-  background: var(--bg-secondary); border: 1px solid var(--border);
-  color: var(--text-secondary); border-radius: 6px;
-  width: 32px; height: 32px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; font-size: 0.85rem;
-  transition: all 0.2s;
-}
-.theme-toggle:hover, .nav-close:hover {
-  background: var(--accent-bg); border-color: var(--accent-border); color: var(--accent);
-}
-.nav-close { display: none; }
-
-.nav-tools {
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--border);
-}
-
-.search-wrapper {
-  position: relative;
-}
-
-.search-wrapper input {
-  width: 100%; border-radius: var(--radius);
-  border: 1px solid var(--border); background: var(--bg);
-  padding: 0.5rem 0.75rem 0.5rem 2rem;
-  font-size: 0.85rem; color: var(--text);
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-.search-wrapper input:focus {
-  outline: none; border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-bg);
-}
-.search-wrapper::before {
-  content: '\\2315'; position: absolute; left: 0.65rem; top: 50%;
-  transform: translateY(-50%); color: var(--text-muted); font-size: 0.85rem;
-  pointer-events: none;
-}
-
-.search-kbd {
-  position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%);
-  background: var(--bg-tertiary); border: 1px solid var(--border);
-  border-radius: 4px; padding: 0.1rem 0.35rem;
-  font-size: 0.7rem; color: var(--text-muted); font-family: inherit;
-  pointer-events: none;
-}
-
-.search-results {
-  position: absolute; top: calc(100% + 4px); left: 0; right: 0;
-  background: var(--bg); border: 1px solid var(--border);
-  border-radius: var(--radius); box-shadow: var(--shadow-lg);
-  max-height: 400px; overflow-y: auto; z-index: 200; display: none;
-}
-.search-results.is-open { display: block; }
-
-.search-result-item {
-  display: block; padding: 0.6rem 0.75rem;
-  text-decoration: none; color: var(--text);
-  border-bottom: 1px solid var(--border-light);
-  transition: background 0.15s;
-}
-.search-result-item:hover, .search-result-item.is-focused {
-  background: var(--accent-bg);
-}
-.search-result-item .sr-title {
-  font-size: 0.85rem; font-weight: 500;
-}
-.search-result-item .sr-folder {
-  font-size: 0.72rem; color: var(--text-muted); margin-top: 1px;
-}
-.search-result-item .sr-snippet {
-  font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px;
-}
-.search-result-item .sr-snippet mark {
-  background: rgba(245, 158, 11, 0.3); color: inherit; border-radius: 2px; padding: 0 1px;
-}
-
-.nav-scroll {
-  overflow-y: auto; flex: 1; padding-bottom: 2rem;
-}
-
-.nav-section-label {
-  padding: 0.75rem 1.15rem 0.35rem;
-  font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em;
-  font-weight: 600; color: var(--text-muted);
-}
-
-.nav-folder { margin-bottom: 0.15rem; }
-
-.nav-folder summary {
-  padding: 0.45rem 1.15rem; font-weight: 600;
-  color: var(--text-secondary); font-size: 0.78rem;
-  cursor: pointer; list-style: none;
-  display: flex; align-items: center; gap: 0.4rem;
-  transition: color 0.15s;
-}
-.nav-folder summary:hover { color: var(--accent); }
-.nav-folder summary::-webkit-details-marker { display: none; }
-
-.nav-folder summary .folder-chevron {
-  font-size: 0.6rem; transition: transform 0.2s; color: var(--text-muted);
-}
-.nav-folder[open] summary .folder-chevron { transform: rotate(90deg); }
-
-.nav-folder-body { padding-left: 0.25rem; }
-
-.nav-item {
-  display: flex; align-items: center; gap: 0.4rem;
-  padding: 0.35rem 0.75rem 0.35rem 1.5rem;
-  color: var(--text-secondary); text-decoration: none;
-  font-size: 0.82rem; border-radius: 6px;
-  margin: 1px 0.5rem; transition: all 0.15s;
-}
-.nav-item:hover {
-  background: var(--accent-bg); color: var(--text);
-}
-.nav-item.is-active {
-  background: var(--accent-bg); color: var(--accent);
-  font-weight: 600;
-}
-.nav-item .nav-icon {
-  font-size: 0.7rem; opacity: 0.7; flex-shrink: 0;
-}
-
-.nav-folder.is-hidden, .nav-item.is-hidden { display: none; }
-
-/* ── Main Content ── */
-.main-content {
-  margin-left: var(--sidebar-width); flex: 1; min-height: 100vh;
-  transition: margin-left 0.3s;
-}
-
-/* ── Page Header ── */
-.page-header {
-  padding: 1.5rem 2rem 1rem;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg);
-}
-.breadcrumb {
-  display: flex; align-items: center; gap: 0.35rem;
-  font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.5rem;
-  flex-wrap: wrap;
-}
-.breadcrumb a { color: var(--text-muted); text-decoration: none; }
-.breadcrumb a:hover { color: var(--accent); }
-.breadcrumb .bc-sep { opacity: 0.5; }
-
-.page-header h1 {
-  font-size: 1.75rem; font-weight: 700; color: var(--text);
-  letter-spacing: -0.5px; line-height: 1.3;
-}
-
-/* ── Content Area with optional TOC ── */
-.content-layout {
-  display: flex; max-width: 1200px; margin: 0 auto; padding: 0 2rem;
-}
-
-.content-body {
-  flex: 1; min-width: 0; max-width: var(--content-max);
-  padding: 2rem 0;
-}
-
-/* ── Table of Contents ── */
-.toc-sidebar {
-  width: 220px; flex-shrink: 0;
-  padding: 2rem 0 2rem 2rem;
-  position: sticky; top: 1rem; align-self: flex-start;
-  max-height: calc(100vh - 2rem); overflow-y: auto;
-}
-.toc-sidebar nav {
-  border-left: 2px solid var(--border);
-  padding-left: 1rem;
-}
-.toc-sidebar .toc-title {
-  font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
-  font-weight: 600; color: var(--text-muted); margin-bottom: 0.75rem;
-}
-.toc-sidebar a {
-  display: block; font-size: 0.78rem; color: var(--text-muted);
-  text-decoration: none; padding: 0.2rem 0; line-height: 1.4;
-  transition: color 0.15s;
-}
-.toc-sidebar a:hover { color: var(--accent); }
-.toc-sidebar a.is-active {
-  color: var(--accent); font-weight: 500;
-}
-.toc-sidebar a.toc-h3 { padding-left: 0.75rem; font-size: 0.74rem; }
-
-/* ── Article Typography ── */
-.content-body h1 { font-size: 1.75rem; margin-top: 2rem; margin-bottom: 0.75rem; color: var(--text); border-bottom: 2px solid var(--accent-border); padding-bottom: 0.5rem; }
-.content-body h2 { font-size: 1.35rem; margin-top: 2rem; margin-bottom: 0.6rem; color: var(--text); padding-top: 0.5rem; }
-.content-body h3 { font-size: 1.1rem; margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--text); }
-.content-body h4 { font-size: 0.95rem; margin-top: 1.25rem; margin-bottom: 0.4rem; color: var(--text-secondary); }
-
-.content-body p { margin-bottom: 1rem; color: var(--text-secondary); line-height: 1.75; }
-.content-body a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s; }
-.content-body a:hover { border-bottom-color: var(--accent); }
-
-.content-body code {
-  background: var(--bg-tertiary); padding: 0.15rem 0.4rem;
-  border-radius: 4px; font-family: 'JetBrains Mono', monospace;
-  font-size: 0.85em; color: var(--accent);
-}
-
-.content-body pre {
-  background: #1e1e2e; color: #cdd6f4;
-  padding: 1.25rem; border-radius: var(--radius-lg);
-  overflow-x: auto; margin: 1.25rem 0;
-  font-size: 0.85rem; line-height: 1.6;
-  border: 1px solid rgba(255,255,255,0.06);
-}
-.content-body pre code {
-  background: none; color: inherit; padding: 0;
-  font-size: inherit; border-radius: 0;
-}
-
-.content-body .table-wrap { overflow-x: auto; margin: 1rem 0; }
-.content-body table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
-.content-body table th, .content-body table td {
-  border: 1px solid var(--border); padding: 0.6rem 0.8rem; text-align: left;
-}
-.content-body table th { background: var(--bg-tertiary); font-weight: 600; color: var(--text); font-size: 0.85rem; }
-.content-body table tr:nth-child(even) { background: var(--bg-secondary); }
-
-.content-body ul, .content-body ol { margin-left: 1.5rem; margin-bottom: 1rem; color: var(--text-secondary); }
-.content-body li { margin-bottom: 0.35rem; line-height: 1.7; }
-
-.content-body blockquote {
-  border-left: 3px solid var(--accent); padding: 0.75rem 1rem;
-  margin: 1rem 0; background: var(--accent-bg); border-radius: 0 var(--radius) var(--radius) 0;
-}
-.content-body blockquote p { color: var(--text-secondary); margin-bottom: 0.5rem; }
-.content-body blockquote p:last-child { margin-bottom: 0; }
-
-.content-body hr { border: 0; border-top: 1px solid var(--border); margin: 2rem 0; }
-
-.content-body img { max-width: 100%; height: auto; border-radius: var(--radius); margin: 1rem 0; }
-
-.content-body details { margin: 1rem 0; border: 1px solid var(--border); border-radius: var(--radius); }
-.content-body summary {
-  cursor: pointer; padding: 0.75rem 1rem; background: var(--bg-secondary);
-  border-radius: var(--radius); font-weight: 600; color: var(--accent);
-  user-select: none; font-size: 0.9rem;
-}
-.content-body details[open] summary { border-radius: var(--radius) var(--radius) 0 0; border-bottom: 1px solid var(--border); }
-.content-body summary:hover { background: var(--accent-bg); }
-
-/* ── Diagram Container ── */
-.diagram-container {
-  background: var(--bg-secondary); padding: 1.5rem; border-radius: var(--radius-lg);
-  margin: 1rem 0; border: 1px solid var(--border);
-}
-.diagram-info {
-  background: var(--accent-bg); padding: 1rem 1.25rem; border-left: 3px solid var(--accent);
-  margin-bottom: 1.5rem; border-radius: 0 var(--radius) var(--radius) 0;
-  font-size: 0.9rem; color: var(--text-secondary);
-}
-.diagram-preview {
-  background: var(--bg); padding: 1rem; border-radius: var(--radius);
-  margin-bottom: 1rem; text-align: center; border: 1px solid var(--border);
-  overflow: hidden; position: relative; min-height: 200px;
-}
-.diagram-preview svg, .diagram-preview img { max-width: 100%; height: auto; display: block; margin: 0 auto; }
-
-.diagram-viewer-container {
-  width: 100%; height: 600px; border-radius: var(--radius);
-  border: 1px solid var(--border); overflow: hidden; background: #fff;
-}
-
-.diagram-tabs {
-  display: flex; gap: 0.5rem; margin-bottom: 1rem;
-}
-.diagram-tab {
-  padding: 0.45rem 1rem; border-radius: 6px; border: 1px solid var(--border);
-  background: var(--bg); color: var(--text-secondary); cursor: pointer;
-  font-size: 0.82rem; font-weight: 500; transition: all 0.15s;
-}
-.diagram-tab:hover { border-color: var(--accent-border); color: var(--accent); }
-.diagram-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-
-.diagram-json {
-  background: #1e1e2e; color: #cdd6f4; padding: 1rem;
-  border-radius: var(--radius); max-height: 400px; overflow-y: auto;
-  font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
-  white-space: pre-wrap; word-break: break-all;
-}
-
-/* ── Prev/Next Navigation ── */
-.page-nav {
-  display: flex; gap: 1rem; padding: 2rem 0;
-  border-top: 1px solid var(--border); margin-top: 2rem;
-}
-.page-nav a {
-  flex: 1; padding: 1rem; border: 1px solid var(--border);
-  border-radius: var(--radius); text-decoration: none;
-  color: var(--text); transition: all 0.2s;
-}
-.page-nav a:hover { border-color: var(--accent-border); background: var(--accent-bg); }
-.page-nav .nav-label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
-.page-nav .nav-title { font-size: 0.9rem; font-weight: 500; margin-top: 0.15rem; }
-.page-nav .nav-next { text-align: right; }
-
-/* ── Back to Top ── */
-.back-to-top {
-  position: fixed; bottom: 2rem; right: 2rem;
-  width: 40px; height: 40px; border-radius: 50%;
-  background: var(--accent); color: #fff; border: none;
-  font-size: 1.1rem; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: var(--shadow-md); transition: all 0.2s;
-  opacity: 0; pointer-events: none; z-index: 50;
-}
-.back-to-top.is-visible { opacity: 1; pointer-events: auto; }
-.back-to-top:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-
-/* ── Dashboard / Homepage ── */
-.dashboard { padding: 2rem; max-width: 1100px; margin: 0 auto; }
-
-.dash-hero {
-  text-align: center; padding: 3rem 1rem 2rem;
-}
-.dash-hero h1 {
-  font-size: 2.25rem; font-weight: 700; color: var(--text);
-  letter-spacing: -0.5px; margin-bottom: 0.5rem;
-}
-.dash-hero p { color: var(--text-secondary); font-size: 1.05rem; max-width: 600px; margin: 0 auto; }
-
-.dash-stats {
-  display: flex; justify-content: center; gap: 2rem;
-  margin: 1.5rem 0 2.5rem; flex-wrap: wrap;
-}
-.dash-stat {
-  text-align: center; padding: 0.75rem 1.5rem;
-  background: var(--bg-secondary); border: 1px solid var(--border);
-  border-radius: var(--radius); min-width: 120px;
-}
-.dash-stat .stat-num { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
-.dash-stat .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
-
-.dash-section-title {
-  font-size: 1.1rem; font-weight: 600; color: var(--text);
-  margin: 2rem 0 1rem; padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--border);
-}
-
-.category-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1rem;
-}
-
-.category-card {
-  border: 1px solid var(--border); border-radius: var(--radius-lg);
-  padding: 1.25rem; background: var(--bg);
-  transition: all 0.2s; cursor: default;
-}
-.category-card:hover {
-  border-color: var(--accent-border); box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
-}
-.category-card .cc-header {
-  display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem;
-}
-.category-card .cc-icon {
-  width: 36px; height: 36px; border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1rem; color: #fff; flex-shrink: 0;
-}
-.category-card .cc-name { font-size: 0.95rem; font-weight: 600; color: var(--text); }
-.category-card .cc-desc { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.45; }
-.category-card .cc-links {
-  display: flex; flex-wrap: wrap; gap: 0.35rem;
-}
-.category-card .cc-links a {
-  font-size: 0.75rem; padding: 0.2rem 0.5rem;
-  background: var(--bg-secondary); border: 1px solid var(--border);
-  border-radius: 4px; color: var(--text-secondary);
-  text-decoration: none; transition: all 0.15s;
-}
-.category-card .cc-links a:hover {
-  background: var(--accent-bg); border-color: var(--accent-border); color: var(--accent);
-}
-
-/* ── Footer ── */
-footer {
-  text-align: center; padding: 2rem;
-  border-top: 1px solid var(--border);
-  color: var(--text-muted); font-size: 0.8rem;
-  margin-top: 3rem;
-}
-
-/* ── Mobile Overlay ── */
-.nav-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.4);
-  opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 90;
-}
-body.nav-open .nav-overlay { opacity: 1; pointer-events: auto; }
-
-.nav-toggle {
-  display: none; background: var(--bg-secondary); border: 1px solid var(--border);
-  color: var(--text-secondary); border-radius: 6px;
-  padding: 0.4rem 0.75rem; cursor: pointer; font-size: 0.82rem; font-weight: 500;
-}
-
-/* ── Keyboard shortcut hint ── */
-.kbd-hint {
-  position: fixed; bottom: 1rem; left: calc(var(--sidebar-width) + 1rem);
-  background: var(--bg-secondary); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 0.5rem 0.75rem;
-  font-size: 0.72rem; color: var(--text-muted);
-  display: flex; gap: 1rem; z-index: 10;
-  opacity: 0.7; transition: opacity 0.2s;
-}
-.kbd-hint:hover { opacity: 1; }
-.kbd-hint kbd {
-  background: var(--bg-tertiary); border: 1px solid var(--border);
-  border-radius: 3px; padding: 0 0.3rem; font-family: inherit;
-  font-size: 0.7rem;
-}
-
-@media (max-width: 1100px) {
-  .toc-sidebar { display: none; }
-  .kbd-hint { display: none; }
-}
-
-@media (max-width: 768px) {
-  .sidebar {
-    width: min(85vw, 320px);
-    transform: translateX(-105%);
-    transition: transform 0.25s ease;
-  }
-  body.nav-open .sidebar { transform: translateX(0); }
-  .nav-close { display: flex; }
-  .nav-toggle { display: inline-flex; }
-  .main-content { margin-left: 0; }
-  .page-header { padding: 1rem; }
-  .page-header h1 { font-size: 1.35rem; }
-  .content-layout { padding: 0 1rem; }
-  .content-body { padding: 1rem 0; }
-  .dashboard { padding: 1rem; }
-  .dash-hero h1 { font-size: 1.5rem; }
-  .category-grid { grid-template-columns: 1fr; }
-  .page-nav { flex-direction: column; }
-  .kbd-hint { display: none; }
-}
-`;
-
 // ─── SVG Icons (Feather-style, inline) ──────────────────────────────────────
 
 const icons = {
@@ -1088,15 +567,7 @@ function generateNav() {
     return html;
   }
 
-  let nav = '<nav class="sidebar" aria-label="Sidebar navigation">';
-  nav += `<div class="nav-header"><a class="nav-brand" href="${safeHref('index.html')}">System Design Ultimatum</a>`;
-  nav += '<div class="nav-actions">';
-  nav += `<button class="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">${icons.moon}</button>`;
-  nav += '<button class="nav-close" type="button" aria-label="Close navigation">&#10005;</button>';
-  nav += '</div></div>';
-  nav += '<div class="nav-tools"><div class="search-wrapper"><input id="nav-search" type="search" placeholder="Search topics..." aria-label="Search" autocomplete="off"><span class="search-kbd">/</span></div>';
-  nav += '<div class="search-results" id="search-results"></div></div>';
-  nav += '<div class="nav-scroll"><div class="nav-content">';
+  let nav = '<nav class="sidebar" aria-label="Primary">';
   nav += '<div class="nav-section-label">Study Notes</div>';
   // Render Notes folder first
   const notesNode = buildFolderTree().children.get('Notes');
@@ -1155,7 +626,7 @@ function generateNav() {
     nav += '</div></details>';
   });
 
-  nav += '</div></div></nav>';
+  nav += '</nav>';
   return nav;
 }
 
@@ -1211,216 +682,45 @@ function generateBreadcrumb(folder, name) {
   return html;
 }
 
-// ─── Client-side JavaScript ─────────────────────────────────────────────────
-
-const clientScript = `
-<script>
-(() => {
-  // ── Dark Mode ──
-  const theme = localStorage.getItem('theme') || 'light';
-  document.documentElement.setAttribute('data-theme', theme);
-
-  const themeBtn = document.querySelector('.theme-toggle');
-  if (themeBtn) {
-    const updateIcon = () => {
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      themeBtn.innerHTML = isDark ? '${icons.sun.replace(/'/g, "\\'")}' : '${icons.moon.replace(/'/g, "\\'")}';
-    };
-    updateIcon();
-    themeBtn.addEventListener('click', () => {
-      const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
-      updateIcon();
-    });
-  }
-
-  // ── Mobile Nav ──
-  const navToggle = document.querySelector('.nav-toggle');
-  const navClose = document.querySelector('.nav-close');
-  const overlay = document.querySelector('.nav-overlay');
-  const setNavOpen = (open) => document.body.classList.toggle('nav-open', open);
-  if (navToggle) navToggle.addEventListener('click', () => setNavOpen(true));
-  if (navClose) navClose.addEventListener('click', () => setNavOpen(false));
-  if (overlay) overlay.addEventListener('click', () => setNavOpen(false));
-
-  // ── Active Nav + Auto-expand ──
-  const navItems = Array.from(document.querySelectorAll('.nav-item'));
-  const folders = Array.from(document.querySelectorAll('.nav-folder'));
-  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-
-  navItems.forEach(item => {
-    const href = decodeURIComponent(item.getAttribute('href'));
-    if (href === currentPage || href === decodeURIComponent(currentPage)) {
-      item.classList.add('is-active');
-      let parent = item.closest('.nav-folder');
-      while (parent) { parent.open = true; parent = parent.parentElement?.closest('.nav-folder'); }
-    }
-  });
-
-  // Remember initial open state for search reset
-  folders.forEach(f => { if (f.hasAttribute('open')) f.dataset.initialOpen = 'true'; });
-
-  // ── Search ──
-  const searchInput = document.querySelector('#nav-search');
-  const searchResults = document.querySelector('#search-results');
-  let searchIndex = null;
-  let focusedIdx = -1;
-
-  async function loadSearchIndex() {
-    if (searchIndex) return searchIndex;
-    try {
-      const res = await fetch('search-index.json');
-      searchIndex = await res.json();
-    } catch { searchIndex = []; }
-    return searchIndex;
-  }
-
-  function renderSearchResults(results) {
-    if (!results.length) { searchResults.classList.remove('is-open'); return; }
-    searchResults.innerHTML = results.slice(0, 12).map((r, i) =>
-      '<a class="search-result-item' + (i === 0 ? ' is-focused' : '') + '" href="' + r.href + '">' +
-      '<div class="sr-title">' + r.name + '</div>' +
-      '<div class="sr-folder">' + r.folder + '</div>' +
-      (r.snippet ? '<div class="sr-snippet">' + r.snippet + '</div>' : '') +
-      '</a>'
-    ).join('');
-    searchResults.classList.add('is-open');
-    focusedIdx = 0;
-  }
-
-  if (searchInput) {
-    let debounce = null;
-    searchInput.addEventListener('input', () => {
-      clearTimeout(debounce);
-      const q = searchInput.value.trim().toLowerCase();
-      if (!q) {
-        searchResults.classList.remove('is-open');
-        // Reset nav filter
-        navItems.forEach(i => i.classList.remove('is-hidden'));
-        folders.forEach(f => { f.classList.remove('is-hidden'); f.open = f.dataset.initialOpen === 'true'; });
-        return;
-      }
-      // Filter nav items
-      navItems.forEach(i => i.classList.toggle('is-hidden', !i.textContent.toLowerCase().includes(q)));
-      folders.forEach(f => {
-        const has = f.querySelector('.nav-item:not(.is-hidden)');
-        f.classList.toggle('is-hidden', !has);
-        if (has) f.open = true;
-      });
-      // Full-text search with debounce
-      debounce = setTimeout(async () => {
-        const index = await loadSearchIndex();
-        const results = index.filter(item =>
-          item.name.toLowerCase().includes(q) || (item.text && item.text.toLowerCase().includes(q))
-        ).map(item => {
-          let snippet = '';
-          if (item.text) {
-            const idx = item.text.toLowerCase().indexOf(q);
-            if (idx !== -1) {
-              const start = Math.max(0, idx - 40);
-              const end = Math.min(item.text.length, idx + q.length + 40);
-              snippet = (start > 0 ? '...' : '') +
-                item.text.substring(start, idx) +
-                '<mark>' + item.text.substring(idx, idx + q.length) + '</mark>' +
-                item.text.substring(idx + q.length, end) +
-                (end < item.text.length ? '...' : '');
-            }
-          }
-          return { ...item, snippet };
-        });
-        renderSearchResults(results);
-      }, 200);
-    });
-
-    searchInput.addEventListener('keydown', (e) => {
-      const items = searchResults.querySelectorAll('.search-result-item');
-      if (!items.length) return;
-      if (e.key === 'ArrowDown') { e.preventDefault(); focusedIdx = Math.min(focusedIdx + 1, items.length - 1); items.forEach((it, i) => it.classList.toggle('is-focused', i === focusedIdx)); }
-      if (e.key === 'ArrowUp') { e.preventDefault(); focusedIdx = Math.max(focusedIdx - 1, 0); items.forEach((it, i) => it.classList.toggle('is-focused', i === focusedIdx)); }
-      if (e.key === 'Enter' && focusedIdx >= 0) { e.preventDefault(); items[focusedIdx].click(); }
-      if (e.key === 'Escape') { searchResults.classList.remove('is-open'); searchInput.blur(); }
-    });
-
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('.nav-tools')) searchResults.classList.remove('is-open');
-    });
-  }
-
-  // ── Reading Progress Bar ──
-  const progressFill = document.querySelector('.progress-fill');
-  if (progressFill) {
-    window.addEventListener('scroll', () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const pct = docHeight > 0 ? Math.min((scrollTop / docHeight) * 100, 100) : 0;
-      progressFill.style.width = pct + '%';
-    }, { passive: true });
-  }
-
-  // ── Scroll Spy for TOC ──
-  const tocLinks = Array.from(document.querySelectorAll('[data-toc-link]'));
-  if (tocLinks.length) {
-    const headingIds = tocLinks.map(a => a.getAttribute('href').slice(1));
-    const headingEls = headingIds.map(id => document.getElementById(id)).filter(Boolean);
-
-    const onScroll = () => {
-      let activeId = headingIds[0];
-      for (const el of headingEls) {
-        if (el.getBoundingClientRect().top <= 100) activeId = el.id;
-      }
-      tocLinks.forEach(a => a.classList.toggle('is-active', a.getAttribute('href') === '#' + activeId));
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-  }
-
-  // ── Back to Top ──
-  const backToTop = document.querySelector('.back-to-top');
-  if (backToTop) {
-    window.addEventListener('scroll', () => {
-      backToTop.classList.toggle('is-visible', window.scrollY > 400);
-    }, { passive: true });
-    backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-  }
-
-  // ── Keyboard Shortcuts ──
-  document.addEventListener('keydown', (e) => {
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
-    if (e.key === '/') { e.preventDefault(); searchInput?.focus(); }
-    if (e.key === 'n') { const next = document.querySelector('.page-nav .nav-next'); if (next) next.click(); }
-    if (e.key === 'p') { const prev = document.querySelector('.page-nav a:not(.nav-next)'); if (prev) prev.click(); }
-    if (e.key === 't') {
-      const toc = document.querySelector('.toc-sidebar');
-      if (toc) toc.style.display = toc.style.display === 'none' ? '' : 'none';
-    }
-  });
-})();
-</script>`;
-
 // ─── Page Template ──────────────────────────────────────────────────────────
 
 function generatePageTemplate(title, content, { toc = '', breadcrumb = '', prevNext = '', isHome = false } = {}) {
   const safeTitle = escapeHtml(title);
+  const themeInit = `<script>(function(){try{var t=localStorage.getItem('theme');if(!t)t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>`;
+  const topbar = `
+  <header class="topbar" role="banner">
+    <button class="topbar-icon-btn topbar-hamburger" type="button" aria-label="Open navigation">☰</button>
+    <a class="topbar-brand" href="index.html">System Design Ultimatum</a>
+    <button id="topbar-search" class="topbar-search" type="button" aria-label="Search (Cmd+K)">
+      <span>Search the docs…</span>
+      <span class="kbd">⌘K</span>
+    </button>
+    <span class="topbar-spacer"></span>
+    <button id="theme-toggle" class="topbar-icon-btn" type="button" aria-label="Toggle dark mode" aria-pressed="false"></button>
+  </header>`;
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${safeTitle} - System Design Ultimatum</title>
+  ${themeInit}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <style>${globalStyles}</style>
+  <link rel="stylesheet" href="${ASSETS.cssHref}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
 <div class="progress-bar"><div class="progress-fill"></div></div>
-${generateNav()}
+${topbar}
 <div class="nav-overlay" data-nav-overlay></div>
-<div class="main-content">
+<div class="app">
+${generateNav()}
+<main class="main" id="main">
 ${isHome ? '' : `
   <div class="page-header">
-    <button class="nav-toggle" type="button" aria-label="Open navigation">Menu</button>
     ${breadcrumb}
     <h1>${safeTitle}</h1>
   </div>
@@ -1431,16 +731,16 @@ ${isHome ? content : `
       ${content}
       ${prevNext}
     </div>
-    ${toc}
   </div>
 `}
   <footer>System Design Ultimatum &middot; Last updated ${new Date().toLocaleDateString()}</footer>
+</main>
+${toc}
 </div>
 <button class="back-to-top" aria-label="Back to top">${icons.up}</button>
-<div class="kbd-hint"><kbd>/</kbd> Search &nbsp; <kbd>n</kbd> Next &nbsp; <kbd>p</kbd> Prev &nbsp; <kbd>t</kbd> TOC</div>
 <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
-${clientScript}
+<script defer src="${ASSETS.jsHref}"></script>
 </body>
 </html>`;
 }
