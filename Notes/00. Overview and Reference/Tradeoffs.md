@@ -12,7 +12,7 @@ This master guide has been divided into focused topic files for easier reference
 - Real-world tradeoff analysis
 - **Interview questions with answers**
 
-### 1. [Database Tradeoffs](./01-Database-Tradeoffs.md)
+### 1. [Database Tradeoffs](../01. Core Concepts/01-Database-Tradeoffs.md)
 SQL vs NoSQL, common databases, geospatial queries (PostgreSQL + PostGIS, Redis Geo, MongoDB, Elasticsearch, DynamoDB, S2/H3 geometry), read replicas vs sharding, normalization vs denormalization, data structures & indexing
 
 **Key topics:**
@@ -20,7 +20,7 @@ SQL vs NoSQL, common databases, geospatial queries (PostgreSQL + PostGIS, Redis 
 - Location query patterns (Uber, food delivery, GIS)
 - Scaling strategies (read replicas, sharding, geo-partitioning)
 
-### 2. [Caching Strategies](./02-Caching-Strategies.md)
+### 2. [Caching Strategies](../01. Core Concepts/02-Caching-Strategies.md)
 Cache Aside, Write-Through, Write-Behind, Refresh-Ahead patterns with deep dives, TTL strategies, cache invalidation, cache stampede solutions
 
 **Key topics:**
@@ -28,7 +28,7 @@ Cache Aside, Write-Through, Write-Behind, Refresh-Ahead patterns with deep dives
 - TTL tuning for different use cases
 - Preventing cascading failures
 
-### 3. [API Design](./03-API-Design.md)
+### 3. [API Design](../01. Core Concepts/03-API-Design.md)
 REST vs gRPC vs GraphQL vs WebSockets vs SSE vs WebHooks with comprehensive comparison table, detailed pros/cons, when to use each, real-time patterns
 
 **Key topics:**
@@ -36,7 +36,7 @@ REST vs gRPC vs GraphQL vs WebSockets vs SSE vs WebHooks with comprehensive comp
 - Real-time communication (WebSockets vs SSE)
 - Mobile vs server API design
 
-### 4. [Storage Tradeoffs](./04-Storage-Tradeoffs.md)
+### 4. [Storage Tradeoffs](../01. Core Concepts/04-Storage-Tradeoffs.md)
 Object Storage (S3) vs Block Storage (EBS) vs File Storage (EFS/NFS), decision matrix, cost analysis, Instagram/Dropbox design examples
 
 **Key topics:**
@@ -44,7 +44,7 @@ Object Storage (S3) vs Block Storage (EBS) vs File Storage (EFS/NFS), decision m
 - Cost optimization strategies
 - Cloud storage architecture
 
-### 5. [Communication Patterns](./05-Communication-Patterns.md)
+### 5. [Communication Patterns](../01. Core Concepts/05-Communication-Patterns.md)
 Synchronous vs Asynchronous, polling patterns (short/long polling, WebSockets, SSE), message queues (Pub/Sub vs Queue), chaos engineering, retry mechanisms with exponential backoff
 
 **Key topics:**
@@ -52,7 +52,7 @@ Synchronous vs Asynchronous, polling patterns (short/long polling, WebSockets, S
 - Message queue strategies
 - Failure handling and resilience
 
-### 6. [Scalability & Reliability](./06-Scalability-Reliability.md)
+### 6. [Scalability & Reliability](../01. Core Concepts/06-Scalability-Reliability.md)
 Vertical vs Horizontal scaling, CAP theorem, load balancing strategies, replication patterns, circuit breaker pattern, multi-region failover, disaster recovery
 
 **Key topics:**
@@ -60,7 +60,7 @@ Vertical vs Horizontal scaling, CAP theorem, load balancing strategies, replicat
 - High availability patterns
 - Fault tolerance strategies
 
-### 7. [Data Processing](./07-Data-Processing.md)
+### 7. [Data Processing](../01. Core Concepts/07-Data-Processing.md)
 Batch vs Stream processing, Lambda vs Kappa architecture, tools comparison (Spark, Flink, Kafka Streams, Kinesis), real-time analytics, data warehouse design for scale
 
 **Key topics:**
@@ -68,7 +68,7 @@ Batch vs Stream processing, Lambda vs Kappa architecture, tools comparison (Spar
 - Real-time analytics at scale
 - Fraud detection and recommendation systems
 
-### 8. [Architecture Patterns](./08-Architecture-Patterns.md)
+### 8. [Architecture Patterns](../01. Core Concepts/08-Architecture-Patterns.md)
 Monolith vs Microservices, architecture evolution, when to migrate, data consistency across services, saga pattern, service design principles
 
 **Key topics:**
@@ -76,7 +76,7 @@ Monolith vs Microservices, architecture evolution, when to migrate, data consist
 - Distributed transaction patterns
 - Service boundary design
 
-### 9. [REST & gRPC Best Practices](./09-REST-gRPC-Best-Practices.md)
+### 9. [REST & gRPC Best Practices](../01. Core Concepts/09-REST-gRPC-Best-Practices.md)
 REST API design principles, HTTP methods semantics, versioning strategies, pagination strategies (offset, cursor, page, seek), filtering & sorting, caching optimization, gRPC proto design, streaming strategies, performance tuning
 
 **Key topics:**
@@ -86,7 +86,7 @@ REST API design principles, HTTP methods semantics, versioning strategies, pagin
 - API optimization techniques (compression, rate limiting, async)
 - Field selection and sparse fieldsets
 
-### 10. [Kafka Deep Dive](./10-Kafka-Deep-Dive.md)
+### 10. [Kafka Deep Dive](../03. Streaming and Coordination/Kafka.md)
 Apache Kafka from ground up, core components (brokers, topics, partitions, replicas, consumer groups), producers and consumers, replication and high availability, Zookeeper vs KRaft, performance tuning, monitoring, exactly-once semantics, real-world patterns
 
 **Key topics:**
@@ -97,7 +97,7 @@ Apache Kafka from ground up, core components (brokers, topics, partitions, repli
 - Exactly-once payment processing
 - Event sourcing and CQRS patterns
 
-### 11. [Design Patterns](./11-Design-Patterns.md)
+### 11. [Design Patterns](../01. Core Concepts/11-Design-Patterns.md)
 CQRS, Event Sourcing, Saga Pattern, Circuit Breaker, Bulkhead, Retry with exponential backoff, Eventual Consistency, Sharding, Cache-Aside, Write-Through, Multi-Tenancy, API Gateway, Strangler Fig
 
 **Key topics:**
@@ -108,4 +108,3 @@ CQRS, Event Sourcing, Saga Pattern, Circuit Breaker, Bulkhead, Retry with expone
 - Sharding strategies for scalability
 - Migration patterns (strangler fig)
 - Multi-tenancy isolation levels
-

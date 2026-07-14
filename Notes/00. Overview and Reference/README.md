@@ -13,21 +13,29 @@ In addition, the notes now include a dedicated **HPC track** covering fundamenta
 
 ```
 Notes/
-├── Tradeoffs.md                     # Master index (reference this first)
-├── 01-Database-Tradeoffs.md         # SQL vs NoSQL, location queries, scaling
-├── 02-Caching-Strategies.md         # Cache patterns, TTL, invalidation
-├── 03-API-Design.md                 # REST, gRPC, GraphQL, WebSocket, SSE
-├── 04-Storage-Tradeoffs.md          # Object vs Block vs File storage
-├── 05-Communication-Patterns.md     # Sync vs Async, polling, message queues
-├── 06-Scalability-Reliability.md    # Vertical vs Horizontal, CAP, circuit breakers
-├── 07-Data-Processing.md            # Batch vs Stream, Lambda vs Kappa
-├── 08-Architecture-Patterns.md      # Monolith vs Microservices
-├── HPC.md                           # Master HPC guide
-├── HPC-01-Fundamentals.md           # Core HPC concepts and workload types
-├── HPC-02-Slurm-MPI.md              # Slurm scheduler and MPI runtime
-├── HPC-03-Storage-Networking-Operations.md # Storage, network, and ops
-├── HPC-04-Cloud-ParallelCluster.md  # Cloud HPC and AWS ParallelCluster
-└── HPC-05-Interviews.md             # HPC interview prep
+├── 00. Overview and Reference/
+│   ├── README.md
+│   ├── Tradeoffs.md
+│   ├── Technology Overview.md
+│   └── Unique Topics.md
+├── 01. Core Concepts/
+│   ├── 01-Database-Tradeoffs.md
+│   ├── 02-Caching-Strategies.md
+│   ├── 03-API-Design.md
+│   ├── 04-Storage-Tradeoffs.md
+│   ├── 05-Communication-Patterns.md
+│   ├── 06-Scalability-Reliability.md
+│   ├── 07-Data-Processing.md
+│   ├── 08-Architecture-Patterns.md
+│   ├── 09-REST-gRPC-Best-Practices.md
+│   ├── 11-Design-Patterns.md
+│   └── 12-Security-Best-Practices.md
+├── 02. Databases and Storage Engines/
+├── 03. Streaming and Coordination/
+├── 04. Cloud and Infrastructure/
+├── 05. Geospatial Systems/
+├── 06. High Performance Computing/
+└── 07. AI and LLM Systems/
 ```
 
 </details>
@@ -187,20 +195,20 @@ Notes/
 <summary>Click to view code (markdown)</summary>
 
 ```markdown
-[Database Tradeoffs](./01-Database-Tradeoffs.md)
-[Caching Strategies](./02-Caching-Strategies.md)
-[API Design](./03-API-Design.md)
-[Storage Tradeoffs](./04-Storage-Tradeoffs.md)
-[Communication Patterns](./05-Communication-Patterns.md)
-[Scalability & Reliability](./06-Scalability-Reliability.md)
-[Data Processing](./07-Data-Processing.md)
-[Architecture Patterns](./08-Architecture-Patterns.md)
-[HPC Master Guide](./HPC.md)
-[HPC Fundamentals](./HPC-01-Fundamentals.md)
-[HPC Slurm and MPI](./HPC-02-Slurm-MPI.md)
-[HPC Storage, Networking, and Operations](./HPC-03-Storage-Networking-Operations.md)
-[Cloud HPC and AWS ParallelCluster](./HPC-04-Cloud-ParallelCluster.md)
-[HPC Interview Prep](./HPC-05-Interviews.md)
+[Database Tradeoffs](../01. Core Concepts/01-Database-Tradeoffs.md)
+[Caching Strategies](../01. Core Concepts/02-Caching-Strategies.md)
+[API Design](../01. Core Concepts/03-API-Design.md)
+[Storage Tradeoffs](../01. Core Concepts/04-Storage-Tradeoffs.md)
+[Communication Patterns](../01. Core Concepts/05-Communication-Patterns.md)
+[Scalability & Reliability](../01. Core Concepts/06-Scalability-Reliability.md)
+[Data Processing](../01. Core Concepts/07-Data-Processing.md)
+[Architecture Patterns](../01. Core Concepts/08-Architecture-Patterns.md)
+[HPC Master Guide](../06. High Performance Computing/HPC.md)
+[HPC Fundamentals](../06. High Performance Computing/HPC-01-Fundamentals.md)
+[HPC Slurm and MPI](../06. High Performance Computing/HPC-02-Slurm-MPI.md)
+[HPC Storage, Networking, and Operations](../06. High Performance Computing/HPC-03-Storage-Networking-Operations.md)
+[Cloud HPC and AWS ParallelCluster](../06. High Performance Computing/HPC-04-Cloud-ParallelCluster.md)
+[HPC Interview Prep](../06. High Performance Computing/HPC-05-Interviews.md)
 ```
 
 </details>

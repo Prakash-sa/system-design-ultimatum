@@ -61,7 +61,10 @@ function markdownToHtml(markdown) {
   const applyInline = (text = '') => {
     let t = escapeHtml(text);
     t = t.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img alt="$1" src="$2" loading="lazy" />');
-    t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+    t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_match, label, href) => {
+      const external = /^https?:\/\//i.test(href);
+      return `<a href="${href}"${external ? ' target="_blank" rel="noopener noreferrer"' : ''}>${label}</a>`;
+    });
     t = t.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     t = t.replace(/__(.*?)__/g, '<strong>$1</strong>');
     t = t.replace(/\*(.*?)\*/g, '<em>$1</em>');
@@ -493,6 +496,14 @@ function buildFolderTree() {
 // ─── Category metadata for dashboard ────────────────────────────────────────
 
 const categoryMeta = {
+  'Overview': { icon: 'book-open', color: '#6366f1', desc: 'Indexes, topic maps, and high-signal reference notes' },
+  'Core Concepts': { icon: 'layers', color: '#14b8a6', desc: 'Foundational system design tradeoffs and patterns' },
+  'Databases': { icon: 'database', color: '#06b6d4', desc: 'Database engines, caches, indexes, and storage systems' },
+  'Streaming': { icon: 'bar-chart-2', color: '#f97316', desc: 'Kafka, Flink, coordination, and stream processing' },
+  'Cloud': { icon: 'upload-cloud', color: '#0ea5e9', desc: 'Cloud services, infrastructure, and operations references' },
+  'Geospatial': { icon: 'globe', color: '#22c55e', desc: 'Geospatial indexing and proximity query techniques' },
+  'High Performance': { icon: 'zap', color: '#eab308', desc: 'HPC, Slurm, MPI, storage, networking, and interviews' },
+  'AI and LLM': { icon: 'brain', color: '#d946ef', desc: 'LLM architecture, RAG, agents, and evaluation' },
   'Notes': { icon: 'book-open', color: '#6366f1', desc: 'Deep-dive study notes on databases, streaming, caching, and more' },
   'Foundational': { icon: 'layers', color: '#14b8a6', desc: 'Core building blocks: URL shorteners, rate limiters, load balancers' },
   'Content Delivery': { icon: 'globe', color: '#f59e0b', desc: 'CDN, media streaming, and content distribution systems' },
@@ -510,10 +521,22 @@ const categoryMeta = {
 };
 
 function getCategoryInfo(folderName) {
+  const leaf = parseFolderName(path.basename(folderName)).label.toLowerCase();
   for (const [key, meta] of Object.entries(categoryMeta)) {
-    if (folderName.toLowerCase().includes(key.toLowerCase())) return meta;
+    if (leaf.includes(key.toLowerCase())) return meta;
+  }
+  for (const [key, meta] of Object.entries(categoryMeta)) {
+    if (key !== 'Notes' && folderName.toLowerCase().includes(key.toLowerCase())) return meta;
   }
   return { icon: 'folder', color: '#64748b', desc: 'System design topics' };
+}
+
+function displayFolderName(folderName) {
+  return folderName
+    .split('/')
+    .filter(Boolean)
+    .map(part => parseFolderName(part).label)
+    .join(' / ');
 }
 
 // ─── SVG Icons (Feather-style, inline) ──────────────────────────────────────
@@ -685,7 +708,7 @@ function generateBreadcrumb(folder, name) {
   let html = '<div class="breadcrumb">';
   html += `<a href="index.html">Home</a><span class="bc-sep">/</span>`;
   if (folder && folder !== '.') {
-    html += `<span>${escapeHtml(folder)}</span><span class="bc-sep">/</span>`;
+    html += `<span>${escapeHtml(displayFolderName(folder))}</span><span class="bc-sep">/</span>`;
   }
   html += `<span>${escapeHtml(name)}</span>`;
   html += '</div>';
@@ -782,7 +805,7 @@ markdownFiles.forEach(filePath => {
     searchIndex.push({
       name: filename,
       href: htmlFileName,
-      folder: folder,
+      folder: displayFolderName(folder),
       type: 'note',
       text: plainText.substring(0, 800),
     });
@@ -905,7 +928,7 @@ function showDiagramView(view) {
     searchIndex.push({
       name: filename,
       href: htmlFileName,
-      folder: folder,
+      folder: displayFolderName(folder),
       type: 'diagram',
       text: textContent.substring(0, 400),
     });
@@ -939,15 +962,33 @@ homeContent += `<div class="dash-stat"><div class="stat-num">${excalidrawFiles.l
 homeContent += `<div class="dash-stat"><div class="stat-num">${Object.keys(filesByFolder).length}</div><div class="stat-label">Categories</div></div>`;
 homeContent += '</div>';
 
-// Study Notes section (Notes folder)
-const notesFolder = filesByFolder['Notes'];
-if (notesFolder && notesFolder.markdown.length) {
-  homeContent += '<div class="dash-section-title">Start Here: Study Notes</div>';
+// Study Notes section (nested Notes collections)
+const noteFolders = folderNames.filter(f => f === 'Notes' || f.startsWith('Notes/'));
+if (noteFolders.length) {
+  homeContent += '<div class="dash-section-title">Study Note Collections</div>';
   homeContent += '<div class="category-grid">';
-  notesFolder.markdown.slice().sort((a, b) => path.basename(a, '.md').localeCompare(path.basename(b, '.md'))).forEach(f => {
-    const name = path.basename(f, '.md');
-    const htmlFile = toHtmlFileName(f, '.md');
-    homeContent += `<a href="${safeHref(htmlFile)}" style="text-decoration:none"><div class="category-card"><div class="cc-header"><div class="cc-icon" style="background:#6366f1">&#128214;</div><div class="cc-name">${escapeHtml(name)}</div></div></div></a>`;
+  noteFolders.forEach(folder => {
+    const { markdown, excalidraw } = filesByFolder[folder];
+    const meta = getCategoryInfo(folder);
+    const iconHtml = iconMap[meta.icon] || iconMap.folder;
+    const totalFiles = markdown.length + excalidraw.length;
+
+    homeContent += '<div class="category-card">';
+    homeContent += `<div class="cc-header"><div class="cc-icon" style="background:${meta.color}">${iconHtml}</div><div class="cc-name">${escapeHtml(displayFolderName(folder).replace(/^Notes \/ /, ''))}</div></div>`;
+    homeContent += `<div class="cc-desc">${escapeHtml(meta.desc)} &middot; ${totalFiles} file${totalFiles !== 1 ? 's' : ''}</div>`;
+    homeContent += '<div class="cc-links">';
+
+    markdown.slice(0, 5).forEach(f => {
+      const name = path.basename(f, '.md');
+      homeContent += `<a href="${safeHref(toHtmlFileName(f, '.md'))}">${escapeHtml(name)}</a>`;
+    });
+
+    const remaining = totalFiles - Math.min(markdown.length, 5);
+    if (remaining > 0) {
+      homeContent += `<span style="font-size:0.75rem;color:var(--text-muted);padding:0.2rem 0">+${remaining} more</span>`;
+    }
+
+    homeContent += '</div></div>';
   });
   homeContent += '</div>';
 }
@@ -956,14 +997,14 @@ if (notesFolder && notesFolder.markdown.length) {
 homeContent += '<div class="dash-section-title">System Design Categories</div>';
 homeContent += '<div class="category-grid">';
 
-folderNames.filter(f => f !== 'Notes').forEach(folder => {
+folderNames.filter(f => f !== 'Notes' && !f.startsWith('Notes/')).forEach(folder => {
   const { markdown, excalidraw } = filesByFolder[folder];
   const meta = getCategoryInfo(folder);
   const iconHtml = iconMap[meta.icon] || iconMap.folder;
   const totalFiles = markdown.length + excalidraw.length;
 
   homeContent += '<div class="category-card">';
-  homeContent += `<div class="cc-header"><div class="cc-icon" style="background:${meta.color}">${iconHtml}</div><div class="cc-name">${escapeHtml(folder)}</div></div>`;
+  homeContent += `<div class="cc-header"><div class="cc-icon" style="background:${meta.color}">${iconHtml}</div><div class="cc-name">${escapeHtml(displayFolderName(folder))}</div></div>`;
   homeContent += `<div class="cc-desc">${escapeHtml(meta.desc)} &middot; ${totalFiles} file${totalFiles !== 1 ? 's' : ''}</div>`;
   homeContent += '<div class="cc-links">';
 
