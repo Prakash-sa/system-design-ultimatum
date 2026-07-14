@@ -522,109 +522,116 @@ const icons = {
   sun: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>',
   moon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>',
   up: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>',
+  menu: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>',
+  search: '<svg class="topbar-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.65" y2="16.65"/></svg>',
 };
 
 // ─── Navigation Generator ───────────────────────────────────────────────────
 
+// Top-level folders are named like "🧩 1. Foundational(Introductory) Design".
+// Split off the emoji and the chapter number so the nav can sort by chapter
+// instead of by emoji codepoint, and render the emoji in its own column.
+function parseFolderName(name) {
+  const m = name.match(/^\s*([^\p{L}\p{N}\s]+)?\s*(?:(\d+)\s*\.)?\s*(.*)$/u);
+  const emoji = (m && m[1]) || '';
+  const order = m && m[2] ? parseInt(m[2], 10) : Number.POSITIVE_INFINITY;
+  let label = ((m && m[3]) || '').trim() || name;
+  label = label.charAt(0).toUpperCase() + label.slice(1);
+  return { emoji, order, label };
+}
+
+function byChapter(a, b) {
+  const A = parseFolderName(a);
+  const B = parseFolderName(b);
+  if (A.order !== B.order) return A.order - B.order;
+  return A.label.localeCompare(B.label);
+}
+
+function countLeaves(node) {
+  let n = node.files.markdown.length + node.files.excalidraw.length;
+  node.children.forEach(child => { n += countLeaves(child); });
+  return n;
+}
+
+function hasContent(node) {
+  return countLeaves(node) > 0;
+}
+
+const chevronSvg =
+  '<svg class="nav-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>';
+
+function navItem(href, label, kind) {
+  const cls = kind === 'diagram' ? 'nav-item is-diagram' : 'nav-item';
+  return `<a href="${safeHref(href)}" class="${cls}" title="${escapeHtml(label)}"><span class="nav-item-label">${escapeHtml(label)}</span></a>`;
+}
+
+// Files of a folder, markdown first, then diagrams — each alphabetical.
+function navFiles(node) {
+  const sortByName = (ext) => (a, b) => path.basename(a, ext).localeCompare(path.basename(b, ext));
+  let html = '';
+  node.files.markdown.slice().sort(sortByName('.md')).forEach(f => {
+    html += navItem(toHtmlFileName(f, '.md'), path.basename(f, '.md'), 'note');
+  });
+  node.files.excalidraw.slice().sort(sortByName('.excalidraw')).forEach(f => {
+    html += navItem(toHtmlFileName(f, '.excalidraw'), path.basename(f, '.excalidraw'), 'diagram');
+  });
+  return html;
+}
+
+function navFolder(name, node, depth = 0) {
+  const { emoji, label } = parseFolderName(name);
+  const count = countLeaves(node);
+  let html = `<details class="nav-folder" data-depth="${depth}">`;
+  html += '<summary>';
+  html += chevronSvg;
+  if (emoji) html += `<span class="nav-folder-emoji" aria-hidden="true">${escapeHtml(emoji)}</span>`;
+  html += `<span class="nav-folder-label" title="${escapeHtml(label)}">${escapeHtml(label)}</span>`;
+  html += `<span class="nav-folder-count">${count}</span>`;
+  html += '</summary>';
+  html += '<div class="nav-folder-body">';
+  html += navFiles(node);
+  Array.from(node.children.keys()).sort(byChapter).forEach(childName => {
+    const child = node.children.get(childName);
+    if (hasContent(child)) html += navFolder(childName, child, depth + 1);
+  });
+  html += '</div></details>';
+  return html;
+}
+
 function generateNav() {
-  const tree = buildFolderTree();
+  const root = buildFolderTree();
+  const notes = root.children.get('Notes');
 
-  function renderFolder(node, depth = 0) {
-    let html = '';
-    const childNames = Array.from(node.children.keys()).sort((a, b) => {
-      if (depth === 0) {
-        if (a === 'Notes' && b !== 'Notes') return -1;
-        if (b === 'Notes' && a !== 'Notes') return 1;
-      }
-      return a.localeCompare(b);
-    });
-
-    childNames.forEach(name => {
-      const child = node.children.get(name);
-      const hasContent = child.files.markdown.length + child.files.excalidraw.length + child.children.size > 0;
-      if (!hasContent) return;
-
-      html += `<details class="nav-folder" data-depth="${depth}">`;
-      html += `<summary><span class="folder-chevron">&#9654;</span> ${escapeHtml(name)}</summary>`;
-      html += '<div class="nav-folder-body">';
-
-      child.files.markdown.slice().sort((a, b) => path.basename(a, '.md').localeCompare(path.basename(b, '.md'))).forEach(f => {
-        const itemName = path.basename(f, '.md');
-        const htmlFile = toHtmlFileName(f, '.md');
-        html += `<a href="${safeHref(htmlFile)}" class="nav-item"><span class="nav-icon">&#128196;</span> ${escapeHtml(itemName)}</a>`;
-      });
-
-      child.files.excalidraw.slice().sort((a, b) => path.basename(a, '.excalidraw').localeCompare(path.basename(b, '.excalidraw'))).forEach(f => {
-        const itemName = path.basename(f, '.excalidraw');
-        const htmlFile = toHtmlFileName(f, '.excalidraw');
-        html += `<a href="${safeHref(htmlFile)}" class="nav-item"><span class="nav-icon">&#128202;</span> ${escapeHtml(itemName)}</a>`;
-      });
-
-      html += renderFolder(child, depth + 1);
-      html += '</div></details>';
-    });
-
-    return html;
-  }
+  const topLevel = Array.from(root.children.keys()).filter(n => n !== 'Notes');
+  const designs = topLevel.filter(n => Number.isFinite(parseFolderName(n).order)).sort(byChapter);
+  const resources = topLevel.filter(n => !Number.isFinite(parseFolderName(n).order)).sort(byChapter);
 
   let nav = '<nav class="sidebar" aria-label="Primary">';
-  nav += '<div class="nav-section-label">Study Notes</div>';
-  // Render Notes folder first
-  const notesNode = buildFolderTree().children.get('Notes');
-  if (notesNode) {
-    notesNode.files.markdown.slice().sort((a, b) => path.basename(a, '.md').localeCompare(path.basename(b, '.md'))).forEach(f => {
-      const itemName = path.basename(f, '.md');
-      const htmlFile = toHtmlFileName(f, '.md');
-      nav += `<a href="${safeHref(htmlFile)}" class="nav-item"><span class="nav-icon">&#128196;</span> ${escapeHtml(itemName)}</a>`;
+
+  if (notes && hasContent(notes)) {
+    nav += '<div class="nav-section-label">Study Notes</div>';
+    nav += navFiles(notes);
+    Array.from(notes.children.keys()).sort(byChapter).forEach(name => {
+      const child = notes.children.get(name);
+      if (hasContent(child)) nav += navFolder(name, child);
     });
   }
-  nav += '<div class="nav-section-label" style="margin-top:0.5rem">System Designs</div>';
-  // Render all other folders
-  const treeRoot = buildFolderTree();
-  Array.from(treeRoot.children.keys()).sort((a, b) => a.localeCompare(b)).forEach(name => {
-    if (name === 'Notes') return;
-    const child = treeRoot.children.get(name);
-    const hasContent = child.files.markdown.length + child.files.excalidraw.length + child.children.size > 0;
-    if (!hasContent) return;
 
-    nav += `<details class="nav-folder">`;
-    nav += `<summary><span class="folder-chevron">&#9654;</span> ${escapeHtml(name)}</summary>`;
-    nav += '<div class="nav-folder-body">';
-
-    child.files.markdown.slice().sort((a, b) => path.basename(a, '.md').localeCompare(path.basename(b, '.md'))).forEach(f => {
-      const itemName = path.basename(f, '.md');
-      const htmlFile = toHtmlFileName(f, '.md');
-      nav += `<a href="${safeHref(htmlFile)}" class="nav-item"><span class="nav-icon">&#128196;</span> ${escapeHtml(itemName)}</a>`;
+  if (designs.length) {
+    nav += '<div class="nav-section-label">System Designs</div>';
+    designs.forEach(name => {
+      const child = root.children.get(name);
+      if (hasContent(child)) nav += navFolder(name, child);
     });
+  }
 
-    child.files.excalidraw.slice().sort((a, b) => path.basename(a, '.excalidraw').localeCompare(path.basename(b, '.excalidraw'))).forEach(f => {
-      const itemName = path.basename(f, '.excalidraw');
-      const htmlFile = toHtmlFileName(f, '.excalidraw');
-      nav += `<a href="${safeHref(htmlFile)}" class="nav-item"><span class="nav-icon">&#128202;</span> ${escapeHtml(itemName)}</a>`;
+  const visibleResources = resources.filter(name => hasContent(root.children.get(name)));
+  if (visibleResources.length) {
+    nav += '<div class="nav-section-label">Resources</div>';
+    visibleResources.forEach(name => {
+      nav += navFolder(name, root.children.get(name));
     });
-
-    // Render sub-folders
-    function renderSubFolders(parentNode) {
-      let subHtml = '';
-      Array.from(parentNode.children.keys()).sort().forEach(subName => {
-        const subChild = parentNode.children.get(subName);
-        const subHasContent = subChild.files.markdown.length + subChild.files.excalidraw.length + subChild.children.size > 0;
-        if (!subHasContent) return;
-        subHtml += `<details class="nav-folder"><summary><span class="folder-chevron">&#9654;</span> ${escapeHtml(subName)}</summary><div class="nav-folder-body">`;
-        subChild.files.markdown.slice().sort((a, b) => path.basename(a, '.md').localeCompare(path.basename(b, '.md'))).forEach(f => {
-          subHtml += `<a href="${safeHref(toHtmlFileName(f, '.md'))}" class="nav-item"><span class="nav-icon">&#128196;</span> ${escapeHtml(path.basename(f, '.md'))}</a>`;
-        });
-        subChild.files.excalidraw.slice().sort((a, b) => path.basename(a, '.excalidraw').localeCompare(path.basename(b, '.excalidraw'))).forEach(f => {
-          subHtml += `<a href="${safeHref(toHtmlFileName(f, '.excalidraw'))}" class="nav-item"><span class="nav-icon">&#128202;</span> ${escapeHtml(path.basename(f, '.excalidraw'))}</a>`;
-        });
-        subHtml += renderSubFolders(subChild);
-        subHtml += '</div></details>';
-      });
-      return subHtml;
-    }
-    nav += renderSubFolders(child);
-    nav += '</div></details>';
-  });
+  }
 
   nav += '</nav>';
   return nav;
@@ -689,9 +696,10 @@ function generatePageTemplate(title, content, { toc = '', breadcrumb = '', prevN
   const themeInit = `<script>(function(){try{var t=localStorage.getItem('theme');if(!t)t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>`;
   const topbar = `
   <header class="topbar" role="banner">
-    <button class="topbar-icon-btn topbar-hamburger" type="button" aria-label="Open navigation">☰</button>
-    <a class="topbar-brand" href="index.html">System Design Ultimatum</a>
+    <button class="topbar-icon-btn topbar-hamburger" type="button" aria-label="Open navigation">${icons.menu}</button>
+    <a class="topbar-brand" href="index.html"><span class="topbar-mark" aria-hidden="true">SD</span>System Design Ultimatum</a>
     <button id="topbar-search" class="topbar-search" type="button" aria-label="Search (Cmd+K)">
+      ${icons.search}
       <span>Search the docs…</span>
       <span class="kbd">⌘K</span>
     </button>

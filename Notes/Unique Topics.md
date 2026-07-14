@@ -803,3 +803,285 @@ Example payload:
 ```
 
 Production webhook systems also need idempotency keys, delivery logs, merchant replay tooling, payload versioning, queue backlog handling, and adaptive rate limits so merchant endpoints are not overwhelmed.
+
+## Google News: Aggregation, Feeds, and Scale
+
+Google News is a read-heavy aggregation system. The hard parts are discovering fresh publisher content, serving low-latency feeds to many users, and keeping pagination stable while new articles arrive.
+
+### Core Requirements
+
+Functional:
+
+- Aggregate articles from many publishers across regions and categories.
+- Let users scroll through a feed continuously.
+- Redirect users to the publisher site for the full article.
+
+Non-functional:
+
+- Feed requests should stay under roughly 200 ms.
+- Fresh articles should appear within minutes, or within 30 minutes at worst.
+- The system should tolerate breaking-news traffic spikes.
+- Publisher failures should not break the feed experience.
+
+### High-Level Architecture
+
+Separate ingestion from serving because they scale differently.
+
+Ingestion path:
+
+1. Publisher webhooks, RSS feeds, APIs, or crawlers discover articles.
+2. Ingestion workers normalize article metadata.
+3. Media workers download and resize thumbnails.
+4. Article metadata is stored in the primary database.
+5. CDC publishes committed article changes to Kafka.
+6. Feed generation workers update regional, category, and trending caches.
+
+Serving path:
+
+1. Client calls `GET /feed?region=US&limit=20&cursor=...`.
+2. API Gateway handles auth, rate limits, and routing.
+3. Feed Service reads a precomputed feed from Redis.
+4. Feed Service returns article cards with publisher URLs and thumbnail URLs.
+5. Clicking an article hits a tracking endpoint, then returns a `302` redirect to the publisher.
+
+The feed service should not query the primary database on every request at large scale. The database is the source of truth, but Redis or another low-latency cache is the read path.
+
+### Article Ingestion
+
+RSS is a common baseline because many publishers already expose it. It is an XML document fetched over HTTP with title, URL, publish time, and metadata.
+
+RSS polling flow:
+
+1. Scheduler loads publisher feed URLs and polling frequency.
+2. Fetcher downloads RSS or API responses.
+3. Parser extracts article URL, title, author, region, category, publish time, and image URL.
+4. Deduplication checks canonical URL and content hash.
+5. Workers store normalized article rows and enqueue media processing.
+
+Polling every 3-6 hours is easy, but too slow for breaking news. Use it as a fallback, not the only freshness mechanism.
+
+### Publisher Webhooks
+
+For high-value publishers, support push-based ingestion.
+
+- Publisher calls `POST /webhooks/article-published`.
+- Request is authenticated with API keys, HMAC signatures, or shared secrets.
+- Payload includes canonical URL, title, publish time, category, region, and optional full metadata.
+- Webhook handler validates the payload and writes it to Kafka.
+- Ingestion workers process it through the same normalization and deduplication path.
+
+Webhooks can get articles into the system within seconds. RSS and crawler fallback cover publishers that do not integrate.
+
+Tradeoffs:
+
+- Webhooks require publisher cooperation.
+- Bad publisher payloads need quarantine and replay tooling.
+- The endpoint must handle traffic bursts when many publishers report the same major story.
+
+### Thumbnail Storage
+
+Do not hotlink publisher images directly.
+
+Reasons:
+
+- Publisher image hosts may be slow or unavailable.
+- URLs can change or expire.
+- Images may be too large, inconsistent, or not optimized for feed cards.
+
+Better path:
+
+- Download the primary image during ingestion.
+- Generate fixed sizes such as `150x100`, `300x200`, and `600x400`.
+- Store variants in object storage.
+- Serve them through a CDN.
+- Use `srcset` or device-aware selection on the client.
+
+This increases storage slightly, but CDN caching reduces origin traffic and keeps global thumbnail latency low.
+
+### Cursor-Based Pagination
+
+Offset pagination is fragile for feeds where new articles constantly arrive. If page 1 changes while a user is reading page 2, offset-based requests can duplicate or skip articles.
+
+Use cursor pagination with monotonic article IDs.
+
+Example:
+
+```sql
+SELECT *
+FROM articles
+WHERE region = 'US'
+  AND article_id < :cursor_id
+ORDER BY article_id DESC
+LIMIT 20;
+```
+
+Good cursor choices:
+
+- ULID.
+- Snowflake-style ID.
+- Database sequence if all inserts go through one ordered source.
+
+Benefits:
+
+- Stable pagination while newer articles arrive.
+- Simple index access.
+- No ambiguity from timestamp collisions.
+
+Tradeoffs:
+
+- The ID strategy must be chosen early.
+- Distributed ID generation must preserve enough ordering for feed pagination.
+- If ranking is not purely chronological, the cursor may need to include `(score, article_id)`.
+
+### Low-Latency Feed Reads
+
+At 100M daily active users, direct database reads for every feed request will not meet the latency or cost target.
+
+Precompute hot feeds in Redis sorted sets:
+
+- `feed:region:US`
+- `feed:category:sports:US`
+- `feed:category:tech:US`
+- `feed:trending:US`
+
+CDC update flow:
+
+1. Article is committed to the database.
+2. CDC emits an article-created event.
+3. Kafka preserves event durability.
+4. Feed workers score the article for region, category, and trending feeds.
+5. Workers call `ZADD` with a timestamp or ranking score.
+6. Workers trim old entries with `ZREMRANGEBYRANK`.
+
+Keep only the most recent N items per feed, often 1,000-2,000 articles. This bounds cache memory while still supporting many scroll pages.
+
+Feed read:
+
+```text
+ZREVRANGE feed:region:US 0 19 WITHSCORES
+```
+
+If article cards need more fields, either store compact JSON in the sorted set value or fetch article metadata from a secondary cache by article ID.
+
+### Category Feeds
+
+A simple version stores category metadata inside each regional cached article and filters in memory.
+
+Example cached item:
+
+```json
+{
+  "id": "01J2NEWSABC123",
+  "title": "Market rally continues after jobs report",
+  "url": "https://publisher.example/articles/market-rally",
+  "category": "business",
+  "region": "US",
+  "published_at": "2026-07-14T12:30:00Z"
+}
+```
+
+For moderate category traffic:
+
+1. Read the latest 1,000 regional articles.
+2. Filter by `category`.
+3. Return the requested page.
+
+This avoids duplicating articles across many caches.
+
+For very hot categories:
+
+- Maintain separate category sorted sets.
+- Populate them from the same CDC pipeline.
+- Scale reads independently for categories like sports, politics, or tech.
+
+### Personalized Feeds
+
+Do not create a dedicated cached feed for every user unless the product requires it. At 100M users, per-user feed caches become expensive and hard to refresh.
+
+Use lightweight preference vectors and assemble feeds on demand from precomputed pools.
+
+Example:
+
+- 60% `feed:category:tech:US`
+- 25% `feed:category:business:US`
+- 15% `feed:trending:US`
+
+The Feed Service reads from a few cached sorted sets, merges candidates, applies a ranking function, deduplicates, and returns the top items.
+
+Ranking signals:
+
+- User category preferences.
+- Publisher affinity.
+- Freshness.
+- Regional relevance.
+- Global importance.
+- Diversity constraints.
+
+Tradeoffs:
+
+- Less personalized than a full recommendation system.
+- Much cheaper than per-user cache materialization.
+- Easier to degrade during traffic spikes by falling back to regional or trending feeds.
+
+### Breaking-News Traffic Spikes
+
+News traffic is regional. A major US story may spike US reads without affecting every region equally.
+
+Scale by region:
+
+- Deploy Feed Service instances close to users.
+- Keep regional Redis clusters near those services.
+- Use CDN caching for images and static client assets.
+- Route users to the nearest healthy region.
+
+Application layer:
+
+- Keep Feed Service stateless.
+- Horizontally scale behind load balancers.
+- Autoscale on request rate, CPU, and p95 latency.
+
+Cache layer:
+
+- Use Redis read replicas for hot regional feeds.
+- Send writes to the master and reads to replicas.
+- Add replicas temporarily during breaking-news events.
+- Monitor replication lag, cache hit rate, and slow commands.
+
+Database layer:
+
+- Keep feed reads off the database.
+- Use the database for durable article state, publisher metadata, and backfills.
+- Use read replicas for admin tools and less latency-sensitive queries.
+
+If one Redis instance handles roughly 100k requests per second and a region needs 1M feed reads per second during a spike, use about 10 read replicas before adding safety margin.
+
+### Freshness and Correctness
+
+Freshness is measured from publisher publish time to user-visible feed time.
+
+Track:
+
+- Publisher delay: `publisher_publish_time` to ingestion receipt.
+- Processing delay: ingestion receipt to article commit.
+- CDC delay: commit to Kafka event.
+- Feed delay: Kafka event to Redis update.
+- Serving delay: Redis update to user-visible response.
+
+Correctness controls:
+
+- Deduplicate by canonical URL and content hash.
+- Keep rejected or malformed articles in a quarantine queue.
+- Support replay from Kafka or database backfill to rebuild caches.
+- Add cache versioning so corrupted feed entries can be replaced safely.
+- Use publisher reputation and spam checks before promoting articles to hot feeds.
+
+### Interview Callouts
+
+Strong defaults:
+
+- Use webhooks for premium freshness and RSS/crawling as fallback.
+- Use monotonic IDs or `(score, article_id)` cursors instead of offset pagination.
+- Use CDC plus Kafka to update Redis feed caches.
+- Keep hot feed reads out of the primary database.
+- Store thumbnails in object storage and serve them through a CDN.
+- Personalize by mixing precomputed feeds before considering per-user materialized feeds.

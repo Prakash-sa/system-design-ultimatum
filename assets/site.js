@@ -52,10 +52,13 @@
   /* ── Active nav link + auto-open parent folder ────────────────────── */
   function initActiveNav() {
     const current = decodeURIComponent((location.pathname.split('/').pop() || 'index.html'));
+    let active = null;
     $$('.nav-item').forEach((item) => {
       const href = decodeURIComponent(item.getAttribute('href') || '');
       if (href === current) {
+        active = item;
         item.classList.add('is-active');
+        item.setAttribute('aria-current', 'page');
         let parent = item.closest('.nav-folder');
         while (parent) {
           parent.open = true;
@@ -63,13 +66,19 @@
         }
       }
     });
+    if (!active) return;
+    // Deep pages sit far down a 250-entry sidebar; bring the current one into view.
+    const sidebar = active.closest('.sidebar');
+    if (!sidebar) return;
+    const top = active.offsetTop - sidebar.clientHeight / 2;
+    if (top > 0) sidebar.scrollTop = top;
   }
 
   /* ── Sidebar folder persistence ───────────────────────────────────── */
   function initFolderPersistence() {
     $$('.sidebar .nav-folder').forEach((folder) => {
       const summary = folder.querySelector(':scope > summary');
-      const label = summary?.textContent.trim() || '';
+      const label = summary?.querySelector('.nav-folder-label')?.textContent.trim() || '';
       const key = 'nav:' + slugify(label);
       const stored = storage.get(key);
       if (stored === 'open') folder.open = true;

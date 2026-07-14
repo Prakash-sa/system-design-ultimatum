@@ -209,13 +209,34 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   border-bottom: 1px solid var(--border);
 }
 .topbar-brand {
-  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 650;
   letter-spacing: -0.01em;
   color: var(--text);
   font-size: 0.95rem;
+  white-space: nowrap;
 }
-.topbar-brand:hover { text-decoration: none; color: var(--accent); }
+.topbar-brand:hover { text-decoration: none; color: var(--text); }
+.topbar-brand:hover .topbar-mark { border-color: var(--accent); color: var(--accent); }
+.topbar-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--text-secondary);
+  transition: color 0.15s, border-color 0.15s;
+}
 .topbar-spacer { flex: 1; }
+@media (max-width: 560px) { .topbar-brand { font-size: 0; gap: 0; } }
 
 .topbar-search {
   display: inline-flex;
@@ -232,6 +253,13 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   transition: border-color 0.15s, color 0.15s;
 }
 .topbar-search:hover { border-color: var(--border-strong); color: var(--text-secondary); }
+.topbar-search:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.topbar-search-icon { flex-shrink: 0; opacity: 0.7; }
+.topbar-search > span:first-of-type {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .topbar-search .kbd {
   margin-left: auto;
   font-family: var(--font-mono);
@@ -265,68 +293,131 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   top: var(--topbar-h);
   height: calc(100vh - var(--topbar-h));
   overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
   border-right: 1px solid var(--border);
-  padding: 1rem 0.5rem 2rem;
+  padding: 0.5rem 0.6rem 3rem;
   background: var(--bg);
 }
-.sidebar::-webkit-scrollbar { width: 8px; }
-.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+/* Scrollbar stays out of the way until the sidebar is actually in use. */
+.sidebar::-webkit-scrollbar { width: 10px; }
+.sidebar::-webkit-scrollbar-thumb {
+  background: transparent;
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-clip: content-box;
+}
+.sidebar:hover::-webkit-scrollbar-thumb { background: var(--border-strong); background-clip: content-box; }
+.sidebar::-webkit-scrollbar-thumb:hover { background: var(--text-muted); background-clip: content-box; }
 
 .nav-section-label {
-  padding: 0.5rem 0.75rem 0.25rem;
-  margin-top: 0.5rem;
-  font-size: 0.68rem;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 0.85rem 0.75rem 0.4rem;
+  font-size: 0.66rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
   color: var(--text-muted);
+  background: linear-gradient(var(--bg) 75%, transparent);
 }
 
 .nav-folder { margin: 0; }
 .nav-folder > summary {
   list-style: none;
   cursor: pointer;
-  padding: 0.35rem 0.75rem;
+  padding: 0.4rem 0.5rem 0.4rem 0.4rem;
   display: flex;
   align-items: center;
   gap: 0.4rem;
   font-size: 0.82rem;
   font-weight: 500;
+  line-height: 1.35;
   color: var(--text-secondary);
   border-radius: var(--radius);
   user-select: none;
+  transition: background 0.12s, color 0.12s;
 }
 .nav-folder > summary::-webkit-details-marker { display: none; }
 .nav-folder > summary:hover { background: var(--bg-muted); color: var(--text); }
-.nav-folder > summary .folder-chevron {
-  display: inline-block;
-  font-size: 0.55rem;
+.nav-folder > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.nav-chevron {
+  flex-shrink: 0;
   color: var(--text-muted);
-  transition: transform 0.15s;
+  transition: transform 0.18s ease;
 }
-.nav-folder[open] > summary .folder-chevron { transform: rotate(90deg); }
+.nav-folder[open] > summary .nav-chevron { transform: rotate(90deg); }
+.nav-folder-emoji { flex-shrink: 0; font-size: 0.85rem; line-height: 1; }
+.nav-folder-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nav-folder-count {
+  flex-shrink: 0;
+  font-size: 0.65rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+.nav-folder > summary:hover .nav-folder-count,
+.nav-folder[open] > summary .nav-folder-count { opacity: 1; }
 
-.nav-folder-body { padding-left: 0.5rem; margin: 0.1rem 0 0.35rem; }
+/* Guide rail ties nested items back to their parent folder. */
+.nav-folder-body {
+  margin: 0.1rem 0 0.3rem 0.85rem;
+  padding-left: 0.35rem;
+  border-left: 1px solid var(--border);
+}
 
 .nav-item {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.3rem 0.75rem 0.3rem 1.25rem;
+  padding: 0.32rem 0.5rem;
   font-size: 0.82rem;
+  line-height: 1.35;
   color: var(--text-secondary);
-  border-left: 2px solid transparent;
-  border-radius: 0 var(--radius) var(--radius) 0;
-  margin-left: 0.25rem;
+  border-radius: var(--radius);
+  transition: background 0.12s, color 0.12s;
+}
+.nav-item-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* Diagram pages get a quiet marker so they read differently from notes. */
+.nav-item.is-diagram .nav-item-label::after {
+  content: '\25C7';
+  margin-left: 0.4rem;
+  font-size: 0.7em;
+  color: var(--text-muted);
 }
 .nav-item:hover { background: var(--bg-muted); color: var(--text); text-decoration: none; }
+.nav-item:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .nav-item.is-active {
   color: var(--accent);
   background: var(--accent-bg);
-  border-left-color: var(--accent);
   font-weight: 600;
 }
-.nav-item .nav-icon { font-size: 0.7rem; opacity: 0.6; flex-shrink: 0; }
+/* Active marker sits on the rail rather than shifting the row. */
+.nav-folder-body .nav-item.is-active::before {
+  content: '';
+  position: absolute;
+  left: calc(-0.35rem - 1px);
+  top: 0.25rem;
+  bottom: 0.25rem;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+}
 .nav-item.is-hidden, .nav-folder.is-hidden { display: none; }
 
 /* ── Main + content column ────────────────────────────────────────────── */
