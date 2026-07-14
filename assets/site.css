@@ -19,6 +19,10 @@
   --accent: #0070f3;
   --accent-bg: rgba(0, 112, 243, 0.08);
   --accent-border: rgba(0, 112, 243, 0.22);
+  --nav-bg: #fbfbfc;
+  --nav-hover: #f1f5f9;
+  --nav-active-bg: #eaf3ff;
+  --nav-active-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
   --info: #0070f3;
   --warn: #f59e0b;
   --success: #10b981;
@@ -28,7 +32,7 @@
   --code-text: #e4e4e7;
 
   --topbar-h: 56px;
-  --sidebar-w: 280px;
+  --sidebar-w: 304px;
   --toc-w: 240px;
   --content-max: 720px;
 
@@ -54,6 +58,10 @@ html[data-theme="dark"] {
   --accent: #3b82f6;
   --accent-bg: rgba(59, 130, 246, 0.14);
   --accent-border: rgba(59, 130, 246, 0.35);
+  --nav-bg: #0d0d0f;
+  --nav-hover: #18181b;
+  --nav-active-bg: rgba(59, 130, 246, 0.18);
+  --nav-active-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
   --code-bg: #000000;
   --code-text: #e4e4e7;
   --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.6), 0 4px 12px rgba(0, 0, 0, 0.4);
@@ -201,11 +209,11 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   height: var(--topbar-h);
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0 1rem;
-  background: color-mix(in srgb, var(--bg) 82%, transparent);
-  backdrop-filter: saturate(180%) blur(8px);
-  -webkit-backdrop-filter: saturate(180%) blur(8px);
+  gap: 0.85rem;
+  padding: 0 1.1rem;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: saturate(180%) blur(14px);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
   border-bottom: 1px solid var(--border);
 }
 .topbar-brand {
@@ -217,23 +225,30 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   color: var(--text);
   font-size: 0.95rem;
   white-space: nowrap;
+  min-width: 0;
 }
 .topbar-brand:hover { text-decoration: none; color: var(--text); }
-.topbar-brand:hover .topbar-mark { border-color: var(--accent); color: var(--accent); }
+.topbar-brand:hover .topbar-mark {
+  border-color: var(--accent-border);
+  color: var(--accent);
+  background: var(--accent-bg);
+}
 .topbar-mark {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  border: 1px solid var(--border-strong);
-  border-radius: 6px;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
   font-family: var(--font-mono);
   font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0;
   color: var(--text-secondary);
-  transition: color 0.15s, border-color 0.15s;
+  background: var(--bg-subtle);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
 }
 .topbar-spacer { flex: 1; }
 @media (max-width: 560px) { .topbar-brand { font-size: 0; gap: 0; } }
@@ -242,17 +257,23 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.4rem 0.6rem 0.4rem 0.75rem;
-  min-width: 240px;
-  max-width: 360px;
-  background: var(--bg-subtle);
+  padding: 0.42rem 0.58rem 0.42rem 0.72rem;
+  min-width: 260px;
+  max-width: 380px;
+  background: color-mix(in srgb, var(--bg-subtle) 88%, var(--bg));
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: 8px;
   color: var(--text-muted);
   font-size: 0.85rem;
-  transition: border-color 0.15s, color 0.15s;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.38);
+  transition: border-color 0.15s, color 0.15s, background 0.15s, box-shadow 0.15s;
 }
-.topbar-search:hover { border-color: var(--border-strong); color: var(--text-secondary); }
+.topbar-search:hover {
+  border-color: var(--border-strong);
+  color: var(--text-secondary);
+  background: var(--bg);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+}
 .topbar-search:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .topbar-search-icon { flex-shrink: 0; opacity: 0.7; }
 .topbar-search > span:first-of-type {
@@ -272,12 +293,12 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 
 .topbar-icon-btn {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius);
+  border-radius: 8px;
   color: var(--text-secondary);
   border: 1px solid transparent;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
@@ -296,8 +317,9 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   overscroll-behavior: contain;
   scrollbar-gutter: stable;
   border-right: 1px solid var(--border);
-  padding: 0.5rem 0.6rem 3rem;
-  background: var(--bg);
+  padding: 0.7rem 0.75rem 3rem;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--nav-bg) 94%, var(--bg)) 0%, var(--nav-bg) 100%);
 }
 /* Scrollbar stays out of the way until the sidebar is actually in use. */
 .sidebar::-webkit-scrollbar { width: 10px; }
@@ -313,48 +335,79 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .nav-section-label {
   position: sticky;
   top: 0;
-  z-index: 1;
-  padding: 0.85rem 0.75rem 0.4rem;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.95rem 0.6rem 0.48rem;
   font-size: 0.66rem;
-  font-weight: 600;
-  letter-spacing: 0.09em;
+  font-weight: 700;
+  letter-spacing: 0.105em;
   text-transform: uppercase;
   color: var(--text-muted);
-  background: linear-gradient(var(--bg) 75%, transparent);
+  background: linear-gradient(var(--nav-bg) 72%, color-mix(in srgb, var(--nav-bg) 78%, transparent));
+}
+.nav-section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+  opacity: 0.72;
 }
 
-.nav-folder { margin: 0; }
+.nav-folder { margin: 0.05rem 0; }
 .nav-folder > summary {
   list-style: none;
   cursor: pointer;
-  padding: 0.4rem 0.5rem 0.4rem 0.4rem;
+  min-height: 34px;
+  padding: 0.44rem 0.55rem 0.44rem 0.4rem;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  font-size: 0.82rem;
-  font-weight: 500;
+  gap: 0.48rem;
+  font-size: 0.835rem;
+  font-weight: 560;
   line-height: 1.35;
   color: var(--text-secondary);
-  border-radius: var(--radius);
+  border: 1px solid transparent;
+  border-radius: 8px;
   user-select: none;
-  transition: background 0.12s, color 0.12s;
+  transition: background 0.12s, color 0.12s, border-color 0.12s, box-shadow 0.12s;
 }
 .nav-folder > summary::-webkit-details-marker { display: none; }
-.nav-folder > summary:hover { background: var(--bg-muted); color: var(--text); }
+.nav-folder > summary:hover {
+  background: var(--nav-hover);
+  border-color: color-mix(in srgb, var(--border) 78%, transparent);
+  color: var(--text);
+}
 .nav-folder > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .nav-chevron {
   flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  padding: 2px;
+  border-radius: 5px;
   color: var(--text-muted);
-  transition: transform 0.18s ease;
+  transition: transform 0.18s ease, background 0.12s, color 0.12s;
 }
+.nav-folder > summary:hover .nav-chevron { background: var(--bg); color: var(--text-secondary); }
 .nav-folder[open] > summary .nav-chevron { transform: rotate(90deg); }
-.nav-folder-emoji { flex-shrink: 0; font-size: 0.85rem; line-height: 1; }
+.nav-folder-emoji {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  line-height: 1;
+}
 .nav-folder-label {
   flex: 1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 .nav-folder-count {
   flex-shrink: 0;
@@ -362,6 +415,10 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   font-variant-numeric: tabular-nums;
   color: var(--text-muted);
   opacity: 0;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: var(--bg);
+  border: 1px solid var(--border);
   transition: opacity 0.12s;
 }
 .nav-folder > summary:hover .nav-folder-count,
@@ -369,53 +426,97 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 /* Guide rail ties nested items back to their parent folder. */
 .nav-folder-body {
-  margin: 0.1rem 0 0.3rem 0.85rem;
-  padding-left: 0.35rem;
-  border-left: 1px solid var(--border);
+  margin: 0.12rem 0 0.42rem 1.08rem;
+  padding-left: 0.52rem;
+  border-left: 1px solid color-mix(in srgb, var(--border) 82%, transparent);
 }
 
 .nav-item {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.32rem 0.5rem;
-  font-size: 0.82rem;
+  gap: 0.52rem;
+  min-height: 33px;
+  padding: 0.37rem 0.55rem;
+  font-size: 0.83rem;
   line-height: 1.35;
   color: var(--text-secondary);
-  border-radius: var(--radius);
-  transition: background 0.12s, color 0.12s;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  transition: background 0.12s, color 0.12s, border-color 0.12s, box-shadow 0.12s;
+}
+.nav-item-icon {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  color: var(--text-muted);
+  background: color-mix(in srgb, var(--bg) 70%, transparent);
+}
+.nav-file-icon {
+  width: 14px;
+  height: 14px;
+  display: block;
 }
 .nav-item-label {
   flex: 1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 /* Diagram pages get a quiet marker so they read differently from notes. */
 .nav-item.is-diagram .nav-item-label::after {
-  content: '\25C7';
-  margin-left: 0.4rem;
-  font-size: 0.7em;
-  color: var(--text-muted);
+  content: none;
 }
-.nav-item:hover { background: var(--bg-muted); color: var(--text); text-decoration: none; }
+.nav-item.is-diagram .nav-item-icon {
+  color: color-mix(in srgb, var(--accent) 70%, var(--text-muted));
+}
+.nav-item:hover {
+  background: var(--nav-hover);
+  border-color: color-mix(in srgb, var(--border) 76%, transparent);
+  color: var(--text);
+  text-decoration: none;
+}
+.nav-item:hover .nav-item-icon {
+  color: var(--text-secondary);
+  background: var(--bg);
+}
 .nav-item:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .nav-item.is-active {
   color: var(--accent);
-  background: var(--accent-bg);
-  font-weight: 600;
+  background: var(--nav-active-bg);
+  border-color: var(--accent-border);
+  box-shadow: var(--nav-active-shadow);
+  font-weight: 650;
+}
+.nav-item.is-active .nav-item-icon {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--bg) 72%, var(--accent-bg));
 }
 /* Active marker sits on the rail rather than shifting the row. */
 .nav-folder-body .nav-item.is-active::before {
   content: '';
   position: absolute;
-  left: calc(-0.35rem - 1px);
-  top: 0.25rem;
-  bottom: 0.25rem;
-  width: 2px;
-  border-radius: 2px;
+  left: calc(-0.52rem - 1px);
+  top: 0.3rem;
+  bottom: 0.3rem;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--accent);
+}
+.sidebar > .nav-item.is-active::before {
+  content: '';
+  position: absolute;
+  left: -0.35rem;
+  top: 0.38rem;
+  bottom: 0.38rem;
+  width: 3px;
+  border-radius: 999px;
   background: var(--accent);
 }
 .nav-item.is-hidden, .nav-folder.is-hidden { display: none; }
