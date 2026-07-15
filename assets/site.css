@@ -33,6 +33,7 @@
 
   --topbar-h: 56px;
   --sidebar-w: clamp(248px, 20vw, 304px);
+  --sidebar-compact-w: clamp(204px, 16vw, 232px);
   --sidebar-mobile-gutter: clamp(0.75rem, 4vw, 1rem);
   --toc-w: 240px;
   --content-max: 720px;
@@ -45,6 +46,10 @@
 
   --font-sans: 'Geist', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'Geist Mono', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+html.nav-compact {
+  --sidebar-w: var(--sidebar-compact-w);
 }
 
 html[data-theme="dark"] {
@@ -198,6 +203,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   display: grid;
   grid-template-columns: var(--sidebar-w) minmax(0, 1fr) var(--toc-w);
   min-height: calc(100vh - var(--topbar-h));
+  transition: grid-template-columns 0.18s ease;
 }
 @media (max-width: 1280px) { .app { grid-template-columns: var(--sidebar-w) minmax(0, 1fr); } }
 @media (max-width: 900px)  { .app { grid-template-columns: minmax(0, 1fr); } }
@@ -305,9 +311,18 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 .topbar-icon-btn:hover { background: var(--bg-muted); border-color: var(--border); color: var(--text); }
+.topbar-icon-btn[aria-pressed="true"] {
+  color: var(--accent);
+  background: var(--accent-bg);
+  border-color: var(--accent-border);
+}
 
 .topbar-hamburger { display: none; }
-@media (max-width: 900px) { .topbar-hamburger { display: inline-flex; } .topbar-search { min-width: 0; flex: 1; } }
+@media (max-width: 900px) {
+  .topbar-hamburger { display: inline-flex; }
+  .topbar-sidebar-toggle { display: none; }
+  .topbar-search { min-width: 0; flex: 1; }
+}
 
 /* ── Sidebar ──────────────────────────────────────────────────────────── */
 .sidebar {
@@ -321,6 +336,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   padding: 0.7rem 0.75rem 3rem;
   background:
     linear-gradient(90deg, color-mix(in srgb, var(--nav-bg) 94%, var(--bg)) 0%, var(--nav-bg) 100%);
+  transition: padding 0.18s ease;
 }
 /* Scrollbar stays out of the way until the sidebar is actually in use. */
 .sidebar::-webkit-scrollbar { width: 10px; }

@@ -19,6 +19,8 @@
   const ICONS = {
     sun:  '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>',
     moon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>',
+    sidebarShrink: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/><path d="M14 10l-2 2 2 2"/></svg>',
+    sidebarExpand: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/><path d="M12 10l2 2-2 2"/></svg>',
   };
 
   /* ── Theme ─────────────────────────────────────────────────────────── */
@@ -35,6 +37,25 @@
       const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', next);
       storage.set('theme', next);
+      render();
+    });
+  }
+
+  /* ── Sidebar size toggle ──────────────────────────────────────────── */
+  function initSidebarToggle() {
+    const btn = $('#sidebar-toggle');
+    if (!btn) return;
+    const render = () => {
+      const isCompact = document.documentElement.classList.contains('nav-compact');
+      btn.setAttribute('aria-pressed', String(isCompact));
+      btn.setAttribute('aria-label', isCompact ? 'Expand navigation' : 'Shrink navigation');
+      btn.title = isCompact ? 'Expand navigation' : 'Shrink navigation';
+      btn.innerHTML = isCompact ? ICONS.sidebarExpand : ICONS.sidebarShrink;
+    };
+    render();
+    btn.addEventListener('click', () => {
+      const isCompact = document.documentElement.classList.toggle('nav-compact');
+      storage.set('sidebar:compact', String(isCompact));
       render();
     });
   }
@@ -361,6 +382,7 @@
   /* ── Boot ─────────────────────────────────────────────────────────── */
   function boot() {
     initTheme();
+    initSidebarToggle();
     initDrawer();
     initActiveNav();
     initFolderPersistence();

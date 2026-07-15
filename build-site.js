@@ -546,6 +546,7 @@ const icons = {
   moon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>',
   up: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>',
   menu: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>',
+  sidebar: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/><path d="M14 10l-2 2 2 2"/></svg>',
   search: '<svg class="topbar-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.65" y2="16.65"/></svg>',
   file: '<svg class="nav-file-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7z"/><path d="M14 2v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/></svg>',
   diagram: '<svg class="nav-file-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="8.5" y="14" width="7" height="7" rx="1.5"/><path d="M10 6.5h4"/><path d="M17.5 10v4"/><path d="M6.5 10v3a1 1 0 0 0 1 1h1"/></svg>',
@@ -719,10 +720,11 @@ function generateBreadcrumb(folder, name) {
 
 function generatePageTemplate(title, content, { toc = '', breadcrumb = '', prevNext = '', isHome = false } = {}) {
   const safeTitle = escapeHtml(title);
-  const themeInit = `<script>(function(){try{var t=localStorage.getItem('theme');if(!t)t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>`;
+  const themeInit = `<script>(function(){try{var t=localStorage.getItem('theme');if(!t)t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);if(localStorage.getItem('sidebar:compact')==='true')document.documentElement.classList.add('nav-compact');}catch(e){}})();</script>`;
   const topbar = `
   <header class="topbar" role="banner">
     <button class="topbar-icon-btn topbar-hamburger" type="button" aria-label="Open navigation">${icons.menu}</button>
+    <button id="sidebar-toggle" class="topbar-icon-btn topbar-sidebar-toggle" type="button" aria-label="Shrink navigation" aria-pressed="false">${icons.sidebar}</button>
     <a class="topbar-brand" href="index.html"><span class="topbar-mark" aria-hidden="true">SD</span>System Design Ultimatum</a>
     <button id="topbar-search" class="topbar-search" type="button" aria-label="Search (Cmd+K)">
       ${icons.search}
