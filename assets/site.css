@@ -32,7 +32,8 @@
   --code-text: #e4e4e7;
 
   --topbar-h: 56px;
-  --sidebar-w: 304px;
+  --sidebar-w: clamp(248px, 20vw, 304px);
+  --sidebar-mobile-gutter: clamp(0.75rem, 4vw, 1rem);
   --toc-w: 240px;
   --content-max: 720px;
 
@@ -360,6 +361,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   list-style: none;
   cursor: pointer;
   min-height: 34px;
+  min-width: 0;
   padding: 0.44rem 0.55rem 0.44rem 0.4rem;
   display: flex;
   align-items: center;
@@ -437,6 +439,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   align-items: center;
   gap: 0.52rem;
   min-height: 33px;
+  min-width: 0;
   padding: 0.37rem 0.55rem;
   font-size: 0.83rem;
   line-height: 1.35;
@@ -972,15 +975,18 @@ html.nav-open .nav-overlay { opacity: 1; pointer-events: auto; }
   .sidebar {
     position: fixed;
     top: var(--topbar-h);
-    left: 0;
-    width: min(85vw, 320px);
+    left: 50%;
+    width: min(calc(100vw - (var(--sidebar-mobile-gutter) * 2)), 320px);
     height: calc(100vh - var(--topbar-h));
-    transform: translateX(-105%);
+    transform: translateX(calc(-50% - 105vw));
     transition: transform 0.25s ease;
     z-index: 80;
     background: var(--bg);
+    border: 1px solid var(--border);
+    border-top: 0;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
   }
-  html.nav-open .sidebar { transform: translateX(0); }
+  html.nav-open .sidebar { transform: translateX(-50%); }
   .main { padding: 1.25rem 1rem 3rem; }
   .dashboard { padding: 2rem 1rem 3rem; }
   .dash-hero h1 { font-size: 1.75rem; }
