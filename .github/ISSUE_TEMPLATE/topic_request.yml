@@ -1,0 +1,26 @@
+name: Topic request
+description: Suggest a new system design topic, diagram, or note.
+title: "[Topic]: "
+labels:
+  - enhancement
+body:
+  - type: input
+    id: topic
+    attributes:
+      label: Topic
+      description: What system, pattern, or concept should be added?
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What should the diagram or note cover?
+    validations:
+      required: true
+  - type: textarea
+    id: references
+    attributes:
+      label: Useful references
+      description: Optional public sources, papers, or docs.
+

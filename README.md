@@ -55,7 +55,12 @@ Push to `main` and GitHub Actions builds + publishes to Pages automatically. Det
 
 ## Contribution guidelines
 
-- Add a short description + metadata header in each new diagram.
-- Follow the filename convention and place the file in an appropriate folder.
-- Open a PR with the proposed changes.
+- Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
+- Follow the [Code of Conduct](CODE_OF_CONDUCT.md).
+- Submit only content you have the right to contribute and include attribution for public sources.
+- Run `node build-site.js` before opening a pull request.
 - Changes merged to `main` automatically deploy to the live site.
+
+## License
+
+Source code is licensed under MIT. Original educational content is licensed under CC BY 4.0 unless noted otherwise. See [LICENSE.md](LICENSE.md) and [NOTICE.md](NOTICE.md).

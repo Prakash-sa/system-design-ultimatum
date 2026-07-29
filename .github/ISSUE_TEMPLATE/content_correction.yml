@@ -1,0 +1,31 @@
+name: Content correction
+description: Report an inaccurate note, diagram, attribution, or tradeoff.
+title: "[Content]: "
+labels:
+  - content
+body:
+  - type: input
+    id: file
+    attributes:
+      label: Affected file or page
+      description: Link or path to the diagram or note.
+    validations:
+      required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: What should be corrected?
+      description: Be specific about the inaccurate or unclear part.
+    validations:
+      required: true
+  - type: textarea
+    id: correction
+    attributes:
+      label: Suggested correction
+      description: Explain the corrected design, wording, or attribution.
+  - type: textarea
+    id: sources
+    attributes:
+      label: Sources
+      description: Add links or references that support the correction.
+

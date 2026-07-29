@@ -1,0 +1,33 @@
+name: Bug report
+description: Report a broken page, build issue, or repository problem.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What is broken?
+    validations:
+      required: true
+  - type: input
+    id: file
+    attributes:
+      label: Affected file or page
+      description: Link or path, if known.
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Include commands, screenshots, or links when helpful.
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser, OS, and Node.js version if relevant.
+
