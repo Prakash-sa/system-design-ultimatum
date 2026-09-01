@@ -1,0 +1,39 @@
+# Jekyll Site Configuration for GitHub Pages
+
+title: "AI Interview Preparation Guide"
+description: "Comprehensive interview preparation materials for AI, ML, GenAI, Agentic AI, and Prompt Engineering"
+author: "AI Interview Prep"
+theme: jekyll-theme-minimal
+
+# URL configuration
+url: "https://prakash-sa.github.io"
+baseurl: "/AI-for-Interview"
+
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+# Build settings
+markdown: kramdown
+permalink: /:title/
+
+# Enable table of contents for markdown
+kramdown:
+  toc_levels: "2..3"
+  auto_ids: true
+
+# Collections
+collections:
+  guides:
+    output: true
+    permalink: /:collection/:name/
+
+# Exclude from processing
+exclude:
+  - .gitignore
+  - .git
+  - Gemfile
+  - Gemfile.lock
+  - vendor

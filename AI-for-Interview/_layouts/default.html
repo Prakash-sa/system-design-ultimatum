@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ page.title | default: site.title }}</title>
+  {% seo %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ "/assets/css/style.css" | relative_url }}">
+</head>
+<body>
+
+  <!-- Reading progress bar -->
+  <div class="progress-bar" id="progressBar" role="progressbar" aria-label="Reading progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+
+  <!-- Top navigation -->
+  <nav class="topnav" aria-label="Main navigation">
+    <div class="topnav-inner">
+      <a class="topnav-brand" href="{{ "/" | relative_url }}" aria-label="AI Interview Prep – Home">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+        </svg>
+        <span class="brand-text">AI Interview Prep</span>
+      </a>
+
+      <div class="topnav-links" id="topnavLinks" aria-hidden="false">
+        <a href="{{ "/" | relative_url }}"
+           {% if page.url == "/" %}class="nav-active" aria-current="page"{% endif %}>
+          Home
+        </a>
+        <a href="{{ "/ml-fundamentals/" | relative_url }}"
+           {% if page.permalink == "/ml-fundamentals/" %}class="nav-active" aria-current="page"{% endif %}>
+          ML Fundamentals
+        </a>
+        <a href="{{ "/generative-ai/" | relative_url }}"
+           {% if page.permalink == "/generative-ai/" %}class="nav-active" aria-current="page"{% endif %}>
+          Generative AI
+        </a>
+        <a href="{{ "/agentic-ai/" | relative_url }}"
+           {% if page.permalink == "/agentic-ai/" %}class="nav-active" aria-current="page"{% endif %}>
+          Agentic AI
+        </a>
+        <a href="{{ "/prompt-engineering/" | relative_url }}"
+           {% if page.permalink == "/prompt-engineering/" %}class="nav-active" aria-current="page"{% endif %}>
+          Prompt Eng
+        </a>
+        <a href="{{ "/claude-code/" | relative_url }}"
+           {% if page.permalink == "/claude-code/" %}class="nav-active" aria-current="page"{% endif %}>
+          Claude Code
+        </a>
+        <a href="https://github.com/prakashsaini/AI-for-Interview" target="_blank" rel="noopener noreferrer" class="nav-github">
+          GitHub
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" class="ext-icon"><path d="M2 10L10 2M10 2H4M10 2v6"/></svg>
+        </a>
+      </div>
+
+      <div class="topnav-actions">
+        <button class="btn-icon" id="themeToggle" aria-label="Toggle dark mode" title="Toggle dark/light mode">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+        </button>
+        <button class="btn-icon nav-hamburger" id="navHamburger" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="topnavLinks">
+          <svg class="ham-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+          <svg class="close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page layout -->
+  {% assign is_home = false %}
+  {% if page.url == "/" %}{% assign is_home = true %}{% endif %}
+
+  <div class="site-layout{% if is_home %} layout-home{% else %} layout-article{% endif %}">
+
+    {% unless is_home %}
+    <!-- TOC Sidebar -->
+    <aside class="toc-panel" id="tocPanel" aria-label="Table of contents">
+      <div class="toc-inner">
+        <div class="toc-header">
+          <span class="toc-label">On this page</span>
+          <button class="btn-icon toc-close-btn" id="tocCloseBtn" aria-label="Close table of contents">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <nav id="tocNav" aria-label="Page sections"></nav>
+        <div class="toc-empty" id="tocEmpty" hidden>No sections found</div>
+      </div>
+    </aside>
+    {% endunless %}
+
+    <!-- Main content -->
+    <main class="content-area" id="contentArea" tabindex="-1">
+      {{ content }}
+    </main>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer" aria-label="Site footer">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <strong>AI Interview Preparation Guide</strong>
+        <span class="footer-sep">&bull;</span>
+        <a href="{{ "/" | relative_url }}">Home</a>
+        <span class="footer-sep">&bull;</span>
+        <a href="https://github.com/prakashsaini/AI-for-Interview" target="_blank" rel="noopener">GitHub</a>
+      </div>
+      <div class="footer-right">
+        Updated {{ site.time | date: "%B %Y" }}
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to top -->
+  <button class="back-to-top" id="backToTop" aria-label="Scroll back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+      <line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>
+    </svg>
+  </button>
+
+  <!-- TOC floating button (mobile only) -->
+  {% unless is_home %}
+  <button class="toc-fab" id="tocFab" aria-label="Open table of contents">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="18" y2="18"/>
+    </svg>
+    <span class="toc-fab-label">Contents</span>
+  </button>
+  {% endunless %}
+
+  <script>
+  (function () {
+    'use strict';
+
+    /* ---------- helpers ---------- */
+    function $(id) { return document.getElementById(id); }
+
+    /* ---------- theme ---------- */
+    var html = document.documentElement;
+    var themeBtn = $('themeToggle');
+    var saved = localStorage.getItem('ai-prep-theme') || 'light';
+    html.setAttribute('data-theme', saved);
+
+    themeBtn && themeBtn.addEventListener('click', function () {
+      var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('ai-prep-theme', next);
+    });
+
+    /* ---------- progress bar ---------- */
+    var bar = $('progressBar');
+    function updateProgress() {
+      if (!bar) return;
+      var scrolled = window.scrollY;
+      var total = document.documentElement.scrollHeight - window.innerHeight;
+      var pct = total > 0 ? (scrolled / total) * 100 : 0;
+      bar.style.transform = 'scaleX(' + (pct / 100) + ')';
+      bar.setAttribute('aria-valuenow', Math.round(pct));
+    }
+
+    /* ---------- back to top ---------- */
+    var btt = $('backToTop');
+    function updateBtt() {
+      if (btt) btt.classList.toggle('visible', window.scrollY > 500);
+    }
+    btt && btt.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    /* ---------- mobile nav ---------- */
+    var hamburger = $('navHamburger');
+    var navLinks  = $('topnavLinks');
+    hamburger && hamburger.addEventListener('click', function () {
+      var open = navLinks.classList.toggle('nav-open');
+      hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      navLinks.setAttribute('aria-hidden', open ? 'false' : 'true');
+      hamburger.classList.toggle('is-open', open);
+    });
+    document.addEventListener('click', function (e) {
+      if (navLinks && navLinks.classList.contains('nav-open')) {
+        if (!navLinks.contains(e.target) && !hamburger.contains(e.target)) {
+          navLinks.classList.remove('nav-open');
+          hamburger.setAttribute('aria-expanded', 'false');
+          hamburger.classList.remove('is-open');
+        }
+      }
+    });
+
+    /* ---------- TOC ---------- */
+    var tocNav    = $('tocNav');
+    var tocPanel  = $('tocPanel');
+    var tocFab    = $('tocFab');
+    var tocClose  = $('tocCloseBtn');
+    var tocEmpty  = $('tocEmpty');
+    var content   = $('contentArea');
+
+    if (tocNav && content) {
+      var headings = Array.from(content.querySelectorAll('h2, h3'));
+      var valid    = headings.filter(function (h) { return h.id; });
+
+      if (valid.length >= 2) {
+        var frag = document.createDocumentFragment();
+        valid.forEach(function (h) {
+          var a = document.createElement('a');
+          a.className = 'toc-link' + (h.tagName === 'H3' ? ' toc-sub' : '');
+          a.href = '#' + h.id;
+          a.textContent = h.textContent;
+          a.addEventListener('click', function (e) {
+            e.preventDefault();
+            var el = document.getElementById(h.id);
+            if (el) {
+              var top = el.getBoundingClientRect().top + window.scrollY - 80;
+              window.scrollTo({ top: top, behavior: 'smooth' });
+              history.replaceState(null, '', '#' + h.id);
+            }
+            if (tocPanel) tocPanel.classList.remove('toc-open');
+          });
+          frag.appendChild(a);
+        });
+        tocNav.appendChild(frag);
+
+        /* active link tracking */
+        var allLinks = Array.from(tocNav.querySelectorAll('.toc-link'));
+        var idxMap   = {};
+        valid.forEach(function (h, i) { idxMap[h.id] = i; });
+        var activeId = null;
+
+        var observer = new IntersectionObserver(function (entries) {
+          var visible = [];
+          entries.forEach(function (en) { if (en.isIntersecting) visible.push(en.target.id); });
+          if (!visible.length) return;
+          var top = visible.reduce(function (a, b) {
+            return (idxMap[a] <= idxMap[b]) ? a : b;
+          });
+          if (top === activeId) return;
+          activeId = top;
+          allLinks.forEach(function (lk) {
+            lk.classList.toggle('toc-active', lk.getAttribute('href') === '#' + top);
+          });
+        }, { rootMargin: '-72px 0px -60% 0px' });
+
+        valid.forEach(function (h) { observer.observe(h); });
+
+      } else {
+        if (tocPanel) tocPanel.setAttribute('hidden', '');
+        if (tocFab)   tocFab.setAttribute('hidden', '');
+        if (tocEmpty) tocEmpty.removeAttribute('hidden');
+      }
+    }
+
+    tocFab   && tocFab.addEventListener('click',  function () { tocPanel && tocPanel.classList.toggle('toc-open'); });
+    tocClose && tocClose.addEventListener('click', function () { tocPanel && tocPanel.classList.remove('toc-open'); });
+
+    /* ---------- escape closes overlays ---------- */
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        if (tocPanel)  tocPanel.classList.remove('toc-open');
+        if (navLinks)  navLinks.classList.remove('nav-open');
+        if (hamburger) { hamburger.setAttribute('aria-expanded', 'false'); hamburger.classList.remove('is-open'); }
+      }
+    });
+
+    /* ---------- scroll listener ---------- */
+    window.addEventListener('scroll', function () { updateProgress(); updateBtt(); }, { passive: true });
+    updateProgress();
+    updateBtt();
+
+  }());
+  </script>
+
+</body>
+</html>
