@@ -91,6 +91,8 @@ Slower required growth = more scalable algorithm. This is the formal answer to "
 ### Reduction and prefix sum (scan)
 
 - **Reduction**: pairwise tree, O(n/p + log p). The building block of dot products, norms, convergence checks.
+
+![Tree reduction (animated)](./animations/tree-reduction.svg)
 - **Inclusive/exclusive scan**: outputs all partial sums. Looks inherently serial but parallelizes:
   - Naive PRAM scan: O(log n) steps, O(n log n) work (not work-efficient).
   - **Blelloch two-phase** (up-sweep reduce + down-sweep): O(log n) span, O(n) work — the GPU standard.
@@ -105,6 +107,8 @@ Slower required growth = more scalable algorithm. This is the formal answer to "
 | **Sample sort** | sample splitters, partition into p buckets, alltoall, local sort | the practical distributed sort; needs good splitters for balance |
 | **Parallel merge sort / PSRS** | local sort + regular sampling + merge | PSRS bounds imbalance ≤ 2× |
 
+![Odd-even transposition sort (animated)](./animations/odd-even-sort.svg)
+
 ### Dense linear algebra
 
 - **BLAS levels**: L1 vector (O(n) work / O(n) data — memory-bound), L2 matrix-vector (O(n²)/O(n²) — memory-bound), L3 matrix-matrix (O(n³)/O(n²) — compute-bound, cache-blockable). Rule: restructure algorithms to live in BLAS-3.
@@ -114,6 +118,8 @@ Slower required growth = more scalable algorithm. This is the formal answer to "
   - **2D block decomposition**: rank (i,j) owns blocks; needs block row of A and block column of B.
   - **Cannon's algorithm**: initial skew (shift A_i left by i, B_j up by j), then √p steps of {multiply local blocks; shift A left, B up by 1}. Communication O(n²/√p) total per rank — asymptotically optimal for 2D.
   - **SUMMA**: √p rounds of row/column broadcasts of blocks — same asymptotics, simpler, handles rectangular grids; what ScaLAPACK uses.
+
+![Cannon's algorithm (animated)](./animations/cannon.svg)
   - **2.5D / communication-avoiding**: replicate data across a third processor dimension to cut communication by √c using c× memory — know the concept ("trade memory for communication, provably optimal").
 - **LU/Cholesky (dense solvers)**: block algorithms with lookahead; panel factorization is the serial-ish bottleneck; this is exactly what HPL benchmarks.
 
@@ -127,6 +133,8 @@ Slower required growth = more scalable algorithm. This is the formal answer to "
 ### Stencils / structured grids (the CFD/heat-equation pattern)
 
 - Jacobi iteration: `new[i][j] = f(old neighbors)`; domain-decompose into blocks, each rank keeps **ghost/halo layers** of neighbor data, refreshed each iteration (**halo exchange**: neighbor sendrecv or `MPI_Cart_shift` pairs).
+
+![Halo exchange (animated)](./animations/halo-exchange.svg)
 - Communication/computation ratio = surface/volume → favor 3D blocks over slabs; overlap halo exchange with interior updates (non-blocking MPI).
 - Deeper halos (exchange every k iterations with k-wide halo + redundant compute) trade computation for latency — "temporal blocking" / communication-avoiding stencils.
 - Red-black Gauss-Seidel: color the grid so same-color updates are independent → parallelizable despite dependencies.

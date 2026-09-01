@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 430" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="760" height="430" rx="12" fill="#0f172a"/>
+  <text x="380" y="28" text-anchor="middle" fill="#e2e8f0" font-size="17" font-weight="600">RAG — retrieve, then generate</text>
+  <!-- query -->
+  <rect x="55" y="80" width="160" height="44" rx="8" fill="#1e293b" stroke="#fbbf24">
+    <animate attributeName="stroke-width" values="1;4;1;1" keyTimes="0;0.05;0.12;1" dur="9s" repeatCount="indefinite"/>
+  </rect>
+  <text x="135" y="102" text-anchor="middle" fill="#e2e8f0" font-size="11">"What's our refund</text>
+  <text x="135" y="116" text-anchor="middle" fill="#e2e8f0" font-size="11">policy for EU users?"</text>
+  <rect x="55" y="190" width="160" height="44" rx="8" fill="#1e293b" stroke="#94a3b8"/>
+  <text x="135" y="217" text-anchor="middle" fill="#e2e8f0" font-size="11">embedding model</text>
+  <circle r="6" fill="#fbbf24" opacity="0">
+    <animateMotion path="M135,124 L135,190" keyPoints="0;0;1;1" keyTimes="0;0.08;0.14;1" calcMode="linear" dur="9s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.08;0.15" dur="9s" repeatCount="indefinite"/>
+  </circle>
+  <!-- vector space -->
+  <rect x="280" y="70" width="210" height="190" rx="8" fill="#1e293b" stroke="#38bdf8"/>
+  <text x="385" y="90" text-anchor="middle" fill="#94a3b8" font-size="11">vector DB (doc chunks as points)</text>
+  <g fill="#64748b">
+    <circle cx="320" cy="130" r="5"/><circle cx="350" cy="220" r="5"/><circle cx="430" cy="230" r="5"/>
+    <circle cx="460" cy="120" r="5"/><circle cx="310" cy="180" r="5"/>
+  </g>
+  <circle cx="410" cy="150" r="5" fill="#64748b"><animate attributeName="fill" calcMode="discrete" values="#64748b;#34d399;#64748b" keyTimes="0;0.28;0.95" dur="9s" repeatCount="indefinite"/></circle>
+  <circle cx="435" cy="170" r="5" fill="#64748b"><animate attributeName="fill" calcMode="discrete" values="#64748b;#34d399;#64748b" keyTimes="0;0.32;0.95" dur="9s" repeatCount="indefinite"/></circle>
+  <circle cx="395" cy="180" r="5" fill="#64748b"><animate attributeName="fill" calcMode="discrete" values="#64748b;#34d399;#64748b" keyTimes="0;0.36;0.95" dur="9s" repeatCount="indefinite"/></circle>
+  <!-- query star lands in space -->
+  <g opacity="0">
+    <circle cx="415" cy="165" r="7" fill="none" stroke="#fbbf24" stroke-width="2"/>
+    <circle cx="415" cy="165" r="2.5" fill="#fbbf24"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.2;0.95" dur="9s" repeatCount="indefinite"/>
+  </g>
+  <circle r="5" fill="#fbbf24" opacity="0">
+    <animateMotion path="M215,212 L415,165" keyPoints="0;0;1;1" keyTimes="0;0.15;0.2;1" calcMode="linear" dur="9s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.15;0.21" dur="9s" repeatCount="indefinite"/>
+  </circle>
+  <g opacity="0">
+    <text x="385" y="248" text-anchor="middle" fill="#34d399" font-size="11" font-weight="600">k-NN: 3 nearest chunks</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.28;0.5" dur="9s" repeatCount="indefinite"/>
+  </g>
+  <!-- prompt assembly -->
+  <rect x="545" y="70" width="165" height="100" rx="8" fill="#1e293b" stroke="#a78bfa"/>
+  <text x="627" y="92" text-anchor="middle" fill="#e2e8f0" font-size="11" font-weight="600">prompt</text>
+  <text x="627" y="110" text-anchor="middle" fill="#94a3b8" font-size="10">question +</text>
+  <g opacity="0">
+    <rect x="560" y="120" width="42" height="16" rx="3" fill="#34d399"/>
+    <rect x="608" y="120" width="42" height="16" rx="3" fill="#34d399"/>
+    <rect x="656" y="120" width="42" height="16" rx="3" fill="#34d399"/>
+    <text x="627" y="152" text-anchor="middle" fill="#94a3b8" font-size="10">top-3 chunks pasted in</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.52" dur="9s" repeatCount="indefinite"/>
+  </g>
+  <circle r="5" fill="#34d399" opacity="0">
+    <animateMotion path="M490,165 L560,128" keyPoints="0;0;1;1" keyTimes="0;0.42;0.5;1" calcMode="linear" dur="9s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.42;0.51" dur="9s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="5" fill="#34d399" opacity="0">
+    <animateMotion path="M490,175 L608,128" keyPoints="0;0;1;1" keyTimes="0;0.44;0.52;1" calcMode="linear" dur="9s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.44;0.53" dur="9s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="5" fill="#fbbf24" opacity="0">
+    <animateMotion path="M215,100 L545,100" keyPoints="0;0;1;1" keyTimes="0;0.44;0.52;1" calcMode="linear" dur="9s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.44;0.53" dur="9s" repeatCount="indefinite"/>
+  </circle>
+  <!-- LLM + answer -->
+  <rect x="545" y="210" width="165" height="60" rx="8" fill="#1e293b" stroke="#94a3b8">
+    <animate attributeName="stroke-width" values="1;1;5;1;1" keyTimes="0;0.64;0.7;0.78;1" dur="9s" repeatCount="indefinite"/>
+  </rect>
+  <text x="627" y="245" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="600">LLM</text>
+  <circle r="5" fill="#a78bfa" opacity="0">
+    <animateMotion path="M627,170 L627,210" keyPoints="0;0;1;1" keyTimes="0;0.58;0.64;1" calcMode="linear" dur="9s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.58;0.65" dur="9s" repeatCount="indefinite"/>
+  </circle>
+  <g opacity="0">
+    <rect x="545" y="300" width="165" height="52" rx="8" fill="#14532d" stroke="#34d399"/>
+    <text x="627" y="322" text-anchor="middle" fill="#e2e8f0" font-size="11">"EU users: 30 days…"</text>
+    <text x="627" y="340" text-anchor="middle" fill="#34d399" font-size="10">grounded + cites chunk 2 ✓</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.8" dur="9s" repeatCount="indefinite"/>
+  </g>
+  <text x="280" y="330" text-anchor="middle" fill="#94a3b8" font-size="13">Why RAG: grounds answers in YOUR data (less hallucination),</text>
+  <text x="280" y="350" text-anchor="middle" fill="#94a3b8" font-size="13">updates instantly (re-index, no retraining), keeps context small.</text>
+  <text x="380" y="400" text-anchor="middle" fill="#94a3b8" font-size="12">Design levers: chunking strategy, embedding model, top-k, hybrid (BM25 + vector) search, reranking, citation checking.</text>
+</svg>

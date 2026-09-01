@@ -37,6 +37,8 @@ OpenMP is built on top of this machinery; use Pthreads directly only when you ne
 
 OpenMP = compiler directives + runtime library + env vars for shared-memory parallelism. **Fork-join model**: master thread forks a team at a parallel region, joins at the end.
 
+![Fork-join model and load imbalance (animated)](./animations/fork-join.svg)
+
 ```c
 #pragma omp parallel for reduction(+:sum) schedule(static)
 for (i = 0; i < N; i++)
@@ -171,6 +173,8 @@ Essentials (ranks, communicators, point-to-point, collectives, placement) are in
 
 Non-blocking collectives (`MPI_Iallreduce`, …) overlap collectives with compute. At scale, collectives dominate — know that allreduce cost is ~2βn regardless of p (good) but alltoall stresses bisection (bad on oversubscribed fabrics).
 
+![Ring allreduce (animated)](./animations/ring-allreduce.svg)
+
 ### Derived datatypes
 
 Describe non-contiguous data (a matrix column, a strided face of a 3D block) so MPI sends it without manual packing: `MPI_Type_vector`, `MPI_Type_create_subarray`, `MPI_Type_create_struct`, then `MPI_Type_commit`. Cleaner and often faster than `MPI_Pack`.
@@ -224,6 +228,8 @@ saxpy<<<(n + 255)/256, 256>>>(n, a, d_x, d_y);
 | Host memory | — | PCIe/NVLink transfers; minimize! |
 
 - **Coalescing**: consecutive threads must access consecutive addresses so a warp's 32 loads merge into few transactions. SoA layouts, stride-1 within warps.
+
+![GPU memory coalescing (animated)](./animations/gpu-coalescing.svg)
 - **Divergence**: `if` branches taken differently within one warp serialize both paths.
 - **Occupancy**: enough resident warps per SM to hide memory latency — limited by registers/thread, shared mem/block, block size.
 - **Tiling in shared memory**: the GPU matmul pattern — each block loads tiles of A and B into shared memory, syncs, multiplies, moves on.

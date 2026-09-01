@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 440" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="760" height="440" rx="12" fill="#0f172a"/>
+  <text x="380" y="28" text-anchor="middle" fill="#e2e8f0" font-size="17" font-weight="600">Inverted Index — documents in, term → doc lists out</text>
+  <!-- docs -->
+  <g>
+    <rect x="60" y="70" width="200" height="62" rx="8" fill="#1e293b" stroke="#38bdf8">
+      <animate attributeName="stroke-width" values="1;4;1;1" keyTimes="0;0.06;0.14;1" dur="10s" repeatCount="indefinite"/>
+    </rect>
+    <text x="160" y="95" text-anchor="middle" fill="#38bdf8" font-size="12" font-weight="600">doc 1</text>
+    <text x="160" y="115" text-anchor="middle" fill="#e2e8f0" font-size="11">"cheap flights to goa"</text>
+  </g>
+  <g>
+    <rect x="60" y="150" width="200" height="62" rx="8" fill="#1e293b" stroke="#34d399">
+      <animate attributeName="stroke-width" values="1;1;4;1;1" keyTimes="0;0.16;0.22;0.3;1" dur="10s" repeatCount="indefinite"/>
+    </rect>
+    <text x="160" y="175" text-anchor="middle" fill="#34d399" font-size="12" font-weight="600">doc 2</text>
+    <text x="160" y="195" text-anchor="middle" fill="#e2e8f0" font-size="11">"cheap hotels in goa"</text>
+  </g>
+  <g>
+    <rect x="60" y="230" width="200" height="62" rx="8" fill="#1e293b" stroke="#fb923c">
+      <animate attributeName="stroke-width" values="1;1;4;1;1" keyTimes="0;0.32;0.38;0.46;1" dur="10s" repeatCount="indefinite"/>
+    </rect>
+    <text x="160" y="255" text-anchor="middle" fill="#fb923c" font-size="12" font-weight="600">doc 3</text>
+    <text x="160" y="275" text-anchor="middle" fill="#e2e8f0" font-size="11">"flights to delhi"</text>
+  </g>
+  <!-- index rows -->
+  <text x="380" y="80" fill="#94a3b8" font-size="12" font-weight="600">term</text>
+  <text x="520" y="80" fill="#94a3b8" font-size="12" font-weight="600">posting list (doc ids)</text>
+  <g>
+    <rect x="370" y="90" width="330" height="30" rx="5" fill="#1e293b" stroke="#334155">
+      <animate attributeName="stroke" calcMode="discrete" values="#334155;#fbbf24;#334155" keyTimes="0;0.6;0.92" dur="10s" repeatCount="indefinite"/>
+    </rect>
+    <text x="380" y="110" fill="#e2e8f0" font-size="12" font-family="monospace">cheap</text>
+    <g opacity="0"><rect x="520" y="95" width="34" height="20" rx="4" fill="#38bdf8"/><text x="537" y="109" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="700">d1</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.1" dur="10s" repeatCount="indefinite"/></g>
+    <g opacity="0"><rect x="560" y="95" width="34" height="20" rx="4" fill="#34d399"/><text x="577" y="109" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="700">d2</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.26" dur="10s" repeatCount="indefinite"/></g>
+  </g>
+  <g>
+    <rect x="370" y="128" width="330" height="30" rx="5" fill="#1e293b" stroke="#334155">
+      <animate attributeName="stroke" calcMode="discrete" values="#334155;#fbbf24;#334155" keyTimes="0;0.6;0.92" dur="10s" repeatCount="indefinite"/>
+    </rect>
+    <text x="380" y="148" fill="#e2e8f0" font-size="12" font-family="monospace">flights</text>
+    <g opacity="0"><rect x="520" y="133" width="34" height="20" rx="4" fill="#38bdf8"/><text x="537" y="147" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="700">d1</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.1" dur="10s" repeatCount="indefinite"/></g>
+    <g opacity="0"><rect x="560" y="133" width="34" height="20" rx="4" fill="#fb923c"/><text x="577" y="147" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="700">d3</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.42" dur="10s" repeatCount="indefinite"/></g>
+  </g>
+  <g>
+    <rect x="370" y="166" width="330" height="30" rx="5" fill="#1e293b" stroke="#334155"/>
+    <text x="380" y="186" fill="#e2e8f0" font-size="12" font-family="monospace">goa</text>
+    <g opacity="0"><rect x="520" y="171" width="34" height="20" rx="4" fill="#38bdf8"/><text x="537" y="185" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="700">d1</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.1" dur="10s" repeatCount="indefinite"/></g>
+    <g opacity="0"><rect x="560" y="171" width="34" height="20" rx="4" fill="#34d399"/><text x="577" y="185" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="700">d2</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.26" dur="10s" repeatCount="indefinite"/></g>
+  </g>
+  <g>
+    <rect x="370" y="204" width="330" height="30" rx="5" fill="#1e293b" stroke="#334155"/>
+    <text x="380" y="224" fill="#e2e8f0" font-size="12" font-family="monospace">hotels</text>
+    <g opacity="0"><rect x="520" y="209" width="34" height="20" rx="4" fill="#34d399"/><text x="537" y="223" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="700">d2</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.26" dur="10s" repeatCount="indefinite"/></g>
+  </g>
+  <g>
+    <rect x="370" y="242" width="330" height="30" rx="5" fill="#1e293b" stroke="#334155"/>
+    <text x="380" y="262" fill="#e2e8f0" font-size="12" font-family="monospace">delhi</text>
+    <g opacity="0"><rect x="520" y="247" width="34" height="20" rx="4" fill="#fb923c"/><text x="537" y="261" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="700">d3</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.42" dur="10s" repeatCount="indefinite"/></g>
+  </g>
+  <!-- query phase -->
+  <g opacity="0">
+    <rect x="60" y="330" width="260" height="36" rx="6" fill="#3b2f1e" stroke="#fbbf24"/>
+    <text x="190" y="353" text-anchor="middle" fill="#fbbf24" font-size="12" font-weight="600">query: "cheap AND flights"</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.55" dur="10s" repeatCount="indefinite"/>
+  </g>
+  <g opacity="0">
+    <text x="380" y="353" fill="#e2e8f0" font-size="12">→ intersect [d1, d2] ∩ [d1, d3]</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.68" dur="10s" repeatCount="indefinite"/>
+  </g>
+  <g opacity="0">
+    <rect x="620" y="332" width="80" height="32" rx="6" fill="#14532d" stroke="#34d399"/>
+    <text x="660" y="353" text-anchor="middle" fill="#34d399" font-size="13" font-weight="700">= d1 ✓</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.8" dur="10s" repeatCount="indefinite"/>
+  </g>
+  <text x="380" y="400" text-anchor="middle" fill="#94a3b8" font-size="13">Search never scans documents — it walks tiny sorted posting lists and intersects them.</text>
+  <text x="380" y="420" text-anchor="middle" fill="#94a3b8" font-size="13">This is the core of Lucene/Elasticsearch; add per-term frequencies for relevance scoring (BM25).</text>
+</svg>

@@ -60,6 +60,8 @@ Cassandra Cluster
 
 ### 1. Consistent Hashing & Token Ring
 
+![Consistent hashing token ring (animated)](./animations/consistent-hashing.svg)
+
 **Problem**: How to distribute data across nodes?
 
 **Solution**: Consistent hashing with token ring

@@ -373,6 +373,8 @@ Even without using Flink, borrow from its design:
 
 ### Q2: Explain Flink's checkpointing mechanism. How does it achieve exactly-once processing?
 
+![Flink checkpoint barriers (animated)](./animations/flink-checkpoint.svg)
+
 **Answer:**
 
 **Checkpointing** is Flink's mechanism for creating consistent snapshots of distributed state, based on the **Chandy-Lamport algorithm**.

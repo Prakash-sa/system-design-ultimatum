@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 430" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="760" height="430" rx="12" fill="#0f172a"/>
+  <text x="380" y="28" text-anchor="middle" fill="#e2e8f0" font-size="17" font-weight="600">GPU Memory Coalescing — one warp, two access patterns</text>
+  <!-- coalesced panel -->
+  <text x="70" y="60" fill="#34d399" font-size="13" font-weight="600">✓ coalesced: thread i → address i (stride 1)</text>
+  <g>
+    <g fill="#334155" stroke="#38bdf8">
+      <rect x="150" y="74" width="18" height="18" rx="3"/><rect x="190" y="74" width="18" height="18" rx="3"/><rect x="230" y="74" width="18" height="18" rx="3"/><rect x="270" y="74" width="18" height="18" rx="3"/>
+      <rect x="310" y="74" width="18" height="18" rx="3"/><rect x="350" y="74" width="18" height="18" rx="3"/><rect x="390" y="74" width="18" height="18" rx="3"/><rect x="430" y="74" width="18" height="18" rx="3"/>
+    </g>
+    <text x="110" y="88" text-anchor="end" fill="#94a3b8" font-size="11">warp</text>
+    <g stroke="#34d399" stroke-width="2" opacity="0.3">
+      <line x1="159" y1="94" x2="163" y2="146"/><line x1="199" y1="94" x2="189" y2="146"/><line x1="239" y1="94" x2="215" y2="146"/><line x1="279" y1="94" x2="241" y2="146"/>
+      <line x1="319" y1="94" x2="267" y2="146"/><line x1="359" y1="94" x2="293" y2="146"/><line x1="399" y1="94" x2="319" y2="146"/><line x1="439" y1="94" x2="345" y2="146"/>
+      <animate attributeName="opacity" values="0.2;1;0.2" keyTimes="0;0.3;1" dur="3s" repeatCount="indefinite"/>
+    </g>
+    <g fill="#1e293b" stroke="#475569">
+      <rect x="150" y="148" width="24" height="22"/><rect x="176" y="148" width="24" height="22"/><rect x="202" y="148" width="24" height="22"/><rect x="228" y="148" width="24" height="22"/>
+      <rect x="254" y="148" width="24" height="22"/><rect x="280" y="148" width="24" height="22"/><rect x="306" y="148" width="24" height="22"/><rect x="332" y="148" width="24" height="22"/>
+      <rect x="358" y="148" width="24" height="22"/><rect x="384" y="148" width="24" height="22"/><rect x="410" y="148" width="24" height="22"/><rect x="436" y="148" width="24" height="22"/>
+      <rect x="462" y="148" width="24" height="22"/><rect x="488" y="148" width="24" height="22"/><rect x="514" y="148" width="24" height="22"/><rect x="540" y="148" width="24" height="22"/>
+    </g>
+    <text x="110" y="163" text-anchor="end" fill="#94a3b8" font-size="11">global mem</text>
+    <rect x="148" y="146" width="210" height="26" fill="#34d399" fill-opacity="0.25" stroke="#34d399" stroke-width="2" rx="3" opacity="0">
+      <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.35;0.7" dur="3s" repeatCount="indefinite"/>
+    </rect>
+    <text x="600" y="163" fill="#34d399" font-size="13" font-weight="600">1 transaction ✓</text>
+  </g>
+  <!-- scattered panel -->
+  <text x="70" y="248" fill="#f87171" font-size="13" font-weight="600">✗ scattered / large stride: thread i → random address</text>
+  <g>
+    <g fill="#334155" stroke="#f87171">
+      <rect x="150" y="262" width="18" height="18" rx="3"/><rect x="190" y="262" width="18" height="18" rx="3"/><rect x="230" y="262" width="18" height="18" rx="3"/><rect x="270" y="262" width="18" height="18" rx="3"/>
+      <rect x="310" y="262" width="18" height="18" rx="3"/><rect x="350" y="262" width="18" height="18" rx="3"/><rect x="390" y="262" width="18" height="18" rx="3"/><rect x="430" y="262" width="18" height="18" rx="3"/>
+    </g>
+    <text x="110" y="276" text-anchor="end" fill="#94a3b8" font-size="11">warp</text>
+    <g stroke="#f87171" stroke-width="2" opacity="0.3">
+      <line x1="159" y1="282" x2="163" y2="334"/><line x1="199" y1="282" x2="293" y2="334"/><line x1="239" y1="282" x2="397" y2="334"/><line x1="279" y1="282" x2="215" y2="334"/>
+      <line x1="319" y1="282" x2="527" y2="334"/><line x1="359" y1="282" x2="345" y2="334"/><line x1="399" y1="282" x2="449" y2="334"/><line x1="439" y1="282" x2="241" y2="334"/>
+      <animate attributeName="opacity" values="0.2;1;0.2" keyTimes="0;0.3;1" dur="6s" repeatCount="indefinite"/>
+    </g>
+    <g fill="#1e293b" stroke="#475569">
+      <rect x="150" y="336" width="24" height="22"/><rect x="176" y="336" width="24" height="22"/><rect x="202" y="336" width="24" height="22"/><rect x="228" y="336" width="24" height="22"/>
+      <rect x="254" y="336" width="24" height="22"/><rect x="280" y="336" width="24" height="22"/><rect x="306" y="336" width="24" height="22"/><rect x="332" y="336" width="24" height="22"/>
+      <rect x="358" y="336" width="24" height="22"/><rect x="384" y="336" width="24" height="22"/><rect x="410" y="336" width="24" height="22"/><rect x="436" y="336" width="24" height="22"/>
+      <rect x="462" y="336" width="24" height="22"/><rect x="488" y="336" width="24" height="22"/><rect x="514" y="336" width="24" height="22"/><rect x="540" y="336" width="24" height="22"/>
+    </g>
+    <text x="110" y="351" text-anchor="end" fill="#94a3b8" font-size="11">global mem</text>
+    <!-- 8 separate transactions pulsing one after another -->
+    <g fill="#f87171" fill-opacity="0.3" stroke="#f87171" stroke-width="2">
+      <rect x="150" y="334" width="26" height="26" rx="3" opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.30;0.38" dur="6s" repeatCount="indefinite"/></rect>
+      <rect x="202" y="334" width="26" height="26" rx="3" opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.38;0.46" dur="6s" repeatCount="indefinite"/></rect>
+      <rect x="228" y="334" width="26" height="26" rx="3" opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.46;0.54" dur="6s" repeatCount="indefinite"/></rect>
+      <rect x="280" y="334" width="26" height="26" rx="3" opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.54;0.62" dur="6s" repeatCount="indefinite"/></rect>
+      <rect x="332" y="334" width="26" height="26" rx="3" opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.62;0.70" dur="6s" repeatCount="indefinite"/></rect>
+      <rect x="384" y="334" width="26" height="26" rx="3" opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.70;0.78" dur="6s" repeatCount="indefinite"/></rect>
+      <rect x="436" y="334" width="26" height="26" rx="3" opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.78;0.86" dur="6s" repeatCount="indefinite"/></rect>
+      <rect x="514" y="334" width="26" height="26" rx="3" opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.86;0.94" dur="6s" repeatCount="indefinite"/></rect>
+    </g>
+    <text x="600" y="351" fill="#f87171" font-size="13" font-weight="600">8 transactions ✗</text>
+  </g>
+  <text x="380" y="398" text-anchor="middle" fill="#94a3b8" font-size="13">Consecutive threads must touch consecutive addresses (SoA layout, stride-1 within the warp) —</text>
+  <text x="380" y="418" text-anchor="middle" fill="#94a3b8" font-size="13">otherwise one warp load becomes many serialized memory transactions and bandwidth collapses.</text>
+</svg>

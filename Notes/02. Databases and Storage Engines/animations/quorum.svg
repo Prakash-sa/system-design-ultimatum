@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 440" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="760" height="440" rx="12" fill="#0f172a"/>
+  <text x="380" y="28" text-anchor="middle" fill="#e2e8f0" font-size="17" font-weight="600">Quorum Reads &amp; Writes — N=3, W=2, R=2</text>
+  <rect x="310" y="55" width="140" height="50" rx="8" fill="#1e293b" stroke="#38bdf8"/>
+  <text x="380" y="85" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="600">coordinator</text>
+  <g>
+    <rect x="100" y="200" width="140" height="70" rx="8" fill="#1e293b" stroke="#94a3b8"/>
+    <text x="170" y="223" text-anchor="middle" fill="#e2e8f0" font-size="12">replica 1</text>
+    <text x="170" y="248" text-anchor="middle" fill="#34d399" font-size="13" font-weight="700">v1<animate attributeName="opacity" calcMode="discrete" values="1;0" keyTimes="0;0.14" dur="10s" repeatCount="indefinite"/></text>
+    <g opacity="0"><text x="170" y="248" text-anchor="middle" fill="#38bdf8" font-size="13" font-weight="700">v2 ✓</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.14" dur="10s" repeatCount="indefinite"/></g>
+  </g>
+  <g>
+    <rect x="310" y="200" width="140" height="70" rx="8" fill="#1e293b" stroke="#94a3b8">
+      <animate attributeName="stroke" calcMode="discrete" values="#94a3b8;#fbbf24" keyTimes="0;0.78" dur="10s" repeatCount="indefinite"/>
+    </rect>
+    <text x="380" y="223" text-anchor="middle" fill="#e2e8f0" font-size="12">replica 2</text>
+    <text x="380" y="248" text-anchor="middle" fill="#34d399" font-size="13" font-weight="700">v1<animate attributeName="opacity" calcMode="discrete" values="1;0" keyTimes="0;0.14" dur="10s" repeatCount="indefinite"/></text>
+    <g opacity="0"><text x="380" y="248" text-anchor="middle" fill="#38bdf8" font-size="13" font-weight="700">v2 ✓</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.14" dur="10s" repeatCount="indefinite"/></g>
+    <g opacity="0"><text x="380" y="288" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="600">the overlap replica</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.78" dur="10s" repeatCount="indefinite"/></g>
+  </g>
+  <g>
+    <rect x="520" y="200" width="140" height="70" rx="8" fill="#1e293b" stroke="#94a3b8"/>
+    <text x="590" y="223" text-anchor="middle" fill="#e2e8f0" font-size="12">replica 3 (lagging)</text>
+    <text x="590" y="248" text-anchor="middle" fill="#34d399" font-size="13" font-weight="700">v1 (stale)</text>
+  </g>
+  <!-- write phase: dots to all three -->
+  <circle r="6" fill="#38bdf8" opacity="0"><animateMotion path="M340,105 L170,200" keyPoints="0;0;1;1" keyTimes="0;0.03;0.1;1" calcMode="linear" dur="10s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.03;0.11" dur="10s" repeatCount="indefinite"/></circle>
+  <circle r="6" fill="#38bdf8" opacity="0"><animateMotion path="M380,105 L380,200" keyPoints="0;0;1;1" keyTimes="0;0.03;0.1;1" calcMode="linear" dur="10s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.03;0.11" dur="10s" repeatCount="indefinite"/></circle>
+  <circle r="6" fill="#38bdf8" opacity="0"><animateMotion path="M420,105 L590,200" keyPoints="0;0;1;1" keyTimes="0;0.03;0.1;1" calcMode="linear" dur="10s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.03;0.11" dur="10s" repeatCount="indefinite"/></circle>
+  <!-- acks from 1 and 2 -->
+  <circle r="5" fill="#34d399" opacity="0"><animateMotion path="M170,200 L340,105" keyPoints="0;0;1;1" keyTimes="0;0.14;0.21;1" calcMode="linear" dur="10s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.14;0.22" dur="10s" repeatCount="indefinite"/></circle>
+  <circle r="5" fill="#34d399" opacity="0"><animateMotion path="M380,200 L380,105" keyPoints="0;0;1;1" keyTimes="0;0.14;0.21;1" calcMode="linear" dur="10s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.14;0.22" dur="10s" repeatCount="indefinite"/></circle>
+  <g opacity="0">
+    <text x="380" y="135" text-anchor="middle" fill="#34d399" font-size="12" font-weight="600">2 acks = W met → success to client (replica 3 catches up later)</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.22;0.42" dur="10s" repeatCount="indefinite"/>
+  </g>
+  <!-- read phase: dots to 2 and 3 -->
+  <circle r="6" fill="#e2e8f0" opacity="0"><animateMotion path="M380,105 L380,200" keyPoints="0;0;1;1" keyTimes="0;0.48;0.55;1" calcMode="linear" dur="10s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.48;0.56" dur="10s" repeatCount="indefinite"/></circle>
+  <circle r="6" fill="#e2e8f0" opacity="0"><animateMotion path="M420,105 L590,200" keyPoints="0;0;1;1" keyTimes="0;0.48;0.55;1" calcMode="linear" dur="10s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.48;0.56" dur="10s" repeatCount="indefinite"/></circle>
+  <circle r="5" fill="#38bdf8" opacity="0"><animateMotion path="M380,200 L380,105" keyPoints="0;0;1;1" keyTimes="0;0.58;0.65;1" calcMode="linear" dur="10s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.58;0.66" dur="10s" repeatCount="indefinite"/></circle>
+  <circle r="5" fill="#94a3b8" opacity="0"><animateMotion path="M590,200 L420,105" keyPoints="0;0;1;1" keyTimes="0;0.58;0.65;1" calcMode="linear" dur="10s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.58;0.66" dur="10s" repeatCount="indefinite"/></circle>
+  <g opacity="0">
+    <text x="380" y="135" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="600">read R=2 → got v2 and v1 → newest version wins → return v2</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.66;0.97" dur="10s" repeatCount="indefinite"/>
+  </g>
+  <!-- phase captions -->
+  <g opacity="0"><text x="380" y="330" text-anchor="middle" fill="#38bdf8" font-size="13" font-weight="600">WRITE: send to all N, wait for W=2 acknowledgments</text><animate attributeName="opacity" calcMode="discrete" values="1;0" keyTimes="0;0.45" dur="10s" repeatCount="indefinite"/></g>
+  <g opacity="0"><text x="380" y="330" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">READ: query R=2 replicas — the quorums MUST overlap somewhere</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.45" dur="10s" repeatCount="indefinite"/></g>
+  <text x="380" y="372" text-anchor="middle" fill="#94a3b8" font-size="13">W + R &gt; N  ⇒  every read quorum intersects every write quorum ⇒ reads always see the latest write.</text>
+  <text x="380" y="394" text-anchor="middle" fill="#94a3b8" font-size="13">Tune it: W=1,R=1 → fast but eventual · W=N → durable writes, slow · Cassandra's QUORUM = ⌊N/2⌋+1.</text>
+</svg>

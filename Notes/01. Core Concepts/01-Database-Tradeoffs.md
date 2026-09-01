@@ -207,6 +207,8 @@
 
 ## Data Structures & Indexing Tradeoffs
 
+![B-tree vs LSM-tree write path (animated)](./animations/lsm-vs-btree.svg)
+
 | Structure | Strengths | Tradeoffs | When to Use |
 |----------|-----------|-----------|-------------|
 | **Bloom Filter** | Very space-efficient membership checks; O(k) inserts/queries; avoids expensive lookups | False positives; no value retrieval; hard deletes unless counting/quotient; needs sizing to meet FP rate | Prefiltering before DB/cache lookups, cache-penetration protection, existence checks at massive scale |

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="760" height="400" rx="12" fill="#0f172a"/>
+  <text x="380" y="28" text-anchor="middle" fill="#e2e8f0" font-size="17" font-weight="600">Load Balancer — round robin, then a node fails</text>
+  <text x="90" y="205" text-anchor="middle" fill="#94a3b8" font-size="12">clients</text>
+  <rect x="280" y="170" width="120" height="60" rx="8" fill="#1e293b" stroke="#38bdf8"/>
+  <text x="340" y="205" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">LB</text>
+  <g>
+    <rect x="560" y="70" width="130" height="55" rx="8" fill="#1e293b" stroke="#34d399"/>
+    <text x="625" y="102" text-anchor="middle" fill="#e2e8f0" font-size="12">server 1</text>
+  </g>
+  <g>
+    <rect x="560" y="170" width="130" height="55" rx="8" fill="#1e293b" stroke="#34d399">
+      <animate attributeName="stroke" calcMode="discrete" values="#34d399;#f87171" keyTimes="0;0.42" dur="9s" repeatCount="indefinite"/>
+      <animate attributeName="fill" calcMode="discrete" values="#1e293b;#3f1d1d" keyTimes="0;0.42" dur="9s" repeatCount="indefinite"/>
+    </rect>
+    <text x="625" y="202" text-anchor="middle" fill="#e2e8f0" font-size="12">server 2</text>
+    <g opacity="0">
+      <text x="625" y="216" text-anchor="middle" fill="#f87171" font-size="10" font-weight="700">✗ health check failed — out of rotation</text>
+      <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.42" dur="9s" repeatCount="indefinite"/>
+    </g>
+  </g>
+  <g>
+    <rect x="560" y="270" width="130" height="55" rx="8" fill="#1e293b" stroke="#34d399"/>
+    <text x="625" y="302" text-anchor="middle" fill="#e2e8f0" font-size="12">server 3</text>
+  </g>
+  <!-- request dots -->
+  <circle r="6" fill="#e2e8f0" opacity="0"><animateMotion path="M110,200 L280,200 L400,200 L560,97" keyPoints="0;0;1;1" keyTimes="0;0.02;0.11;1" calcMode="linear" dur="9s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.02;0.12" dur="9s" repeatCount="indefinite"/></circle>
+  <circle r="6" fill="#e2e8f0" opacity="0"><animateMotion path="M110,200 L280,200 L400,200 L560,197" keyPoints="0;0;1;1" keyTimes="0;0.14;0.23;1" calcMode="linear" dur="9s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.14;0.24" dur="9s" repeatCount="indefinite"/></circle>
+  <circle r="6" fill="#e2e8f0" opacity="0"><animateMotion path="M110,200 L280,200 L400,200 L560,297" keyPoints="0;0;1;1" keyTimes="0;0.26;0.35;1" calcMode="linear" dur="9s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.26;0.36" dur="9s" repeatCount="indefinite"/></circle>
+  <circle r="6" fill="#e2e8f0" opacity="0"><animateMotion path="M110,200 L280,200 L400,200 L560,97" keyPoints="0;0;1;1" keyTimes="0;0.5;0.59;1" calcMode="linear" dur="9s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.5;0.60" dur="9s" repeatCount="indefinite"/></circle>
+  <circle r="6" fill="#e2e8f0" opacity="0"><animateMotion path="M110,200 L280,200 L400,200 L560,297" keyPoints="0;0;1;1" keyTimes="0;0.62;0.71;1" calcMode="linear" dur="9s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.62;0.72" dur="9s" repeatCount="indefinite"/></circle>
+  <circle r="6" fill="#e2e8f0" opacity="0"><animateMotion path="M110,200 L280,200 L400,200 L560,97" keyPoints="0;0;1;1" keyTimes="0;0.74;0.83;1" calcMode="linear" dur="9s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.74;0.84" dur="9s" repeatCount="indefinite"/></circle>
+  <g opacity="0"><text x="380" y="360" text-anchor="middle" fill="#e2e8f0" font-size="13">round robin: 1 → 2 → 3 → 1 → …</text><animate attributeName="opacity" calcMode="discrete" values="1;0" keyTimes="0;0.42" dur="9s" repeatCount="indefinite"/></g>
+  <g opacity="0"><text x="380" y="360" text-anchor="middle" fill="#fbbf24" font-size="13">server 2 removed → traffic redistributes to 1 and 3; users never notice</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.42" dur="9s" repeatCount="indefinite"/></g>
+  <text x="380" y="386" text-anchor="middle" fill="#94a3b8" font-size="12">Other strategies: least-connections (uneven work), IP/consistent hash (sticky sessions, cache affinity), weighted (mixed hardware).</text>
+</svg>

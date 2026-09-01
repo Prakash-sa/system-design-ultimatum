@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 310" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="760" height="310" rx="12" fill="#0f172a"/>
+  <text x="380" y="26" text-anchor="middle" fill="#e2e8f0" font-size="16" font-weight="600">MPI Collectives</text>
+  <line x1="255" y1="40" x2="255" y2="260" stroke="#334155"/>
+  <line x1="505" y1="40" x2="505" y2="260" stroke="#334155"/>
+  <!-- ===== Broadcast ===== -->
+  <text x="130" y="52" text-anchor="middle" fill="#38bdf8" font-size="13" font-weight="600">Bcast</text>
+  <circle cx="130" cy="85" r="14" fill="#38bdf8"/><text x="130" y="90" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="700">root</text>
+  <g fill="#334155" stroke="#475569">
+    <circle cx="55" cy="210" r="12"><animate attributeName="fill" calcMode="discrete" values="#334155;#1e3a5f;#334155" keyTimes="0;0.4;0.95" dur="6s" repeatCount="indefinite"/></circle>
+    <circle cx="105" cy="210" r="12"><animate attributeName="fill" calcMode="discrete" values="#334155;#1e3a5f;#334155" keyTimes="0;0.4;0.95" dur="6s" repeatCount="indefinite"/></circle>
+    <circle cx="155" cy="210" r="12"><animate attributeName="fill" calcMode="discrete" values="#334155;#1e3a5f;#334155" keyTimes="0;0.4;0.95" dur="6s" repeatCount="indefinite"/></circle>
+    <circle cx="205" cy="210" r="12"><animate attributeName="fill" calcMode="discrete" values="#334155;#1e3a5f;#334155" keyTimes="0;0.4;0.95" dur="6s" repeatCount="indefinite"/></circle>
+  </g>
+  <g>
+    <circle r="5" fill="#38bdf8"><animateMotion path="M130,100 L55,196" keyPoints="0;0;1;1" keyTimes="0;0.1;0.35;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.1;0.38" dur="6s" repeatCount="indefinite"/></circle>
+    <circle r="5" fill="#38bdf8"><animateMotion path="M130,100 L105,196" keyPoints="0;0;1;1" keyTimes="0;0.1;0.35;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.1;0.38" dur="6s" repeatCount="indefinite"/></circle>
+    <circle r="5" fill="#38bdf8"><animateMotion path="M130,100 L155,196" keyPoints="0;0;1;1" keyTimes="0;0.1;0.35;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.1;0.38" dur="6s" repeatCount="indefinite"/></circle>
+    <circle r="5" fill="#38bdf8"><animateMotion path="M130,100 L205,196" keyPoints="0;0;1;1" keyTimes="0;0.1;0.35;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.1;0.38" dur="6s" repeatCount="indefinite"/></circle>
+  </g>
+  <text x="130" y="250" text-anchor="middle" fill="#94a3b8" font-size="11">same data to all · O(log p) tree</text>
+  <!-- ===== Scatter ===== -->
+  <text x="380" y="52" text-anchor="middle" fill="#a78bfa" font-size="13" font-weight="600">Scatter</text>
+  <circle cx="380" cy="85" r="14" fill="#a78bfa"/><text x="380" y="90" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="700">root</text>
+  <g fill="#334155" stroke="#475569">
+    <circle cx="305" cy="210" r="12"><animate attributeName="fill" calcMode="discrete" values="#334155;#38bdf8;#334155" keyTimes="0;0.4;0.95" dur="6s" repeatCount="indefinite"/></circle>
+    <circle cx="355" cy="210" r="12"><animate attributeName="fill" calcMode="discrete" values="#334155;#34d399;#334155" keyTimes="0;0.4;0.95" dur="6s" repeatCount="indefinite"/></circle>
+    <circle cx="405" cy="210" r="12"><animate attributeName="fill" calcMode="discrete" values="#334155;#fbbf24;#334155" keyTimes="0;0.4;0.95" dur="6s" repeatCount="indefinite"/></circle>
+    <circle cx="455" cy="210" r="12"><animate attributeName="fill" calcMode="discrete" values="#334155;#f87171;#334155" keyTimes="0;0.4;0.95" dur="6s" repeatCount="indefinite"/></circle>
+  </g>
+  <g>
+    <circle r="5" fill="#38bdf8"><animateMotion path="M380,100 L305,196" keyPoints="0;0;1;1" keyTimes="0;0.1;0.35;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.1;0.38" dur="6s" repeatCount="indefinite"/></circle>
+    <circle r="5" fill="#34d399"><animateMotion path="M380,100 L355,196" keyPoints="0;0;1;1" keyTimes="0;0.1;0.35;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.1;0.38" dur="6s" repeatCount="indefinite"/></circle>
+    <circle r="5" fill="#fbbf24"><animateMotion path="M380,100 L405,196" keyPoints="0;0;1;1" keyTimes="0;0.1;0.35;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.1;0.38" dur="6s" repeatCount="indefinite"/></circle>
+    <circle r="5" fill="#f87171"><animateMotion path="M380,100 L455,196" keyPoints="0;0;1;1" keyTimes="0;0.1;0.35;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.1;0.38" dur="6s" repeatCount="indefinite"/></circle>
+  </g>
+  <text x="380" y="250" text-anchor="middle" fill="#94a3b8" font-size="11">different block to each · Gather reverses it</text>
+  <!-- ===== Allreduce ===== -->
+  <text x="630" y="52" text-anchor="middle" fill="#fbbf24" font-size="13" font-weight="600">Allreduce</text>
+  <circle cx="630" cy="110" r="15" fill="#3b2f1e" stroke="#fbbf24">
+    <animate attributeName="fill" calcMode="discrete" values="#3b2f1e;#fbbf24;#3b2f1e" keyTimes="0;0.36;0.52" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  <text x="630" y="115" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="700">Σ</text>
+  <g fill="#334155" stroke="#475569">
+    <circle cx="555" cy="210" r="12"><animate attributeName="fill" calcMode="discrete" values="#334155;#fbbf24;#334155" keyTimes="0;0.75;0.97" dur="6s" repeatCount="indefinite"/></circle>
+    <circle cx="605" cy="210" r="12"><animate attributeName="fill" calcMode="discrete" values="#334155;#fbbf24;#334155" keyTimes="0;0.75;0.97" dur="6s" repeatCount="indefinite"/></circle>
+    <circle cx="655" cy="210" r="12"><animate attributeName="fill" calcMode="discrete" values="#334155;#fbbf24;#334155" keyTimes="0;0.75;0.97" dur="6s" repeatCount="indefinite"/></circle>
+    <circle cx="705" cy="210" r="12"><animate attributeName="fill" calcMode="discrete" values="#334155;#fbbf24;#334155" keyTimes="0;0.75;0.97" dur="6s" repeatCount="indefinite"/></circle>
+  </g>
+  <!-- up dots -->
+  <g>
+    <circle r="4" fill="#38bdf8"><animateMotion path="M555,198 L622,122" keyPoints="0;0;1;1" keyTimes="0;0.08;0.32;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.08;0.34" dur="6s" repeatCount="indefinite"/></circle>
+    <circle r="4" fill="#34d399"><animateMotion path="M605,198 L628,124" keyPoints="0;0;1;1" keyTimes="0;0.08;0.32;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.08;0.34" dur="6s" repeatCount="indefinite"/></circle>
+    <circle r="4" fill="#a78bfa"><animateMotion path="M655,198 L634,124" keyPoints="0;0;1;1" keyTimes="0;0.08;0.32;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.08;0.34" dur="6s" repeatCount="indefinite"/></circle>
+    <circle r="4" fill="#f87171"><animateMotion path="M705,198 L638,122" keyPoints="0;0;1;1" keyTimes="0;0.08;0.32;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.08;0.34" dur="6s" repeatCount="indefinite"/></circle>
+  </g>
+  <!-- down dots (result to everyone) -->
+  <g>
+    <circle r="4" fill="#fbbf24"><animateMotion path="M622,122 L555,198" keyPoints="0;0;1;1" keyTimes="0;0.5;0.72;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.5;0.74" dur="6s" repeatCount="indefinite"/></circle>
+    <circle r="4" fill="#fbbf24"><animateMotion path="M628,124 L605,198" keyPoints="0;0;1;1" keyTimes="0;0.5;0.72;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.5;0.74" dur="6s" repeatCount="indefinite"/></circle>
+    <circle r="4" fill="#fbbf24"><animateMotion path="M634,124 L655,198" keyPoints="0;0;1;1" keyTimes="0;0.5;0.72;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.5;0.74" dur="6s" repeatCount="indefinite"/></circle>
+    <circle r="4" fill="#fbbf24"><animateMotion path="M638,122 L705,198" keyPoints="0;0;1;1" keyTimes="0;0.5;0.72;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.5;0.74" dur="6s" repeatCount="indefinite"/></circle>
+  </g>
+  <text x="630" y="250" text-anchor="middle" fill="#94a3b8" font-size="11">combine + give result to all</text>
+  <text x="380" y="288" text-anchor="middle" fill="#94a3b8" font-size="12">Collectives synchronize everyone — at scale they dominate runtime (every CG iteration's dot product is an Allreduce).</text>
+</svg>

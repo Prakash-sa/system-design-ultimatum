@@ -129,6 +129,8 @@ A comprehensive reference for comparing widely-used AWS services across compute,
 
 ### SQS vs SNS vs Kinesis
 
+![Queue as shock absorber (animated)](./animations/sqs-buffering.svg)
+
 | Feature | SQS (Simple Queue Service) | SNS (Simple Notification Service) | Kinesis Data Streams |
 |---------|---------------------------|-----------------------------------|---------------------|
 | **Pattern** | Queue (point-to-point, pull-based) | Pub/Sub (push-based, fan-out) | Real-time streaming (ordered, replayable) |

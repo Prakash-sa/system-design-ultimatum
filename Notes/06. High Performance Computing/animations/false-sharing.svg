@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 430" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="760" height="430" rx="12" fill="#0f172a"/>
+  <text x="380" y="28" text-anchor="middle" fill="#e2e8f0" font-size="17" font-weight="600">False Sharing — one cache line, two writers</text>
+  <text x="380" y="54" text-anchor="middle" fill="#f87171" font-size="13" font-weight="600">✗ x and y live on the SAME 64 B line</text>
+  <!-- cores -->
+  <rect x="60" y="68" width="200" height="112" rx="8" fill="#1e293b" stroke="#475569"/>
+  <text x="160" y="88" text-anchor="middle" fill="#e2e8f0" font-size="13">Core 0 · L1  (T0 writes x)</text>
+  <rect x="75" y="100" width="170" height="52" rx="6" fill="none" stroke="#475569" stroke-dasharray="4 4"/>
+  <rect x="500" y="68" width="200" height="112" rx="8" fill="#1e293b" stroke="#475569"/>
+  <text x="600" y="88" text-anchor="middle" fill="#e2e8f0" font-size="13">Core 1 · L1  (T1 writes y)</text>
+  <rect x="515" y="100" width="170" height="52" rx="6" fill="none" stroke="#475569" stroke-dasharray="4 4"/>
+  <!-- the bouncing cache line -->
+  <g>
+    <rect x="80" y="106" width="80" height="40" fill="#38bdf8" rx="4"/>
+    <rect x="160" y="106" width="80" height="40" fill="#fb923c" rx="4"/>
+    <rect x="80" y="106" width="160" height="40" fill="none" stroke="#f87171" stroke-width="3" rx="4"/>
+    <text x="120" y="131" text-anchor="middle" fill="#0f172a" font-size="13" font-weight="700">x</text>
+    <text x="200" y="131" text-anchor="middle" fill="#0f172a" font-size="13" font-weight="700">y</text>
+    <animateTransform attributeName="transform" type="translate" calcMode="discrete" values="0 0;440 0" keyTimes="0;0.5" dur="4s" repeatCount="indefinite"/>
+  </g>
+  <!-- invalidate arrows -->
+  <g opacity="0">
+    <line x1="270" y1="126" x2="480" y2="126" stroke="#f87171" stroke-width="3"/>
+    <polygon points="490,126 474,118 474,134" fill="#f87171"/>
+    <text x="380" y="114" text-anchor="middle" fill="#f87171" font-size="12" font-weight="600">T1 writes y → invalidate! line migrates</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.38;0.5" dur="4s" repeatCount="indefinite"/>
+  </g>
+  <g opacity="0">
+    <line x1="490" y1="164" x2="280" y2="164" stroke="#f87171" stroke-width="3"/>
+    <polygon points="270,164 286,156 286,172" fill="#f87171"/>
+    <text x="380" y="196" text-anchor="middle" fill="#f87171" font-size="12" font-weight="600">T0 writes x → invalidate! line migrates back</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.88;0.995" dur="4s" repeatCount="indefinite"/>
+  </g>
+  <!-- fixed version -->
+  <text x="380" y="240" text-anchor="middle" fill="#34d399" font-size="13" font-weight="600">✓ fix: pad each variable to its own 64 B line — no traffic at all</text>
+  <rect x="60" y="255" width="200" height="100" rx="8" fill="#1e293b" stroke="#475569"/>
+  <text x="160" y="275" text-anchor="middle" fill="#e2e8f0" font-size="13">Core 0 · L1</text>
+  <g>
+    <rect x="80" y="290" width="70" height="36" fill="#38bdf8" rx="4"/>
+    <rect x="150" y="290" width="90" height="36" fill="#334155" rx="4"/>
+    <rect x="80" y="290" width="160" height="36" fill="none" stroke="#34d399" stroke-width="2" rx="4"/>
+    <text x="115" y="313" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="700">x</text>
+    <text x="195" y="313" text-anchor="middle" fill="#94a3b8" font-size="11">pad 56 B</text>
+    <animate attributeName="opacity" values="0.65;1;0.65" keyTimes="0;0.5;1" dur="2s" repeatCount="indefinite"/>
+  </g>
+  <rect x="500" y="255" width="200" height="100" rx="8" fill="#1e293b" stroke="#475569"/>
+  <text x="600" y="275" text-anchor="middle" fill="#e2e8f0" font-size="13">Core 1 · L1</text>
+  <g>
+    <rect x="520" y="290" width="70" height="36" fill="#fb923c" rx="4"/>
+    <rect x="590" y="290" width="90" height="36" fill="#334155" rx="4"/>
+    <rect x="520" y="290" width="160" height="36" fill="none" stroke="#34d399" stroke-width="2" rx="4"/>
+    <text x="555" y="313" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="700">y</text>
+    <text x="635" y="313" text-anchor="middle" fill="#94a3b8" font-size="11">pad 56 B</text>
+    <animate attributeName="opacity" values="0.65;1;0.65" keyTimes="0;0.5;1" dur="2s" repeatCount="indefinite"/>
+  </g>
+  <text x="380" y="386" text-anchor="middle" fill="#94a3b8" font-size="13">Same data, zero logical sharing — but the top version ping-pongs the line in Modified state</text>
+  <text x="380" y="406" text-anchor="middle" fill="#94a3b8" font-size="13">on every write (10–100× slower). Pad per-thread data, or use reduction clauses.</text>
+</svg>

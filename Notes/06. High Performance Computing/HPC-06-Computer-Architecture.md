@@ -10,6 +10,8 @@ A cluster is only as good as what each core does per cycle. Most "parallel" perf
 
 A processor overlaps instruction execution in stages (classic 5-stage: fetch → decode → execute → memory → writeback). With `k` stages, ideal throughput approaches 1 instruction/cycle with latency unchanged.
 
+![Pipelined execution (animated)](./animations/pipeline.svg)
+
 ### Pipeline hazards
 
 | Hazard | Cause | Mitigation |
@@ -63,6 +65,8 @@ One instruction operates on a whole vector register:
 | DRAM | 100s GB | ~100 ns | ~100–400 GB/s per socket |
 | HBM (GPU/some CPUs) | 10s GB | similar latency, ~1–3 TB/s | bandwidth tier |
 | NVMe / parallel FS | TB–PB | µs–ms | I/O tier |
+
+![Memory hierarchy latency (animated)](./animations/cache-hierarchy.svg)
 
 CPUs compute far faster than DRAM can feed them (the **memory wall**). Caches only work because programs have **locality**:
 - **Temporal locality**: recently used data is reused soon.
@@ -122,6 +126,8 @@ for (ii = 0; ii < N; ii += B)
 
 Choose B so three B×B blocks fit in cache. In practice: call BLAS (`dgemm`) — it does this plus vectorization plus prefetching.
 
+![Blocked matrix multiply tiling (animated)](./animations/tiling.svg)
+
 ## Virtual Memory and the TLB
 
 - Programs use virtual addresses; hardware translates via **page tables** (pages typically 4 KB).
@@ -132,6 +138,8 @@ Choose B so three B×B blocks fit in cache. In practice: call BLAS (`dgemm`) —
 ## NUMA (Non-Uniform Memory Access)
 
 Each socket has its own memory controller; a socket's cores reach local DRAM faster (~100 ns) than the other socket's (~150–200 ns, over the inter-socket link).
+
+![NUMA local vs remote access (animated)](./animations/numa.svg)
 
 Rules that matter:
 - **First-touch policy**: a page is placed on the NUMA node of the core that first *writes* it. Initialize arrays with the same thread layout that will compute on them (a serial init loop puts everything on socket 0 and halves bandwidth for socket 1's threads).
@@ -164,6 +172,8 @@ A write requires exclusive ownership → other copies get invalidated → their 
 ### False sharing (classic exam + real-world bug)
 
 Two threads write *different* variables that live on the *same* 64 B cache line → the line ping-pongs between cores in M state → huge slowdown with zero logical sharing.
+
+![False sharing (animated)](./animations/false-sharing.svg)
 
 ```c
 double partial[NTHREADS];          /* adjacent doubles share lines: BAD */

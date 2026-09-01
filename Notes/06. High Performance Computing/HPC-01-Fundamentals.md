@@ -2,6 +2,8 @@
 
 This is the entry point for the whole HPC note set. Start here, then go deeper with the focused files. Together these notes cover both the **platform/interview side** (Slurm, MPI, storage, cloud) and the **academic course side** (architecture, parallel programming, parallel algorithms, performance theory — the material in NPTEL HPC / parallel computing courses, CMU 15-418-style courses, and CUDA courses).
 
+> 🎬 These notes contain looping animations (in `animations/`). They play automatically in the VS Code markdown preview (`⌘⇧V`) and on GitHub.
+
 ## The Full Map
 
 | File | Covers |
@@ -125,6 +127,8 @@ Almost every real cluster today is hybrid: MPI across nodes, threads/GPUs within
 
 ## Workload Shapes
 
+![Embarrassingly parallel vs tightly coupled (animated)](./animations/workload-shapes.svg)
+
 ### Embarrassingly parallel
 
 Tasks are independent, no communication between them.
@@ -169,6 +173,8 @@ Strong scaling always saturates: per-process work shrinks while communication an
 
 Problem size grows with resources (fixed work per process). Question: does runtime stay roughly constant? This is how the biggest simulations justify the biggest machines.
 
+![Strong vs weak scaling (animated)](./animations/strong-vs-weak.svg)
+
 ### Amdahl's Law (strong-scaling limit)
 
 If a fraction `f` of the program is serial:
@@ -178,6 +184,8 @@ S(p) = 1 / (f + (1 - f)/p)        S(∞) = 1/f
 ```
 
 Example: f = 5% serial → max speedup 20, no matter how many cores. Amdahl is why "just add nodes" fails.
+
+![Amdahl's Law (animated)](./animations/amdahl.svg)
 
 ### Gustafson's Law (weak-scaling view)
 

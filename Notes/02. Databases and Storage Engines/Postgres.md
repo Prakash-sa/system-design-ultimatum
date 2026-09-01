@@ -212,6 +212,8 @@ Benefits: concurrent writes to different partitions, index updates only on relev
 
 ### Replication
 
+![WAL and streaming replication (animated)](./animations/wal-replication.svg)
+
 Two purposes: **scaling reads** and **high availability**.
 
 | Mode | Behavior | Tradeoff |

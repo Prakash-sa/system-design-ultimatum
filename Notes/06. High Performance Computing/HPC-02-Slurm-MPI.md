@@ -64,6 +64,8 @@ Generic resources such as:
 
 ## Slurm Job Lifecycle
 
+![Slurm job lifecycle (animated)](./animations/slurm-lifecycle.svg)
+
 1. user writes job script
 2. submit with `sbatch`
 3. job enters queue
@@ -122,6 +124,8 @@ Use MPI when:
 - **communicator**: group of ranks
 - **point-to-point communication**: send/receive
 - **collectives**: broadcast, reduce, all-reduce, gather, scatter
+
+![MPI collectives (animated)](./animations/mpi-collectives.svg)
 
 ## Why MPI Matters
 

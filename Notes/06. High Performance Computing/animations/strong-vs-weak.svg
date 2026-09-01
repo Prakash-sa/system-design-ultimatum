@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 420" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="760" height="420" rx="12" fill="#0f172a"/>
+  <text x="380" y="28" text-anchor="middle" fill="#e2e8f0" font-size="17" font-weight="600">Strong vs Weak Scaling</text>
+  <line x1="380" y1="45" x2="380" y2="360" stroke="#334155"/>
+  <!-- STRONG -->
+  <text x="190" y="60" text-anchor="middle" fill="#38bdf8" font-size="14" font-weight="600">Strong: same problem, more workers</text>
+  <rect x="120" y="90" width="140" height="140" rx="4" fill="#1e3a5f" stroke="#38bdf8"/>
+  <line x1="190" y1="90" x2="190" y2="230" stroke="#0f172a" stroke-width="3" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.25" dur="8s" repeatCount="indefinite"/>
+  </line>
+  <line x1="120" y1="160" x2="260" y2="160" stroke="#0f172a" stroke-width="3" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.5" dur="8s" repeatCount="indefinite"/>
+  </line>
+  <g opacity="0">
+    <line x1="155" y1="90" x2="155" y2="230" stroke="#0f172a" stroke-width="3"/>
+    <line x1="225" y1="90" x2="225" y2="230" stroke="#0f172a" stroke-width="3"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.75" dur="8s" repeatCount="indefinite"/>
+  </g>
+  <g opacity="0"><text x="190" y="260" text-anchor="middle" fill="#e2e8f0" font-size="13">p = 1</text><animate attributeName="opacity" calcMode="discrete" values="1;0" keyTimes="0;0.25" dur="8s" repeatCount="indefinite"/></g>
+  <g opacity="0"><text x="190" y="260" text-anchor="middle" fill="#e2e8f0" font-size="13">p = 2</text><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.25;0.5" dur="8s" repeatCount="indefinite"/></g>
+  <g opacity="0"><text x="190" y="260" text-anchor="middle" fill="#e2e8f0" font-size="13">p = 4</text><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.5;0.75" dur="8s" repeatCount="indefinite"/></g>
+  <g opacity="0"><text x="190" y="260" text-anchor="middle" fill="#e2e8f0" font-size="13">p = 8</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.75" dur="8s" repeatCount="indefinite"/></g>
+  <text x="110" y="300" text-anchor="start" fill="#94a3b8" font-size="12">runtime:</text>
+  <rect x="110" y="310" width="200" height="16" rx="3" fill="none" stroke="#475569"/>
+  <rect x="110" y="310" width="200" height="16" rx="3" fill="#34d399">
+    <animate attributeName="width" calcMode="discrete" values="200;100;50;25" keyTimes="0;0.25;0.5;0.75" dur="8s" repeatCount="indefinite"/>
+  </rect>
+  <text x="190" y="352" text-anchor="middle" fill="#94a3b8" font-size="12">goal: T = T₁/p  (Amdahl limits this)</text>
+  <!-- WEAK -->
+  <text x="570" y="60" text-anchor="middle" fill="#fbbf24" font-size="14" font-weight="600">Weak: problem grows with workers</text>
+  <rect x="535" y="125" width="70" height="70" rx="4" fill="#3b2f1e" stroke="#fbbf24">
+    <animate attributeName="x" calcMode="discrete" values="535;520;500;470" keyTimes="0;0.25;0.5;0.75" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="y" calcMode="discrete" values="125;110;90;60" keyTimes="0;0.25;0.5;0.75" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="width" calcMode="discrete" values="70;100;140;200" keyTimes="0;0.25;0.5;0.75" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="height" calcMode="discrete" values="70;100;140;200" keyTimes="0;0.25;0.5;0.75" dur="8s" repeatCount="indefinite"/>
+  </rect>
+  <g opacity="0"><text x="570" y="260" text-anchor="middle" fill="#e2e8f0" font-size="13">p = 1 · work/worker fixed</text><animate attributeName="opacity" calcMode="discrete" values="1;0" keyTimes="0;0.25" dur="8s" repeatCount="indefinite"/></g>
+  <g opacity="0"><text x="570" y="260" text-anchor="middle" fill="#e2e8f0" font-size="13">p = 2 · problem 2×</text><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.25;0.5" dur="8s" repeatCount="indefinite"/></g>
+  <g opacity="0"><text x="570" y="260" text-anchor="middle" fill="#e2e8f0" font-size="13">p = 4 · problem 4×</text><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.5;0.75" dur="8s" repeatCount="indefinite"/></g>
+  <g opacity="0"><text x="570" y="260" text-anchor="middle" fill="#e2e8f0" font-size="13">p = 8 · problem 8×</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.75" dur="8s" repeatCount="indefinite"/></g>
+  <text x="490" y="300" text-anchor="start" fill="#94a3b8" font-size="12">runtime:</text>
+  <rect x="490" y="310" width="200" height="16" rx="3" fill="none" stroke="#475569"/>
+  <rect x="490" y="310" width="100" height="16" rx="3" fill="#34d399">
+    <animate attributeName="opacity" values="0.7;1;0.7" keyTimes="0;0.5;1" dur="2s" repeatCount="indefinite"/>
+  </rect>
+  <text x="570" y="352" text-anchor="middle" fill="#94a3b8" font-size="12">goal: T stays constant  (Gustafson's view)</text>
+  <text x="380" y="390" text-anchor="middle" fill="#94a3b8" font-size="13">Strong scaling asks "can I finish faster?" — weak scaling asks "can I solve bigger?" Report both in scaling studies.</text>
+</svg>

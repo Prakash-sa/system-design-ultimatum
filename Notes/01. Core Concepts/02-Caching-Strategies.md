@@ -26,6 +26,8 @@
 
 ### Cache Aside (Lazy Loading) Pattern
 
+![Cache-aside flow (animated)](./animations/cache-aside.svg)
+
 <details>
 <summary>Click to view code</summary>
 

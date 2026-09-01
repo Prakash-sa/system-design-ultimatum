@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 420" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="760" height="420" rx="12" fill="#0f172a"/>
+  <text x="380" y="28" text-anchor="middle" fill="#e2e8f0" font-size="17" font-weight="600">WAL + Streaming Replication — one log drives everything</text>
+  <!-- primary -->
+  <rect x="55" y="70" width="310" height="230" rx="10" fill="#1e293b" stroke="#38bdf8"/>
+  <text x="210" y="92" text-anchor="middle" fill="#38bdf8" font-size="13" font-weight="600">Primary</text>
+  <rect x="75" y="105" width="270" height="60" rx="6" fill="#0b1f33" stroke="#475569"/>
+  <text x="210" y="123" text-anchor="middle" fill="#94a3b8" font-size="11">data pages (updated in memory, flushed lazily)</text>
+  <rect x="95" y="132" width="50" height="22" rx="3" fill="#334155">
+    <animate attributeName="fill" values="#334155;#334155;#1e5f43;#334155" keyTimes="0;0.2;0.28;0.4" dur="9s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="155" y="132" width="50" height="22" rx="3" fill="#334155">
+    <animate attributeName="fill" values="#334155;#334155;#1e5f43;#334155" keyTimes="0;0.55;0.63;0.75" dur="9s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="215" y="132" width="50" height="22" rx="3" fill="#334155"/>
+  <text x="75" y="205" fill="#94a3b8" font-size="11">WAL (append-only, fsync'd):</text>
+  <rect x="75" y="215" width="270" height="40" rx="6" fill="#0b1f33" stroke="#fb923c"/>
+  <rect x="85" y="223" width="55" height="24" rx="3" fill="#3b2f1e" stroke="#fb923c"/>
+  <text x="112" y="240" text-anchor="middle" fill="#94a3b8" font-size="10">rec 101</text>
+  <g opacity="0">
+    <rect x="148" y="223" width="55" height="24" rx="3" fill="#fb923c"/>
+    <text x="175" y="240" text-anchor="middle" fill="#0f172a" font-size="10" font-weight="700">rec 102</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.1" dur="9s" repeatCount="indefinite"/>
+  </g>
+  <g opacity="0">
+    <rect x="211" y="223" width="55" height="24" rx="3" fill="#fb923c"/>
+    <text x="238" y="240" text-anchor="middle" fill="#0f172a" font-size="10" font-weight="700">rec 103</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.45" dur="9s" repeatCount="indefinite"/>
+  </g>
+  <!-- client write -->
+  <circle r="6" fill="#fbbf24" opacity="0">
+    <animateMotion path="M210,40 L175,220" keyPoints="0;0;1;1" keyTimes="0;0.02;0.09;1" calcMode="linear" dur="9s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.02;0.1" dur="9s" repeatCount="indefinite"/>
+  </circle>
+  <text x="240" y="48" fill="#94a3b8" font-size="11">COMMIT</text>
+  <g opacity="0">
+    <text x="210" y="280" text-anchor="middle" fill="#34d399" font-size="11" font-weight="600">✓ ack after sequential WAL append — not after page writes</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.11;0.4" dur="9s" repeatCount="indefinite"/>
+  </g>
+  <!-- replica -->
+  <rect x="430" y="70" width="275" height="230" rx="10" fill="#1e293b" stroke="#a78bfa"/>
+  <text x="567" y="92" text-anchor="middle" fill="#a78bfa" font-size="13" font-weight="600">Replica (read-only)</text>
+  <rect x="450" y="105" width="235" height="60" rx="6" fill="#0b1f33" stroke="#475569"/>
+  <text x="567" y="123" text-anchor="middle" fill="#94a3b8" font-size="11">data pages</text>
+  <rect x="470" y="132" width="50" height="22" rx="3" fill="#334155">
+    <animate attributeName="fill" values="#334155;#334155;#1e5f43;#334155" keyTimes="0;0.36;0.44;0.56" dur="9s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="530" y="132" width="50" height="22" rx="3" fill="#334155">
+    <animate attributeName="fill" values="#334155;#334155;#1e5f43;#334155" keyTimes="0;0.72;0.8;0.92" dur="9s" repeatCount="indefinite"/>
+  </rect>
+  <text x="450" y="205" fill="#94a3b8" font-size="11">replayed WAL:</text>
+  <rect x="450" y="215" width="235" height="40" rx="6" fill="#0b1f33" stroke="#a78bfa"/>
+  <g opacity="0">
+    <rect x="462" y="223" width="55" height="24" rx="3" fill="#a78bfa"/>
+    <text x="489" y="240" text-anchor="middle" fill="#0f172a" font-size="10" font-weight="700">rec 102</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.34" dur="9s" repeatCount="indefinite"/>
+  </g>
+  <g opacity="0">
+    <rect x="525" y="223" width="55" height="24" rx="3" fill="#a78bfa"/>
+    <text x="552" y="240" text-anchor="middle" fill="#0f172a" font-size="10" font-weight="700">rec 103</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.7" dur="9s" repeatCount="indefinite"/>
+  </g>
+  <!-- shipping chips -->
+  <rect x="-27" y="-12" width="55" height="24" rx="3" fill="#fb923c" opacity="0">
+    <animateMotion path="M345,235 L462,235" keyPoints="0;0;1;1" keyTimes="0;0.24;0.33;1" calcMode="linear" dur="9s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.24;0.34" dur="9s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="-27" y="-12" width="55" height="24" rx="3" fill="#fb923c" opacity="0">
+    <animateMotion path="M345,235 L525,235" keyPoints="0;0;1;1" keyTimes="0;0.6;0.69;1" calcMode="linear" dur="9s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.6;0.7" dur="9s" repeatCount="indefinite"/>
+  </rect>
+  <text x="388" y="222" text-anchor="middle" fill="#94a3b8" font-size="10">ship log</text>
+  <text x="380" y="340" text-anchor="middle" fill="#94a3b8" font-size="13">One sequential log gives you: fast commits (no random I/O on the critical path), crash recovery (replay),</text>
+  <text x="380" y="360" text-anchor="middle" fill="#94a3b8" font-size="13">replication (ship + replay), and PITR (archive). Async replay = replica lag → read-your-writes problems.</text>
+  <text x="380" y="392" text-anchor="middle" fill="#94a3b8" font-size="13">Same idea everywhere: Postgres WAL, MySQL binlog, Kafka's log, Raft's log.</text>
+</svg>

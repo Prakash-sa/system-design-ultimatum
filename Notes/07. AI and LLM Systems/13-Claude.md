@@ -40,6 +40,8 @@ A **Large Language Model (LLM)** is a deep learning model trained on massive tex
 
 ### How LLMs Generate Text
 
+![Autoregressive generation and KV cache (animated)](./animations/autoregressive.svg)
+
 <details>
 <summary>Click to view explanation</summary>
 
@@ -239,6 +241,8 @@ Document:
 RAG combines a retrieval system with an LLM — first retrieve relevant documents, then generate answers grounded in those documents.
 
 ### RAG Architecture
+
+![RAG pipeline (animated)](./animations/rag.svg)
 
 <details>
 <summary>Click to view architecture</summary>

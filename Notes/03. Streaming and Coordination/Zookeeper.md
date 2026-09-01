@@ -319,6 +319,8 @@ Modern alternatives often preferred today:
 
 ### 3. Leader Election
 
+![ZooKeeper leader election (animated)](./animations/zk-leader-election.svg)
+
 ZooKeeper's classic recipe uses **ephemeral sequential** nodes.
 
 Pattern:

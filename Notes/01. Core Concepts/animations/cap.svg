@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 430" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="760" height="430" rx="12" fill="#0f172a"/>
+  <text x="380" y="28" text-anchor="middle" fill="#e2e8f0" font-size="17" font-weight="600">CAP — when the partition happens, you must pick C or A</text>
+  <line x1="380" y1="45" x2="380" y2="370" stroke="#334155"/>
+  <!-- CP panel -->
+  <text x="195" y="60" text-anchor="middle" fill="#38bdf8" font-size="13" font-weight="600">CP: stay consistent, refuse writes</text>
+  <rect x="55" y="90" width="110" height="60" rx="8" fill="#1e293b" stroke="#94a3b8"/>
+  <text x="110" y="115" text-anchor="middle" fill="#e2e8f0" font-size="12">Node A</text>
+  <text x="110" y="136" text-anchor="middle" fill="#34d399" font-size="12" font-weight="700">v1</text>
+  <rect x="225" y="90" width="110" height="60" rx="8" fill="#1e293b" stroke="#94a3b8"/>
+  <text x="280" y="115" text-anchor="middle" fill="#e2e8f0" font-size="12">Node B</text>
+  <text x="280" y="136" text-anchor="middle" fill="#34d399" font-size="12" font-weight="700">v1</text>
+  <line x1="165" y1="120" x2="225" y2="120" stroke="#34d399" stroke-width="3">
+    <animate attributeName="stroke" calcMode="discrete" values="#34d399;#f87171" keyTimes="0;0.25" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="stroke-dasharray" calcMode="discrete" values="none;5 5" keyTimes="0;0.25" dur="8s" repeatCount="indefinite"/>
+  </line>
+  <g opacity="0">
+    <path d="M190,95 L200,112 L190,120 L202,140" stroke="#f87171" stroke-width="3" fill="none"/>
+    <text x="196" y="88" text-anchor="middle" fill="#f87171" font-size="11" font-weight="700">⚡ partition</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.25" dur="8s" repeatCount="indefinite"/>
+  </g>
+  <circle r="6" fill="#fbbf24" opacity="0">
+    <animateMotion path="M280,200 L280,155" keyPoints="0;0;1;1" keyTimes="0;0.4;0.5;1" calcMode="linear" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.4;0.51" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <text x="280" y="218" text-anchor="middle" fill="#94a3b8" font-size="11">write x=2</text>
+  <g opacity="0">
+    <text x="280" y="176" text-anchor="middle" fill="#f87171" font-size="14" font-weight="700">✗ rejected</text>
+    <text x="195" y="250" text-anchor="middle" fill="#f87171" font-size="12">"can't reach quorum — try later"</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.52" dur="8s" repeatCount="indefinite"/>
+  </g>
+  <text x="195" y="300" text-anchor="middle" fill="#94a3b8" font-size="12">every read still sees one truth (v1),</text>
+  <text x="195" y="318" text-anchor="middle" fill="#94a3b8" font-size="12">but part of the system is DOWN for writes</text>
+  <text x="195" y="345" text-anchor="middle" fill="#38bdf8" font-size="12">banking, inventory, ZooKeeper, HBase</text>
+  <!-- AP panel -->
+  <text x="570" y="60" text-anchor="middle" fill="#fb923c" font-size="13" font-weight="600">AP: stay available, accept divergence</text>
+  <rect x="430" y="90" width="110" height="60" rx="8" fill="#1e293b" stroke="#94a3b8"/>
+  <text x="485" y="115" text-anchor="middle" fill="#e2e8f0" font-size="12">Node A</text>
+  <text x="485" y="136" text-anchor="middle" fill="#34d399" font-size="12" font-weight="700">v1<animate attributeName="fill" calcMode="discrete" values="#34d399;#38bdf8" keyTimes="0;0.5" dur="8s" repeatCount="indefinite"/></text>
+  <g opacity="0">
+    <text x="485" y="136" text-anchor="middle" fill="#38bdf8" font-size="12" font-weight="700">x=2</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.5" dur="8s" repeatCount="indefinite"/>
+  </g>
+  <rect x="600" y="90" width="110" height="60" rx="8" fill="#1e293b" stroke="#94a3b8"/>
+  <text x="655" y="115" text-anchor="middle" fill="#e2e8f0" font-size="12">Node B</text>
+  <text x="655" y="136" text-anchor="middle" fill="#34d399" font-size="12" font-weight="700">v1<animate attributeName="fill" calcMode="discrete" values="#34d399;#fb923c" keyTimes="0;0.5" dur="8s" repeatCount="indefinite"/></text>
+  <g opacity="0">
+    <text x="655" y="136" text-anchor="middle" fill="#fb923c" font-size="12" font-weight="700">x=3</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.5" dur="8s" repeatCount="indefinite"/>
+  </g>
+  <line x1="540" y1="120" x2="600" y2="120" stroke="#34d399" stroke-width="3">
+    <animate attributeName="stroke" calcMode="discrete" values="#34d399;#f87171" keyTimes="0;0.25" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="stroke-dasharray" calcMode="discrete" values="none;5 5" keyTimes="0;0.25" dur="8s" repeatCount="indefinite"/>
+  </line>
+  <g opacity="0">
+    <text x="570" y="88" text-anchor="middle" fill="#f87171" font-size="11" font-weight="700">⚡ partition</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.25" dur="8s" repeatCount="indefinite"/>
+  </g>
+  <circle r="6" fill="#38bdf8" opacity="0">
+    <animateMotion path="M485,200 L485,155" keyPoints="0;0;1;1" keyTimes="0;0.38;0.48;1" calcMode="linear" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.38;0.49" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="6" fill="#fb923c" opacity="0">
+    <animateMotion path="M655,200 L655,155" keyPoints="0;0;1;1" keyTimes="0;0.38;0.48;1" calcMode="linear" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.38;0.49" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <text x="485" y="218" text-anchor="middle" fill="#94a3b8" font-size="11">write x=2 ✓</text>
+  <text x="655" y="218" text-anchor="middle" fill="#94a3b8" font-size="11">write x=3 ✓</text>
+  <g opacity="0">
+    <text x="570" y="250" text-anchor="middle" fill="#fbbf24" font-size="12" font-weight="600">⚠ replicas now disagree — reconcile after heal</text>
+    <text x="570" y="268" text-anchor="middle" fill="#94a3b8" font-size="11">(last-write-wins, vector clocks, CRDTs)</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.55" dur="8s" repeatCount="indefinite"/>
+  </g>
+  <text x="570" y="300" text-anchor="middle" fill="#94a3b8" font-size="12">every request gets an answer,</text>
+  <text x="570" y="318" text-anchor="middle" fill="#94a3b8" font-size="12">but it may be stale or conflicting</text>
+  <text x="570" y="345" text-anchor="middle" fill="#fb923c" font-size="12">shopping carts, likes, DNS, Cassandra, Dynamo</text>
+  <text x="380" y="398" text-anchor="middle" fill="#94a3b8" font-size="13">Partitions WILL happen — CAP is really about what your system does during those minutes. No partition → you can have both.</text>
+</svg>

@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 430" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="760" height="430" rx="12" fill="#0f172a"/>
+  <text x="380" y="28" text-anchor="middle" fill="#e2e8f0" font-size="17" font-weight="600">Synchronous vs Asynchronous</text>
+  <!-- sync -->
+  <text x="70" y="62" fill="#f87171" font-size="13" font-weight="600">Synchronous — caller waits</text>
+  <rect x="70" y="80" width="130" height="55" rx="8" fill="#1e293b" stroke="#94a3b8"/>
+  <text x="135" y="112" text-anchor="middle" fill="#e2e8f0" font-size="12">Client</text>
+  <rect x="520" y="80" width="150" height="55" rx="8" fill="#1e293b" stroke="#94a3b8"/>
+  <text x="595" y="102" text-anchor="middle" fill="#e2e8f0" font-size="12">Service</text>
+  <rect x="535" y="112" width="120" height="10" rx="3" fill="none" stroke="#475569"/>
+  <rect x="535" y="112" width="0" height="10" rx="3" fill="#fb923c">
+    <animate attributeName="width" values="0;0;120;120" keyTimes="0;0.14;0.52;1" calcMode="linear" dur="8s" repeatCount="indefinite"/>
+  </rect>
+  <circle r="6" fill="#e2e8f0" opacity="0">
+    <animateMotion path="M200,100 L520,100" keyPoints="0;0;1;1" keyTimes="0;0.04;0.13;1" calcMode="linear" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.04;0.14" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="6" fill="#34d399" opacity="0">
+    <animateMotion path="M520,118 L200,118" keyPoints="0;0;1;1" keyTimes="0;0.53;0.62;1" calcMode="linear" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.53;0.63" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <g opacity="0">
+    <text x="135" y="158" text-anchor="middle" fill="#f87171" font-size="12" font-weight="600">⏳ blocked, holding a thread + connection</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.14;0.53" dur="8s" repeatCount="indefinite"/>
+  </g>
+  <g opacity="0">
+    <text x="135" y="158" text-anchor="middle" fill="#34d399" font-size="12">got result — latency = whole processing time</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.62;0.95" dur="8s" repeatCount="indefinite"/>
+  </g>
+  <!-- async -->
+  <text x="70" y="212" fill="#34d399" font-size="13" font-weight="600">Asynchronous — queue decouples them</text>
+  <rect x="70" y="230" width="130" height="55" rx="8" fill="#1e293b" stroke="#94a3b8"/>
+  <text x="135" y="262" text-anchor="middle" fill="#e2e8f0" font-size="12">Client</text>
+  <rect x="320" y="230" width="140" height="55" rx="8" fill="#1e293b" stroke="#fbbf24"/>
+  <text x="390" y="250" text-anchor="middle" fill="#e2e8f0" font-size="12">Queue</text>
+  <rect x="335" y="258" width="24" height="18" rx="3" fill="#fbbf24" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.12;0.42" dur="8s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="580" y="230" width="130" height="55" rx="8" fill="#1e293b" stroke="#94a3b8"/>
+  <text x="645" y="250" text-anchor="middle" fill="#e2e8f0" font-size="12">Worker</text>
+  <rect x="595" y="258" width="100" height="10" rx="3" fill="none" stroke="#475569"/>
+  <rect x="595" y="258" width="0" height="10" rx="3" fill="#34d399">
+    <animate attributeName="width" values="0;0;100;100" keyTimes="0;0.52;0.86;1" calcMode="linear" dur="8s" repeatCount="indefinite"/>
+  </rect>
+  <circle r="6" fill="#fbbf24" opacity="0">
+    <animateMotion path="M200,255 L320,255" keyPoints="0;0;1;1" keyTimes="0;0.04;0.11;1" calcMode="linear" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.04;0.12" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="5" fill="#34d399" opacity="0">
+    <animateMotion path="M320,270 L200,270" keyPoints="0;0;1;1" keyTimes="0;0.13;0.18;1" calcMode="linear" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.13;0.19" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="6" fill="#fbbf24" opacity="0">
+    <animateMotion path="M460,255 L580,255" keyPoints="0;0;1;1" keyTimes="0;0.42;0.5;1" calcMode="linear" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.42;0.51" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <g opacity="0">
+    <text x="135" y="308" text-anchor="middle" fill="#34d399" font-size="12" font-weight="600">✓ free after ~5 ms ack ("202 Accepted")</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.18" dur="8s" repeatCount="indefinite"/>
+  </g>
+  <g opacity="0">
+    <text x="645" y="308" text-anchor="middle" fill="#94a3b8" font-size="12">processes at its own pace</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.5" dur="8s" repeatCount="indefinite"/>
+  </g>
+  <text x="380" y="352" text-anchor="middle" fill="#94a3b8" font-size="13">Sync: simple, immediate result — but callers stack up when the service slows (cascading failure).</text>
+  <text x="380" y="372" text-anchor="middle" fill="#94a3b8" font-size="13">Async: absorbs spikes, retries safely, scales workers independently — but needs status tracking / callbacks.</text>
+  <text x="380" y="400" text-anchor="middle" fill="#94a3b8" font-size="13">Use sync when the user needs the answer now (auth, payment confirm); async for everything that can wait (emails, feeds).</text>
+</svg>

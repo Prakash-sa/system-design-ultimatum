@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 460" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="760" height="460" rx="12" fill="#0f172a"/>
+  <text x="380" y="28" text-anchor="middle" fill="#e2e8f0" font-size="17" font-weight="600">Kafka Topic — partitioned append-only logs + consumer offsets</text>
+  <rect x="60" y="52" width="130" height="44" rx="8" fill="#1e293b" stroke="#38bdf8"/>
+  <text x="125" y="79" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="600">producer</text>
+  <text x="230" y="70" fill="#94a3b8" font-size="11">key → hash → partition</text>
+  <!-- lanes -->
+  <text x="130" y="140" text-anchor="end" fill="#94a3b8" font-size="12">P0</text>
+  <g fill="#1e293b" stroke="#475569">
+    <rect x="150" y="120" width="44" height="32"/><rect x="196" y="120" width="44" height="32"/><rect x="242" y="120" width="44" height="32"/><rect x="288" y="120" width="44" height="32"/>
+  </g>
+  <text x="172" y="141" text-anchor="middle" fill="#64748b" font-size="11">0</text>
+  <text x="218" y="141" text-anchor="middle" fill="#64748b" font-size="11">1</text>
+  <text x="264" y="141" text-anchor="middle" fill="#64748b" font-size="11">2</text>
+  <text x="310" y="141" text-anchor="middle" fill="#64748b" font-size="11">3</text>
+  <g opacity="0"><rect x="334" y="120" width="44" height="32" fill="#1e3a5f" stroke="#38bdf8"/><text x="356" y="141" text-anchor="middle" fill="#38bdf8" font-size="11">4</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.18" dur="10s" repeatCount="indefinite"/></g>
+  <g opacity="0"><rect x="380" y="120" width="44" height="32" fill="#1e3a5f" stroke="#38bdf8"/><text x="402" y="141" text-anchor="middle" fill="#38bdf8" font-size="11">5</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.5" dur="10s" repeatCount="indefinite"/></g>
+  <text x="130" y="210" text-anchor="end" fill="#94a3b8" font-size="12">P1</text>
+  <g fill="#1e293b" stroke="#475569">
+    <rect x="150" y="190" width="44" height="32"/><rect x="196" y="190" width="44" height="32"/><rect x="242" y="190" width="44" height="32"/><rect x="288" y="190" width="44" height="32"/>
+  </g>
+  <text x="172" y="211" text-anchor="middle" fill="#64748b" font-size="11">0</text>
+  <text x="218" y="211" text-anchor="middle" fill="#64748b" font-size="11">1</text>
+  <text x="264" y="211" text-anchor="middle" fill="#64748b" font-size="11">2</text>
+  <text x="310" y="211" text-anchor="middle" fill="#64748b" font-size="11">3</text>
+  <g opacity="0"><rect x="334" y="190" width="44" height="32" fill="#1e3a5f" stroke="#38bdf8"/><text x="356" y="211" text-anchor="middle" fill="#38bdf8" font-size="11">4</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.34" dur="10s" repeatCount="indefinite"/></g>
+  <text x="130" y="280" text-anchor="end" fill="#94a3b8" font-size="12">P2</text>
+  <g fill="#1e293b" stroke="#475569">
+    <rect x="150" y="260" width="44" height="32"/><rect x="196" y="260" width="44" height="32"/><rect x="242" y="260" width="44" height="32"/><rect x="288" y="260" width="44" height="32"/>
+  </g>
+  <text x="172" y="281" text-anchor="middle" fill="#64748b" font-size="11">0</text>
+  <text x="218" y="281" text-anchor="middle" fill="#64748b" font-size="11">1</text>
+  <text x="264" y="281" text-anchor="middle" fill="#64748b" font-size="11">2</text>
+  <text x="310" y="281" text-anchor="middle" fill="#64748b" font-size="11">3</text>
+  <g opacity="0"><rect x="334" y="260" width="44" height="32" fill="#1e3a5f" stroke="#38bdf8"/><text x="356" y="281" text-anchor="middle" fill="#38bdf8" font-size="11">4</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.26" dur="10s" repeatCount="indefinite"/></g>
+  <g opacity="0"><rect x="380" y="260" width="44" height="32" fill="#1e3a5f" stroke="#38bdf8"/><text x="402" y="281" text-anchor="middle" fill="#38bdf8" font-size="11">5</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.62" dur="10s" repeatCount="indefinite"/></g>
+  <!-- producer dots -->
+  <circle r="5" fill="#38bdf8" opacity="0"><animateMotion path="M190,74 L356,116" keyPoints="0;0;1;1" keyTimes="0;0.1;0.17;1" calcMode="linear" dur="10s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.1;0.18" dur="10s" repeatCount="indefinite"/></circle>
+  <circle r="5" fill="#38bdf8" opacity="0"><animateMotion path="M190,74 L356,256" keyPoints="0;0;1;1" keyTimes="0;0.19;0.25;1" calcMode="linear" dur="10s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.19;0.26" dur="10s" repeatCount="indefinite"/></circle>
+  <circle r="5" fill="#38bdf8" opacity="0"><animateMotion path="M190,74 L356,186" keyPoints="0;0;1;1" keyTimes="0;0.27;0.33;1" calcMode="linear" dur="10s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.27;0.34" dur="10s" repeatCount="indefinite"/></circle>
+  <circle r="5" fill="#38bdf8" opacity="0"><animateMotion path="M190,74 L402,116" keyPoints="0;0;1;1" keyTimes="0;0.43;0.49;1" calcMode="linear" dur="10s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.43;0.5" dur="10s" repeatCount="indefinite"/></circle>
+  <circle r="5" fill="#38bdf8" opacity="0"><animateMotion path="M190,74 L402,256" keyPoints="0;0;1;1" keyTimes="0;0.55;0.61;1" calcMode="linear" dur="10s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.55;0.62" dur="10s" repeatCount="indefinite"/></circle>
+  <!-- consumer offset pointers -->
+  <polygon points="264,160 256,172 272,172" fill="#34d399">
+    <animate attributeName="points" calcMode="discrete"
+      values="264,160 256,172 272,172;310,160 302,172 318,172;356,160 348,172 364,172"
+      keyTimes="0;0.3;0.72" dur="10s" repeatCount="indefinite"/>
+  </polygon>
+  <polygon points="310,230 302,242 318,242" fill="#34d399">
+    <animate attributeName="points" calcMode="discrete"
+      values="310,230 302,242 318,242;356,230 348,242 364,242"
+      keyTimes="0;0.55" dur="10s" repeatCount="indefinite"/>
+  </polygon>
+  <polygon points="310,300 302,312 318,312" fill="#fbbf24">
+    <animate attributeName="points" calcMode="discrete"
+      values="310,300 302,312 318,312;356,300 348,312 364,312;402,300 394,312 410,312"
+      keyTimes="0;0.42;0.8" dur="10s" repeatCount="indefinite"/>
+  </polygon>
+  <text x="530" y="141" fill="#34d399" font-size="11">▲ C1 offset (owns P0 + P1)</text>
+  <text x="530" y="281" fill="#fbbf24" font-size="11">▲ C2 offset (owns P2)</text>
+  <text x="530" y="180" fill="#94a3b8" font-size="11">consumer group "billing":</text>
+  <text x="530" y="196" fill="#94a3b8" font-size="11">each partition → exactly one</text>
+  <text x="530" y="211" fill="#94a3b8" font-size="11">consumer in the group</text>
+  <text x="380" y="356" text-anchor="middle" fill="#94a3b8" font-size="13">Messages are never popped — consumers just advance their committed offset (lag = latest − committed).</text>
+  <text x="380" y="376" text-anchor="middle" fill="#94a3b8" font-size="13">Ordering holds only WITHIN a partition; same key → same partition → per-key order.</text>
+  <text x="380" y="402" text-anchor="middle" fill="#94a3b8" font-size="13">Max useful consumers in a group = partition count. Replay = rewind the offset.</text>
+</svg>

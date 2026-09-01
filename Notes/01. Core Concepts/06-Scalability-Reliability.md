@@ -334,6 +334,8 @@ Then size:
 
 ## CAP Theorem Tradeoffs
 
+![CAP during a partition (animated)](./animations/cap.svg)
+
 | Choice | Guarantees | Sacrifice | Use Cases |
 |--------|-----------|----------|-----------|
 | **CP** | Consistency + Partition Tolerance | Availability | Banking, inventory, auctions |
@@ -354,6 +356,8 @@ Then size:
 ---
 
 ## Load Balancing Strategies
+
+![Load balancing and failover (animated)](./animations/load-balancer.svg)
 
 | Strategy | How It Works | Pros | Cons | When to Use |
 |----------|-------------|------|------|-------------|

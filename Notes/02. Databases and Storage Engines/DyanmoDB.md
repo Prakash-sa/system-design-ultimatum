@@ -26,6 +26,8 @@
 
 ## DynamoDB Architecture Overview
 
+![Quorum reads and writes (animated)](./animations/quorum.svg)
+
 <details>
 <summary>Click to view code</summary>
 

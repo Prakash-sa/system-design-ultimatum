@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="760" height="400" rx="12" fill="#0f172a"/>
+  <text x="380" y="30" text-anchor="middle" fill="#e2e8f0" font-size="17" font-weight="600">Blocked (Tiled) Matrix Multiply — tiles stay in cache while reused</text>
+  <text x="135" y="78" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="600">A</text>
+  <text x="375" y="78" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="600">B</text>
+  <text x="615" y="78" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="600">C = A · B</text>
+  <!-- grids: 4x4 tiles of 36px, gap 2, origins A(60,90) B(300,90) C(540,90) -->
+  <g stroke="#334155" fill="#1e293b">
+    <rect x="60" y="90" width="150" height="150" rx="3"/>
+    <rect x="300" y="90" width="150" height="150" rx="3"/>
+    <rect x="540" y="90" width="150" height="150" rx="3"/>
+  </g>
+  <g stroke="#334155" stroke-width="2">
+    <path d="M98,90 v150 M136,90 v150 M174,90 v150 M60,128 h150 M60,166 h150 M60,204 h150"/>
+    <path d="M338,90 v150 M376,90 v150 M414,90 v150 M300,128 h150 M300,166 h150 M300,204 h150"/>
+    <path d="M578,90 v150 M616,90 v150 M654,90 v150 M540,128 h150 M540,166 h150 M540,204 h150"/>
+  </g>
+  <!-- C cells filling up -->
+  <rect x="540" y="90" width="36" height="36" fill="#34d399" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0.25;0.45;0.7;1" keyTimes="0;0.08;0.18;0.28;0.38" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="578" y="90" width="36" height="36" fill="#34d399" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0.25;0.45;0.7;1" keyTimes="0;0.48;0.58;0.68;0.78" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <!-- highlight over A: row 0, k cycles 0..3 twice -->
+  <rect x="60" y="90" width="36" height="36" fill="#fbbf24" fill-opacity="0.35" stroke="#fbbf24" stroke-width="3">
+    <animate attributeName="x" calcMode="discrete" values="60;98;136;174;60;98;136;174" keyTimes="0;0.1;0.2;0.3;0.4;0.5;0.6;0.7" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <!-- highlight over B: (k, col 0) then (k, col 1) -->
+  <rect x="300" y="90" width="36" height="36" fill="#38bdf8" fill-opacity="0.35" stroke="#38bdf8" stroke-width="3">
+    <animate attributeName="x" calcMode="discrete" values="300;338" keyTimes="0;0.4" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="y" calcMode="discrete" values="90;128;166;204;90;128;166;204" keyTimes="0;0.1;0.2;0.3;0.4;0.5;0.6;0.7" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <!-- highlight over C target -->
+  <rect x="540" y="90" width="36" height="36" fill="none" stroke="#34d399" stroke-width="3">
+    <animate attributeName="x" calcMode="discrete" values="540;578" keyTimes="0;0.4" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <!-- equation captions -->
+  <g opacity="0">
+    <text x="380" y="285" text-anchor="middle" fill="#e2e8f0" font-size="14">C(0,0) += A(0,k) · B(k,0)   for k = 0…3</text>
+    <animate attributeName="opacity" calcMode="discrete" values="1;0" keyTimes="0;0.4" dur="10s" repeatCount="indefinite"/>
+  </g>
+  <g opacity="0">
+    <text x="380" y="285" text-anchor="middle" fill="#e2e8f0" font-size="14">C(0,1) += A(0,k) · B(k,1)   — A's row is reused straight from cache</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.4;0.85" dur="10s" repeatCount="indefinite"/>
+  </g>
+  <text x="380" y="330" text-anchor="middle" fill="#94a3b8" font-size="13">Pick tile size B so three B×B tiles fit in cache: memory traffic drops from O(N³) to O(N³/B).</text>
+  <text x="380" y="350" text-anchor="middle" fill="#94a3b8" font-size="13">This (plus vectorization and prefetch) is what BLAS dgemm does — and the same idea as GPU shared-memory tiling.</text>
+</svg>

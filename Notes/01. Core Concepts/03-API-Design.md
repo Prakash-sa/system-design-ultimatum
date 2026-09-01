@@ -176,6 +176,8 @@ query {
 
 ## WebSockets vs Server-Sent Events (SSE)
 
+![Short polling vs SSE vs WebSocket (animated)](./animations/realtime-apis.svg)
+
 | Aspect | WebSockets | SSE (Server-Sent Events) | When to Use |
 |--------|-----------|------------------------|-------------|
 | **Direction** | Bi-directional (client ↔ server) | One-way (server → client) | WebSockets: interactive; SSE: notifications |

@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="760" height="400" rx="12" fill="#0f172a"/>
+  <text x="380" y="30" text-anchor="middle" fill="#e2e8f0" font-size="17" font-weight="600">Pipelined Execution — 5 instructions, 5 stages</text>
+  <!-- cycle highlight (moves one column per second) -->
+  <rect x="150" y="64" width="58" height="206" rx="4" fill="#e2e8f0" fill-opacity="0.09">
+    <animate attributeName="x" calcMode="discrete" values="150;210;270;330;390;450;510;570;630" keyTimes="0;0.0833;0.1667;0.25;0.3333;0.4167;0.5;0.5833;0.6667" dur="12s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="1;0" keyTimes="0;0.75" dur="12s" repeatCount="indefinite"/>
+  </rect>
+  <!-- column headers -->
+  <text x="178" y="58" text-anchor="middle" fill="#94a3b8" font-size="11">cyc 1</text>
+  <text x="238" y="58" text-anchor="middle" fill="#94a3b8" font-size="11">2</text>
+  <text x="298" y="58" text-anchor="middle" fill="#94a3b8" font-size="11">3</text>
+  <text x="358" y="58" text-anchor="middle" fill="#94a3b8" font-size="11">4</text>
+  <text x="418" y="58" text-anchor="middle" fill="#94a3b8" font-size="11">5</text>
+  <text x="478" y="58" text-anchor="middle" fill="#94a3b8" font-size="11">6</text>
+  <text x="538" y="58" text-anchor="middle" fill="#94a3b8" font-size="11">7</text>
+  <text x="598" y="58" text-anchor="middle" fill="#94a3b8" font-size="11">8</text>
+  <text x="658" y="58" text-anchor="middle" fill="#94a3b8" font-size="11">9</text>
+  <!-- row labels -->
+  <text x="138" y="92" text-anchor="end" fill="#e2e8f0" font-size="13">I1</text>
+  <text x="138" y="132" text-anchor="end" fill="#e2e8f0" font-size="13">I2</text>
+  <text x="138" y="172" text-anchor="end" fill="#e2e8f0" font-size="13">I3</text>
+  <text x="138" y="212" text-anchor="end" fill="#e2e8f0" font-size="13">I4</text>
+  <text x="138" y="252" text-anchor="end" fill="#e2e8f0" font-size="13">I5</text>
+  <!-- I1 -->
+  <g><rect x="150" y="70" width="56" height="34" rx="4" fill="#38bdf8"/><text x="178" y="92" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="600">IF</text></g>
+  <g opacity="0"><rect x="210" y="70" width="56" height="34" rx="4" fill="#a78bfa"/><text x="238" y="92" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="600">ID</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.0833" dur="12s" repeatCount="indefinite"/></g>
+  <g opacity="0"><rect x="270" y="70" width="56" height="34" rx="4" fill="#34d399"/><text x="298" y="92" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="600">EX</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.1667" dur="12s" repeatCount="indefinite"/></g>
+  <g opacity="0"><rect x="330" y="70" width="56" height="34" rx="4" fill="#fb923c"/><text x="358" y="92" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="600">MEM</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.25" dur="12s" repeatCount="indefinite"/></g>
+  <g opacity="0"><rect x="390" y="70" width="56" height="34" rx="4" fill="#f87171"/><text x="418" y="92" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="600">WB</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.3333" dur="12s" repeatCount="indefinite"/></g>
+  <!-- I2 -->
+  <g opacity="0"><rect x="210" y="110" width="56" height="34" rx="4" fill="#38bdf8"/><text x="238" y="132" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="600">IF</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.0833" dur="12s" repeatCount="indefinite"/></g>
+  <g opacity="0"><rect x="270" y="110" width="56" height="34" rx="4" fill="#a78bfa"/><text x="298" y="132" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="600">ID</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.1667" dur="12s" repeatCount="indefinite"/></g>
+  <g opacity="0"><rect x="330" y="110" width="56" height="34" rx="4" fill="#34d399"/><text x="358" y="132" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="600">EX</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.25" dur="12s" repeatCount="indefinite"/></g>
+  <g opacity="0"><rect x="390" y="110" width="56" height="34" rx="4" fill="#fb923c"/><text x="418" y="132" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="600">MEM</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.3333" dur="12s" repeatCount="indefinite"/></g>
+  <g opacity="0"><rect x="450" y="110" width="56" height="34" rx="4" fill="#f87171"/><text x="478" y="132" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="600">WB</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.4167" dur="12s" repeatCount="indefinite"/></g>
+  <!-- I3 -->
+  <g opacity="0"><rect x="270" y="150" width="56" height="34" rx="4" fill="#38bdf8"/><text x="298" y="172" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="600">IF</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.1667" dur="12s" repeatCount="indefinite"/></g>
+  <g opacity="0"><rect x="330" y="150" width="56" height="34" rx="4" fill="#a78bfa"/><text x="358" y="172" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="600">ID</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.25" dur="12s" repeatCount="indefinite"/></g>
+  <g opacity="0"><rect x="390" y="150" width="56" height="34" rx="4" fill="#34d399"/><text x="418" y="172" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="600">EX</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.3333" dur="12s" repeatCount="indefinite"/></g>
+  <g opacity="0"><rect x="450" y="150" width="56" height="34" rx="4" fill="#fb923c"/><text x="478" y="172" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="600">MEM</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.4167" dur="12s" repeatCount="indefinite"/></g>
+  <g opacity="0"><rect x="510" y="150" width="56" height="34" rx="4" fill="#f87171"/><text x="538" y="172" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="600">WB</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.5" dur="12s" repeatCount="indefinite"/></g>
+  <!-- I4 -->
+  <g opacity="0"><rect x="330" y="190" width="56" height="34" rx="4" fill="#38bdf8"/><text x="358" y="212" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="600">IF</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.25" dur="12s" repeatCount="indefinite"/></g>
+  <g opacity="0"><rect x="390" y="190" width="56" height="34" rx="4" fill="#a78bfa"/><text x="418" y="212" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="600">ID</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.3333" dur="12s" repeatCount="indefinite"/></g>
+  <g opacity="0"><rect x="450" y="190" width="56" height="34" rx="4" fill="#34d399"/><text x="478" y="212" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="600">EX</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.4167" dur="12s" repeatCount="indefinite"/></g>
+  <g opacity="0"><rect x="510" y="190" width="56" height="34" rx="4" fill="#fb923c"/><text x="538" y="212" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="600">MEM</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.5" dur="12s" repeatCount="indefinite"/></g>
+  <g opacity="0"><rect x="570" y="190" width="56" height="34" rx="4" fill="#f87171"/><text x="598" y="212" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="600">WB</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.5833" dur="12s" repeatCount="indefinite"/></g>
+  <!-- I5 -->
+  <g opacity="0"><rect x="390" y="230" width="56" height="34" rx="4" fill="#38bdf8"/><text x="418" y="252" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="600">IF</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.3333" dur="12s" repeatCount="indefinite"/></g>
+  <g opacity="0"><rect x="450" y="230" width="56" height="34" rx="4" fill="#a78bfa"/><text x="478" y="252" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="600">ID</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.4167" dur="12s" repeatCount="indefinite"/></g>
+  <g opacity="0"><rect x="510" y="230" width="56" height="34" rx="4" fill="#34d399"/><text x="538" y="252" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="600">EX</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.5" dur="12s" repeatCount="indefinite"/></g>
+  <g opacity="0"><rect x="570" y="230" width="56" height="34" rx="4" fill="#fb923c"/><text x="598" y="252" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="600">MEM</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.5833" dur="12s" repeatCount="indefinite"/></g>
+  <g opacity="0"><rect x="630" y="230" width="56" height="34" rx="4" fill="#f87171"/><text x="658" y="252" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="600">WB</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.6667" dur="12s" repeatCount="indefinite"/></g>
+  <!-- legend -->
+  <rect x="90" y="296" width="14" height="14" rx="3" fill="#38bdf8"/><text x="110" y="308" fill="#94a3b8" font-size="12">IF fetch</text>
+  <rect x="210" y="296" width="14" height="14" rx="3" fill="#a78bfa"/><text x="230" y="308" fill="#94a3b8" font-size="12">ID decode</text>
+  <rect x="345" y="296" width="14" height="14" rx="3" fill="#34d399"/><text x="365" y="308" fill="#94a3b8" font-size="12">EX execute</text>
+  <rect x="485" y="296" width="14" height="14" rx="3" fill="#fb923c"/><text x="505" y="308" fill="#94a3b8" font-size="12">MEM</text>
+  <rect x="575" y="296" width="14" height="14" rx="3" fill="#f87171"/><text x="595" y="308" fill="#94a3b8" font-size="12">WB write-back</text>
+  <text x="380" y="345" text-anchor="middle" fill="#94a3b8" font-size="13">Without pipelining: 5 × 5 = 25 cycles. With pipelining: 9 cycles —</text>
+  <text x="380" y="365" text-anchor="middle" fill="#94a3b8" font-size="13">one instruction completes every cycle once the pipe is full. Hazards insert bubbles into exactly this picture.</text>
+</svg>

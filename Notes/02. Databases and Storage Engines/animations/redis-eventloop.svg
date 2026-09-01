@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="760" height="400" rx="12" fill="#0f172a"/>
+  <text x="380" y="28" text-anchor="middle" fill="#e2e8f0" font-size="17" font-weight="600">Redis — one thread, millions of ops/sec</text>
+  <!-- clients -->
+  <g fill="#1e293b" stroke="#94a3b8">
+    <rect x="55" y="80" width="110" height="40" rx="6"/>
+    <rect x="55" y="150" width="110" height="40" rx="6"/>
+    <rect x="55" y="220" width="110" height="40" rx="6"/>
+  </g>
+  <text x="110" y="105" text-anchor="middle" fill="#e2e8f0" font-size="11">client · GET</text>
+  <text x="110" y="175" text-anchor="middle" fill="#e2e8f0" font-size="11">client · SET</text>
+  <text x="110" y="245" text-anchor="middle" fill="#e2e8f0" font-size="11">client · INCR</text>
+  <!-- event loop -->
+  <circle cx="390" cy="170" r="70" fill="#1e293b" stroke="#f87171" stroke-width="3"/>
+  <text x="390" y="160" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">single thread</text>
+  <text x="390" y="180" text-anchor="middle" fill="#94a3b8" font-size="11">event loop (epoll)</text>
+  <text x="390" y="198" text-anchor="middle" fill="#94a3b8" font-size="11">one command at a time</text>
+  <!-- spinning marker on the loop -->
+  <circle r="7" fill="#f87171">
+    <animateMotion path="M390,100 A70,70 0 1 1 389.9,100" dur="1.2s" repeatCount="indefinite"/>
+  </circle>
+  <!-- RAM -->
+  <rect x="560" y="130" width="150" height="80" rx="8" fill="#1e293b" stroke="#38bdf8"/>
+  <text x="635" y="162" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="600">all data in RAM</text>
+  <text x="635" y="182" text-anchor="middle" fill="#94a3b8" font-size="11">~100 ns access</text>
+  <!-- command dots getting serialized -->
+  <circle r="5" fill="#fbbf24" opacity="0">
+    <animateMotion path="M165,100 L322,150" keyPoints="0;0;1;1" keyTimes="0;0.05;0.15;1" calcMode="linear" dur="4.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.05;0.16" dur="4.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="5" fill="#34d399" opacity="0">
+    <animateMotion path="M165,170 L320,170" keyPoints="0;0;1;1" keyTimes="0;0.28;0.38;1" calcMode="linear" dur="4.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.28;0.39" dur="4.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="5" fill="#a78bfa" opacity="0">
+    <animateMotion path="M165,240 L322,192" keyPoints="0;0;1;1" keyTimes="0;0.52;0.62;1" calcMode="linear" dur="4.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.52;0.63" dur="4.5s" repeatCount="indefinite"/>
+  </circle>
+  <!-- to RAM and back pulses -->
+  <circle r="5" fill="#38bdf8" opacity="0">
+    <animateMotion path="M460,170 L560,170" keyPoints="0;1;0" keyTimes="0;0.5;1" calcMode="linear" dur="0.9s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.9;0.4;0.9" dur="0.9s" repeatCount="indefinite"/>
+  </circle>
+  <text x="380" y="300" text-anchor="middle" fill="#94a3b8" font-size="13">Why it works: every operation is a RAM access (ns), so the CPU — not I/O — is the ceiling.</text>
+  <text x="380" y="320" text-anchor="middle" fill="#94a3b8" font-size="13">One thread = no locks, no context switches, and every command is naturally ATOMIC.</text>
+  <text x="380" y="348" text-anchor="middle" fill="#f87171" font-size="13">The catch: one slow command (KEYS *, big SMEMBERS, huge value) blocks EVERYONE — the hot-key/slow-command problem.</text>
+  <text x="380" y="372" text-anchor="middle" fill="#94a3b8" font-size="12">(Redis 6+ moves network I/O to helper threads; command execution stays single-threaded. Scale-out = Redis Cluster hash slots.)</text>
+</svg>

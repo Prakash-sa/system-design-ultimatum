@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="760" height="400" rx="12" fill="#0f172a"/>
+  <text x="380" y="28" text-anchor="middle" fill="#e2e8f0" font-size="17" font-weight="600">Tree Reduction — sum 8 values in log₂(8) = 3 steps</text>
+  <!-- level 1 edges (leaves -> L1) -->
+  <g stroke="#475569" stroke-width="2">
+    <line x1="100" y1="284" x2="140" y2="236"/><line x1="180" y1="284" x2="140" y2="236"/>
+    <line x1="260" y1="284" x2="300" y2="236"/><line x1="340" y1="284" x2="300" y2="236"/>
+    <line x1="420" y1="284" x2="460" y2="236"/><line x1="500" y1="284" x2="460" y2="236"/>
+    <line x1="580" y1="284" x2="620" y2="236"/><line x1="660" y1="284" x2="620" y2="236"/>
+  </g>
+  <g stroke="#38bdf8" stroke-width="3" opacity="0">
+    <line x1="100" y1="284" x2="140" y2="236"/><line x1="180" y1="284" x2="140" y2="236"/>
+    <line x1="260" y1="284" x2="300" y2="236"/><line x1="340" y1="284" x2="300" y2="236"/>
+    <line x1="420" y1="284" x2="460" y2="236"/><line x1="500" y1="284" x2="460" y2="236"/>
+    <line x1="580" y1="284" x2="620" y2="236"/><line x1="660" y1="284" x2="620" y2="236"/>
+    <animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;0.05;0.10;0.16;1" dur="8s" repeatCount="indefinite"/>
+  </g>
+  <!-- level 2 edges -->
+  <g stroke="#475569" stroke-width="2">
+    <line x1="140" y1="204" x2="220" y2="156"/><line x1="300" y1="204" x2="220" y2="156"/>
+    <line x1="460" y1="204" x2="540" y2="156"/><line x1="620" y1="204" x2="540" y2="156"/>
+  </g>
+  <g stroke="#38bdf8" stroke-width="3" opacity="0">
+    <line x1="140" y1="204" x2="220" y2="156"/><line x1="300" y1="204" x2="220" y2="156"/>
+    <line x1="460" y1="204" x2="540" y2="156"/><line x1="620" y1="204" x2="540" y2="156"/>
+    <animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;0.30;0.35;0.41;1" dur="8s" repeatCount="indefinite"/>
+  </g>
+  <!-- root edges -->
+  <g stroke="#475569" stroke-width="2">
+    <line x1="220" y1="124" x2="380" y2="86"/><line x1="540" y1="124" x2="380" y2="86"/>
+  </g>
+  <g stroke="#38bdf8" stroke-width="3" opacity="0">
+    <line x1="220" y1="124" x2="380" y2="86"/><line x1="540" y1="124" x2="380" y2="86"/>
+    <animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;0.55;0.60;0.66;1" dur="8s" repeatCount="indefinite"/>
+  </g>
+  <!-- leaves -->
+  <g>
+    <circle cx="100" cy="300" r="17" fill="#1e293b" stroke="#94a3b8"/><text x="100" y="305" text-anchor="middle" fill="#e2e8f0" font-size="13">3</text>
+    <circle cx="180" cy="300" r="17" fill="#1e293b" stroke="#94a3b8"/><text x="180" y="305" text-anchor="middle" fill="#e2e8f0" font-size="13">1</text>
+    <circle cx="260" cy="300" r="17" fill="#1e293b" stroke="#94a3b8"/><text x="260" y="305" text-anchor="middle" fill="#e2e8f0" font-size="13">4</text>
+    <circle cx="340" cy="300" r="17" fill="#1e293b" stroke="#94a3b8"/><text x="340" y="305" text-anchor="middle" fill="#e2e8f0" font-size="13">1</text>
+    <circle cx="420" cy="300" r="17" fill="#1e293b" stroke="#94a3b8"/><text x="420" y="305" text-anchor="middle" fill="#e2e8f0" font-size="13">5</text>
+    <circle cx="500" cy="300" r="17" fill="#1e293b" stroke="#94a3b8"/><text x="500" y="305" text-anchor="middle" fill="#e2e8f0" font-size="13">9</text>
+    <circle cx="580" cy="300" r="17" fill="#1e293b" stroke="#94a3b8"/><text x="580" y="305" text-anchor="middle" fill="#e2e8f0" font-size="13">2</text>
+    <circle cx="660" cy="300" r="17" fill="#1e293b" stroke="#94a3b8"/><text x="660" y="305" text-anchor="middle" fill="#e2e8f0" font-size="13">6</text>
+  </g>
+  <!-- level 1 nodes -->
+  <g opacity="0">
+    <circle cx="140" cy="220" r="17" fill="#1e3a5f" stroke="#38bdf8"/><text x="140" y="225" text-anchor="middle" fill="#e2e8f0" font-size="13">4</text>
+    <circle cx="300" cy="220" r="17" fill="#1e3a5f" stroke="#38bdf8"/><text x="300" y="225" text-anchor="middle" fill="#e2e8f0" font-size="13">5</text>
+    <circle cx="460" cy="220" r="17" fill="#1e3a5f" stroke="#38bdf8"/><text x="460" y="225" text-anchor="middle" fill="#e2e8f0" font-size="13">14</text>
+    <circle cx="620" cy="220" r="17" fill="#1e3a5f" stroke="#38bdf8"/><text x="620" y="225" text-anchor="middle" fill="#e2e8f0" font-size="13">8</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.12" dur="8s" repeatCount="indefinite"/>
+  </g>
+  <!-- level 2 nodes -->
+  <g opacity="0">
+    <circle cx="220" cy="140" r="17" fill="#1e3a5f" stroke="#38bdf8"/><text x="220" y="145" text-anchor="middle" fill="#e2e8f0" font-size="13">9</text>
+    <circle cx="540" cy="140" r="17" fill="#1e3a5f" stroke="#38bdf8"/><text x="540" y="145" text-anchor="middle" fill="#e2e8f0" font-size="13">22</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.37" dur="8s" repeatCount="indefinite"/>
+  </g>
+  <!-- root -->
+  <g opacity="0">
+    <circle cx="380" cy="68" r="20" fill="#14532d" stroke="#34d399" stroke-width="2"/><text x="380" y="73" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">31</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.62" dur="8s" repeatCount="indefinite"/>
+  </g>
+  <!-- step labels -->
+  <g opacity="0"><text x="700" y="260" text-anchor="end" fill="#38bdf8" font-size="12" font-weight="600">step 1</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.10" dur="8s" repeatCount="indefinite"/></g>
+  <g opacity="0"><text x="700" y="180" text-anchor="end" fill="#38bdf8" font-size="12" font-weight="600">step 2</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.35" dur="8s" repeatCount="indefinite"/></g>
+  <g opacity="0"><text x="700" y="100" text-anchor="end" fill="#38bdf8" font-size="12" font-weight="600">step 3</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.60" dur="8s" repeatCount="indefinite"/></g>
+  <text x="380" y="355" text-anchor="middle" fill="#94a3b8" font-size="13">O(n/p + log p): the same tree underlies MPI_Reduce, barriers, dot products in CG solvers,</text>
+  <text x="380" y="375" text-anchor="middle" fill="#94a3b8" font-size="13">and (run twice, up + down) the work-efficient Blelloch prefix-sum scan.</text>
+</svg>

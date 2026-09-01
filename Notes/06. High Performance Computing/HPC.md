@@ -245,6 +245,8 @@ Example:
 
 ## 9. Amdahl's Law
 
+![Amdahl's Law (animated)](./animations/amdahl.svg)
+
 If part of a program is serial, that limits parallel speedup.
 
 ```text
@@ -599,6 +601,8 @@ Slurm does two big jobs:
 
 ### Job lifecycle
 
+![Slurm job lifecycle (animated)](./animations/slurm-lifecycle.svg)
+
 1. User writes a job script
 2. User submits with `sbatch`
 3. Slurm validates request
@@ -832,6 +836,8 @@ A communication group, commonly `MPI_COMM_WORLD`.
 
 ### 4. Collective communication
 
+![MPI collectives (animated)](./animations/mpi-collectives.svg)
+
 Operations involving groups:
 - `MPI_Bcast`
 - `MPI_Reduce`
@@ -901,6 +907,8 @@ This is a major optimization technique.
 ## MPI Communication Patterns
 
 ### Halo exchange
+
+![Halo exchange (animated)](./animations/halo-exchange.svg)
 
 Common in grid/mesh simulations:
 - each rank exchanges boundary cells with neighbors

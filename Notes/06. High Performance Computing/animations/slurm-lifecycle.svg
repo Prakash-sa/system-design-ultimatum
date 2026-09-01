@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 380" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="760" height="380" rx="12" fill="#0f172a"/>
+  <text x="380" y="28" text-anchor="middle" fill="#e2e8f0" font-size="17" font-weight="600">Slurm Job Lifecycle</text>
+  <!-- queue box -->
+  <rect x="220" y="90" width="160" height="210" rx="8" fill="#1e293b" stroke="#475569"/>
+  <text x="300" y="112" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">queue (slurmctld)</text>
+  <rect x="240" y="130" width="120" height="30" rx="6" fill="#334155"/><text x="300" y="150" text-anchor="middle" fill="#94a3b8" font-size="11">job 4215 · prio 9</text>
+  <rect x="240" y="170" width="120" height="30" rx="6" fill="#334155"/><text x="300" y="190" text-anchor="middle" fill="#94a3b8" font-size="11">job 4216 · prio 7</text>
+  <!-- cluster -->
+  <rect x="470" y="80" width="240" height="220" rx="8" fill="#1e293b" stroke="#475569"/>
+  <text x="590" y="102" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">compute nodes (slurmd)</text>
+  <rect x="490" y="115" width="95" height="70" rx="6" fill="#334155">
+    <animate attributeName="fill" calcMode="discrete" values="#334155;#14532d;#334155" keyTimes="0;0.5;0.82" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <text x="537" y="155" text-anchor="middle" fill="#94a3b8" font-size="11">node 1</text>
+  <rect x="595" y="115" width="95" height="70" rx="6" fill="#334155">
+    <animate attributeName="fill" calcMode="discrete" values="#334155;#14532d;#334155" keyTimes="0;0.5;0.82" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <text x="642" y="155" text-anchor="middle" fill="#94a3b8" font-size="11">node 2</text>
+  <rect x="490" y="195" width="95" height="70" rx="6" fill="#334155"/><text x="537" y="235" text-anchor="middle" fill="#64748b" font-size="11">node 3 (busy)</text>
+  <rect x="595" y="195" width="95" height="70" rx="6" fill="#334155"/><text x="642" y="235" text-anchor="middle" fill="#64748b" font-size="11">node 4 (busy)</text>
+  <!-- progress bar while running -->
+  <rect x="490" y="275" width="200" height="10" rx="3" fill="none" stroke="#475569" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.5;0.82" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="490" y="275" width="0" height="10" rx="3" fill="#34d399">
+    <animate attributeName="width" values="0;0;200;200" keyTimes="0;0.5;0.8;1" calcMode="linear" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.5;0.82" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <!-- the job chip -->
+  <g>
+    <rect x="0" y="0" width="120" height="30" rx="6" fill="#1e3a5f" stroke="#38bdf8" stroke-width="2">
+      <animate attributeName="stroke-opacity" values="1;0.3;1" keyTimes="0;0.5;1" dur="1s" repeatCount="indefinite"/>
+    </rect>
+    <text x="60" y="20" text-anchor="middle" fill="#e2e8f0" font-size="11" font-weight="600">job 4217 · YOU</text>
+    <animateTransform attributeName="transform" type="translate" values="60 205;240 210;240 210" keyTimes="0;0.1;1" calcMode="linear" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="1;0" keyTimes="0;0.47" dur="10s" repeatCount="indefinite"/>
+  </g>
+  <text x="120" y="190" text-anchor="middle" fill="#94a3b8" font-size="12">sbatch job.sh</text>
+  <!-- allocation arrow flash -->
+  <g opacity="0">
+    <line x1="390" y1="190" x2="455" y2="150" stroke="#34d399" stroke-width="3"/>
+    <polygon points="463,145 447,146 453,160" fill="#34d399"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.45;0.53" dur="10s" repeatCount="indefinite"/>
+  </g>
+  <!-- status lines -->
+  <g opacity="0"><text x="380" y="335" text-anchor="middle" fill="#38bdf8" font-size="13" font-weight="600">① sbatch submits — job enters the queue</text><animate attributeName="opacity" calcMode="discrete" values="1;0" keyTimes="0;0.12" dur="10s" repeatCount="indefinite"/></g>
+  <g opacity="0"><text x="380" y="335" text-anchor="middle" fill="#fbbf24" font-size="13" font-weight="600">② PENDING — priority, fairshare, limits; backfill may slot it into gaps</text><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.12;0.45" dur="10s" repeatCount="indefinite"/></g>
+  <g opacity="0"><text x="380" y="335" text-anchor="middle" fill="#34d399" font-size="13" font-weight="600">③ RUNNING — nodes allocated, srun launches the tasks</text><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.45;0.8" dur="10s" repeatCount="indefinite"/></g>
+  <g opacity="0"><text x="380" y="335" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">④ COMPLETED ✓ — slurmdbd/sacct records usage for fairshare</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.8" dur="10s" repeatCount="indefinite"/></g>
+  <text x="380" y="364" text-anchor="middle" fill="#94a3b8" font-size="12">Jobs stay PENDING for: insufficient nodes, fairshare penalty, QoS/partition limits, oversized requests, fragmentation.</text>
+</svg>

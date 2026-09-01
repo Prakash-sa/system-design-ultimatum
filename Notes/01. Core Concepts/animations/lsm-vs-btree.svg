@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 430" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="760" height="430" rx="12" fill="#0f172a"/>
+  <text x="380" y="28" text-anchor="middle" fill="#e2e8f0" font-size="17" font-weight="600">B-Tree vs LSM-Tree — where a write goes</text>
+  <line x1="385" y1="45" x2="385" y2="360" stroke="#334155"/>
+  <!-- B-tree panel -->
+  <text x="200" y="58" text-anchor="middle" fill="#38bdf8" font-size="13" font-weight="600">B-Tree (Postgres, MySQL)</text>
+  <g fill="#1e293b" stroke="#475569">
+    <rect x="170" y="90" width="60" height="26" rx="4"/>
+    <rect x="105" y="150" width="60" height="26" rx="4"/>
+    <rect x="235" y="150" width="60" height="26" rx="4"/>
+    <rect x="65" y="210" width="55" height="26" rx="4"/>
+    <rect x="135" y="210" width="55" height="26" rx="4"/>
+    <rect x="205" y="210" width="55" height="26" rx="4"/>
+    <rect x="275" y="210" width="55" height="26" rx="4"/>
+  </g>
+  <g stroke="#475569">
+    <line x1="185" y1="116" x2="135" y2="150"/><line x1="215" y1="116" x2="265" y2="150"/>
+    <line x1="120" y1="176" x2="92" y2="210"/><line x1="150" y1="176" x2="162" y2="210"/>
+    <line x1="250" y1="176" x2="232" y2="210"/><line x1="280" y1="176" x2="302" y2="210"/>
+  </g>
+  <text x="200" y="108" text-anchor="middle" fill="#94a3b8" font-size="10">root</text>
+  <!-- write dot 1: to left leaf -->
+  <circle r="6" fill="#fbbf24" opacity="0">
+    <animateMotion path="M200,64 L200,103 L135,163 L92,223" keyPoints="0;0;1;1" keyTimes="0;0.05;0.35;1" calcMode="linear" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.05;0.36" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <rect x="65" y="210" width="55" height="26" rx="4" fill="#f87171" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.8;0;0" keyTimes="0;0.35;0.40;0.48;1" dur="8s" repeatCount="indefinite"/>
+  </rect>
+  <!-- write dot 2: to right leaf -->
+  <circle r="6" fill="#fbbf24" opacity="0">
+    <animateMotion path="M200,64 L200,103 L265,163 L302,223" keyPoints="0;0;1;1" keyTimes="0;0.5;0.8;1" calcMode="linear" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.5;0.81" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <rect x="275" y="210" width="55" height="26" rx="4" fill="#f87171" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.8;0;0" keyTimes="0;0.8;0.85;0.93;1" dur="8s" repeatCount="indefinite"/>
+  </rect>
+  <text x="200" y="270" text-anchor="middle" fill="#94a3b8" font-size="12">each write seeks to its page →</text>
+  <text x="200" y="288" text-anchor="middle" fill="#94a3b8" font-size="12">random I/O, in-place update</text>
+  <text x="200" y="316" text-anchor="middle" fill="#34d399" font-size="12">✓ fast point reads (one path down)</text>
+  <!-- LSM panel -->
+  <text x="570" y="58" text-anchor="middle" fill="#fb923c" font-size="13" font-weight="600">LSM-Tree (Cassandra, RocksDB)</text>
+  <rect x="440" y="76" width="180" height="52" rx="6" fill="#1e293b" stroke="#fb923c"/>
+  <text x="530" y="94" text-anchor="middle" fill="#e2e8f0" font-size="11">memtable (RAM, sorted)</text>
+  <rect x="452" y="102" width="0" height="16" rx="3" fill="#fb923c">
+    <animate attributeName="width" calcMode="linear" values="10;156;10;10;156;156" keyTimes="0;0.28;0.32;0.35;0.62;1" dur="8s" repeatCount="indefinite"/>
+  </rect>
+  <!-- incoming write dots -->
+  <circle r="5" fill="#fbbf24" opacity="0">
+    <animateMotion path="M530,50 L530,88" keyPoints="0;0;1;1" keyTimes="0;0.04;0.12;1" calcMode="linear" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.04;0.13" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="5" fill="#fbbf24" opacity="0">
+    <animateMotion path="M530,50 L530,88" keyPoints="0;0;1;1" keyTimes="0;0.16;0.24;1" calcMode="linear" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.16;0.25" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="5" fill="#fbbf24" opacity="0">
+    <animateMotion path="M530,50 L530,88" keyPoints="0;0;1;1" keyTimes="0;0.4;0.48;1" calcMode="linear" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.4;0.49" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <text x="648" y="94" fill="#94a3b8" font-size="10">writes are</text>
+  <text x="648" y="107" fill="#94a3b8" font-size="10">appends</text>
+  <!-- L0 SSTables -->
+  <text x="440" y="168" fill="#94a3b8" font-size="11">flush → L0 SSTables (disk, immutable):</text>
+  <g opacity="0">
+    <rect x="440" y="180" width="85" height="26" rx="4" fill="#1e3a5f" stroke="#38bdf8"/>
+    <text x="482" y="197" text-anchor="middle" fill="#e2e8f0" font-size="10">SSTable 1</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0.3" keyTimes="0;0.32;0.82" dur="8s" repeatCount="indefinite"/>
+  </g>
+  <g opacity="0">
+    <rect x="535" y="180" width="85" height="26" rx="4" fill="#1e3a5f" stroke="#38bdf8"/>
+    <text x="577" y="197" text-anchor="middle" fill="#e2e8f0" font-size="10">SSTable 2</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0.3" keyTimes="0;0.66;0.82" dur="8s" repeatCount="indefinite"/>
+  </g>
+  <!-- compaction -->
+  <g opacity="0">
+    <rect x="440" y="240" width="180" height="26" rx="4" fill="#14532d" stroke="#34d399"/>
+    <text x="530" y="257" text-anchor="middle" fill="#e2e8f0" font-size="10">L1: merged + sorted (compaction)</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.84" dur="8s" repeatCount="indefinite"/>
+  </g>
+  <text x="570" y="292" text-anchor="middle" fill="#94a3b8" font-size="12">writes are sequential appends → very fast ingest;</text>
+  <text x="570" y="310" text-anchor="middle" fill="#94a3b8" font-size="12">reads may check memtable + several SSTables</text>
+  <text x="570" y="328" text-anchor="middle" fill="#34d399" font-size="12">✓ bloom filters skip SSTables without the key</text>
+  <text x="380" y="392" text-anchor="middle" fill="#94a3b8" font-size="13">Rule of thumb: B-tree for read-heavy / point lookups, LSM for write-heavy ingest — compaction is the rent LSM pays later.</text>
+</svg>

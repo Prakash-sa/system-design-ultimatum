@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 440" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="760" height="440" rx="12" fill="#0f172a"/>
+  <text x="380" y="28" text-anchor="middle" fill="#e2e8f0" font-size="17" font-weight="600">Ring Allreduce — bandwidth-optimal collective</text>
+  <!-- edges (clockwise) -->
+  <g stroke="#475569" stroke-width="2">
+    <line x1="440" y1="100" x2="600" y2="190"/>
+    <line x1="620" y1="240" x2="440" y2="330"/>
+    <line x1="320" y1="330" x2="140" y2="240"/>
+    <line x1="120" y1="180" x2="320" y2="100"/>
+  </g>
+  <!-- nodes -->
+  <g>
+    <rect x="325" y="52" width="110" height="60" rx="8" fill="#1e293b" stroke="#38bdf8"/>
+    <text x="380" y="72" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="600">rank 0</text>
+    <g>
+      <rect x="337" y="82" width="20" height="12" rx="2" fill="#38bdf8" opacity="0.35"><animate attributeName="opacity" calcMode="discrete" values="0.35;1" keyTimes="0;0.83" dur="10s" repeatCount="indefinite"/></rect>
+      <rect x="361" y="82" width="20" height="12" rx="2" fill="#34d399" opacity="0.35"><animate attributeName="opacity" calcMode="discrete" values="0.35;1" keyTimes="0;0.83" dur="10s" repeatCount="indefinite"/></rect>
+      <rect x="385" y="82" width="20" height="12" rx="2" fill="#fbbf24" opacity="0.35"><animate attributeName="opacity" calcMode="discrete" values="0.35;1" keyTimes="0;0.83" dur="10s" repeatCount="indefinite"/></rect>
+      <rect x="409" y="82" width="20" height="12" rx="2" fill="#f87171" opacity="0.35"><animate attributeName="opacity" calcMode="discrete" values="0.35;1" keyTimes="0;0.83" dur="10s" repeatCount="indefinite"/></rect>
+    </g>
+  </g>
+  <g>
+    <rect x="585" y="180" width="110" height="60" rx="8" fill="#1e293b" stroke="#38bdf8"/>
+    <text x="640" y="200" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="600">rank 1</text>
+    <rect x="597" y="210" width="20" height="12" rx="2" fill="#38bdf8" opacity="0.35"><animate attributeName="opacity" calcMode="discrete" values="0.35;1" keyTimes="0;0.83" dur="10s" repeatCount="indefinite"/></rect>
+    <rect x="621" y="210" width="20" height="12" rx="2" fill="#34d399" opacity="0.35"><animate attributeName="opacity" calcMode="discrete" values="0.35;1" keyTimes="0;0.83" dur="10s" repeatCount="indefinite"/></rect>
+    <rect x="645" y="210" width="20" height="12" rx="2" fill="#fbbf24" opacity="0.35"><animate attributeName="opacity" calcMode="discrete" values="0.35;1" keyTimes="0;0.83" dur="10s" repeatCount="indefinite"/></rect>
+    <rect x="669" y="210" width="20" height="12" rx="2" fill="#f87171" opacity="0.35"><animate attributeName="opacity" calcMode="discrete" values="0.35;1" keyTimes="0;0.83" dur="10s" repeatCount="indefinite"/></rect>
+  </g>
+  <g>
+    <rect x="325" y="310" width="110" height="60" rx="8" fill="#1e293b" stroke="#38bdf8"/>
+    <text x="380" y="330" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="600">rank 2</text>
+    <rect x="337" y="340" width="20" height="12" rx="2" fill="#38bdf8" opacity="0.35"><animate attributeName="opacity" calcMode="discrete" values="0.35;1" keyTimes="0;0.83" dur="10s" repeatCount="indefinite"/></rect>
+    <rect x="361" y="340" width="20" height="12" rx="2" fill="#34d399" opacity="0.35"><animate attributeName="opacity" calcMode="discrete" values="0.35;1" keyTimes="0;0.83" dur="10s" repeatCount="indefinite"/></rect>
+    <rect x="385" y="340" width="20" height="12" rx="2" fill="#fbbf24" opacity="0.35"><animate attributeName="opacity" calcMode="discrete" values="0.35;1" keyTimes="0;0.83" dur="10s" repeatCount="indefinite"/></rect>
+    <rect x="409" y="340" width="20" height="12" rx="2" fill="#f87171" opacity="0.35"><animate attributeName="opacity" calcMode="discrete" values="0.35;1" keyTimes="0;0.83" dur="10s" repeatCount="indefinite"/></rect>
+  </g>
+  <g>
+    <rect x="65" y="180" width="110" height="60" rx="8" fill="#1e293b" stroke="#38bdf8"/>
+    <text x="120" y="200" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="600">rank 3</text>
+    <rect x="77" y="210" width="20" height="12" rx="2" fill="#38bdf8" opacity="0.35"><animate attributeName="opacity" calcMode="discrete" values="0.35;1" keyTimes="0;0.83" dur="10s" repeatCount="indefinite"/></rect>
+    <rect x="101" y="210" width="20" height="12" rx="2" fill="#34d399" opacity="0.35"><animate attributeName="opacity" calcMode="discrete" values="0.35;1" keyTimes="0;0.83" dur="10s" repeatCount="indefinite"/></rect>
+    <rect x="125" y="210" width="20" height="12" rx="2" fill="#fbbf24" opacity="0.35"><animate attributeName="opacity" calcMode="discrete" values="0.35;1" keyTimes="0;0.83" dur="10s" repeatCount="indefinite"/></rect>
+    <rect x="149" y="210" width="20" height="12" rx="2" fill="#f87171" opacity="0.35"><animate attributeName="opacity" calcMode="discrete" values="0.35;1" keyTimes="0;0.83" dur="10s" repeatCount="indefinite"/></rect>
+  </g>
+  <!-- packets: 6 traversals per loop (3 reduce-scatter + 3 allgather steps), all edges send concurrently -->
+  <rect x="-8" y="-8" width="16" height="16" rx="3" fill="#fbbf24">
+    <animateMotion path="M440,100 L600,190" calcMode="linear"
+      keyPoints="0;1;0;1;0;1;0;1;0;1;0;1;1" keyTimes="0;0.14;0.14;0.28;0.28;0.42;0.42;0.56;0.56;0.70;0.70;0.84;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="1;0" keyTimes="0;0.84" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="-8" y="-8" width="16" height="16" rx="3" fill="#38bdf8">
+    <animateMotion path="M620,240 L440,330" calcMode="linear"
+      keyPoints="0;1;0;1;0;1;0;1;0;1;0;1;1" keyTimes="0;0.14;0.14;0.28;0.28;0.42;0.42;0.56;0.56;0.70;0.70;0.84;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="1;0" keyTimes="0;0.84" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="-8" y="-8" width="16" height="16" rx="3" fill="#34d399">
+    <animateMotion path="M320,330 L140,240" calcMode="linear"
+      keyPoints="0;1;0;1;0;1;0;1;0;1;0;1;1" keyTimes="0;0.14;0.14;0.28;0.28;0.42;0.42;0.56;0.56;0.70;0.70;0.84;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="1;0" keyTimes="0;0.84" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="-8" y="-8" width="16" height="16" rx="3" fill="#f87171">
+    <animateMotion path="M120,180 L320,100" calcMode="linear"
+      keyPoints="0;1;0;1;0;1;0;1;0;1;0;1;1" keyTimes="0;0.14;0.14;0.28;0.28;0.42;0.42;0.56;0.56;0.70;0.70;0.84;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="1;0" keyTimes="0;0.84" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <!-- phase labels -->
+  <g opacity="0">
+    <text x="380" y="180" text-anchor="middle" fill="#fbbf24" font-size="13" font-weight="600">Phase 1 · reduce-scatter (p−1 steps)</text>
+    <text x="380" y="200" text-anchor="middle" fill="#94a3b8" font-size="12">send one chunk right, add the chunk that arrives</text>
+    <animate attributeName="opacity" calcMode="discrete" values="1;0" keyTimes="0;0.42" dur="10s" repeatCount="indefinite"/>
+  </g>
+  <g opacity="0">
+    <text x="380" y="180" text-anchor="middle" fill="#34d399" font-size="13" font-weight="600">Phase 2 · allgather (p−1 steps)</text>
+    <text x="380" y="200" text-anchor="middle" fill="#94a3b8" font-size="12">circulate the finished sums around the ring</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.42;0.84" dur="10s" repeatCount="indefinite"/>
+  </g>
+  <g opacity="0">
+    <text x="380" y="190" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="600">✓ every rank holds the full result</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.84" dur="10s" repeatCount="indefinite"/>
+  </g>
+  <text x="380" y="408" text-anchor="middle" fill="#94a3b8" font-size="13">Each rank sends 2(p−1)/p · n ≈ 2n bytes regardless of p — this is MPI_Allreduce for large messages</text>
+  <text x="380" y="428" text-anchor="middle" fill="#94a3b8" font-size="13">and NCCL's workhorse for gradient sync in distributed training.</text>
+</svg>

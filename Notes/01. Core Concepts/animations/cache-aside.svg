@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="760" height="400" rx="12" fill="#0f172a"/>
+  <text x="380" y="28" text-anchor="middle" fill="#e2e8f0" font-size="17" font-weight="600">Cache-Aside (Lazy Loading) — first read misses, then hits</text>
+  <rect x="60" y="160" width="140" height="60" rx="8" fill="#1e293b" stroke="#94a3b8"/>
+  <text x="130" y="195" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">App</text>
+  <rect x="470" y="70" width="180" height="60" rx="8" fill="#1e293b" stroke="#38bdf8"/>
+  <text x="560" y="93" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">Cache (Redis)</text>
+  <g opacity="0">
+    <rect x="490" y="100" width="140" height="20" rx="4" fill="#14532d" stroke="#34d399"/>
+    <text x="560" y="114" text-anchor="middle" fill="#e2e8f0" font-size="10">user:42 → {…}  TTL 300s</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.56" dur="9s" repeatCount="indefinite"/>
+  </g>
+  <rect x="470" y="270" width="180" height="60" rx="8" fill="#1e293b" stroke="#fb923c"/>
+  <text x="560" y="305" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">Database</text>
+  <!-- 1 miss -->
+  <circle r="6" fill="#e2e8f0" opacity="0">
+    <animateMotion path="M200,180 L470,100" keyPoints="0;0;1;1" keyTimes="0;0.03;0.13;1" calcMode="linear" dur="9s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.03;0.14" dur="9s" repeatCount="indefinite"/>
+  </circle>
+  <g opacity="0">
+    <text x="400" y="115" text-anchor="middle" fill="#f87171" font-size="13" font-weight="700">MISS ✗</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.13;0.21" dur="9s" repeatCount="indefinite"/>
+  </g>
+  <!-- 2 read DB -->
+  <circle r="6" fill="#fb923c" opacity="0">
+    <animateMotion path="M200,205 L470,295" keyPoints="0;0;1;1" keyTimes="0;0.2;0.31;1" calcMode="linear" dur="9s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.2;0.32" dur="9s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="6" fill="#fb923c" opacity="0">
+    <animateMotion path="M470,295 L200,205" keyPoints="0;0;1;1" keyTimes="0;0.33;0.43;1" calcMode="linear" dur="9s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.33;0.44" dur="9s" repeatCount="indefinite"/>
+  </circle>
+  <!-- 3 populate -->
+  <circle r="6" fill="#34d399" opacity="0">
+    <animateMotion path="M200,180 L470,100" keyPoints="0;0;1;1" keyTimes="0;0.46;0.55;1" calcMode="linear" dur="9s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.46;0.56" dur="9s" repeatCount="indefinite"/>
+  </circle>
+  <!-- 4 second read: hit -->
+  <circle r="6" fill="#e2e8f0" opacity="0">
+    <animateMotion path="M200,180 L470,100" keyPoints="0;0;1;1" keyTimes="0;0.63;0.71;1" calcMode="linear" dur="9s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.63;0.72" dur="9s" repeatCount="indefinite"/>
+  </circle>
+  <g opacity="0">
+    <text x="400" y="115" text-anchor="middle" fill="#34d399" font-size="13" font-weight="700">HIT ✓ (~1 ms)</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.71;0.82" dur="9s" repeatCount="indefinite"/>
+  </g>
+  <circle r="6" fill="#34d399" opacity="0">
+    <animateMotion path="M470,100 L200,180" keyPoints="0;0;1;1" keyTimes="0;0.74;0.82;1" calcMode="linear" dur="9s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.74;0.83" dur="9s" repeatCount="indefinite"/>
+  </circle>
+  <!-- step captions -->
+  <g opacity="0"><text x="380" y="360" text-anchor="middle" fill="#e2e8f0" font-size="13">① app checks cache first — key not there</text><animate attributeName="opacity" calcMode="discrete" values="1;0" keyTimes="0;0.18" dur="9s" repeatCount="indefinite"/></g>
+  <g opacity="0"><text x="380" y="360" text-anchor="middle" fill="#fb923c" font-size="13">② on miss, app reads the database (~50 ms)</text><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.18;0.45" dur="9s" repeatCount="indefinite"/></g>
+  <g opacity="0"><text x="380" y="360" text-anchor="middle" fill="#34d399" font-size="13">③ app writes the result into the cache with a TTL</text><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.45;0.62" dur="9s" repeatCount="indefinite"/></g>
+  <g opacity="0"><text x="380" y="360" text-anchor="middle" fill="#e2e8f0" font-size="13">④ subsequent reads hit the cache — DB only sees misses</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.62" dur="9s" repeatCount="indefinite"/></g>
+  <text x="380" y="386" text-anchor="middle" fill="#94a3b8" font-size="12">Cache only fills with data that is actually requested; cache failure degrades to DB reads, never data loss.</text>
+</svg>

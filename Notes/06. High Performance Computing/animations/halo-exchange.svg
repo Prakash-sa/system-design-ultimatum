@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 440" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="760" height="440" rx="12" fill="#0f172a"/>
+  <text x="380" y="28" text-anchor="middle" fill="#e2e8f0" font-size="17" font-weight="600">Halo (Ghost Cell) Exchange — one stencil iteration</text>
+  <!-- 4 blocks with ghost rings -->
+  <g>
+    <rect x="150" y="70" width="180" height="130" rx="6" fill="#1e293b" stroke="#64748b" stroke-dasharray="5 4"/>
+    <rect x="164" y="84" width="152" height="102" rx="4" fill="#0b1f33" stroke="#38bdf8"/>
+    <text x="240" y="140" text-anchor="middle" fill="#94a3b8" font-size="12">rank 0 interior</text>
+    <rect x="164" y="84" width="152" height="102" rx="4" fill="#34d399" opacity="0">
+      <animate attributeName="opacity" values="0;0;0.4;0;0" keyTimes="0;0.42;0.55;0.75;1" dur="7s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+  <g>
+    <rect x="430" y="70" width="180" height="130" rx="6" fill="#1e293b" stroke="#64748b" stroke-dasharray="5 4"/>
+    <rect x="444" y="84" width="152" height="102" rx="4" fill="#0b1f33" stroke="#38bdf8"/>
+    <text x="520" y="140" text-anchor="middle" fill="#94a3b8" font-size="12">rank 1 interior</text>
+    <rect x="444" y="84" width="152" height="102" rx="4" fill="#34d399" opacity="0">
+      <animate attributeName="opacity" values="0;0;0.4;0;0" keyTimes="0;0.42;0.55;0.75;1" dur="7s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+  <g>
+    <rect x="150" y="250" width="180" height="130" rx="6" fill="#1e293b" stroke="#64748b" stroke-dasharray="5 4"/>
+    <rect x="164" y="264" width="152" height="102" rx="4" fill="#0b1f33" stroke="#38bdf8"/>
+    <text x="240" y="320" text-anchor="middle" fill="#94a3b8" font-size="12">rank 2 interior</text>
+    <rect x="164" y="264" width="152" height="102" rx="4" fill="#34d399" opacity="0">
+      <animate attributeName="opacity" values="0;0;0.4;0;0" keyTimes="0;0.42;0.55;0.75;1" dur="7s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+  <g>
+    <rect x="430" y="250" width="180" height="130" rx="6" fill="#1e293b" stroke="#64748b" stroke-dasharray="5 4"/>
+    <rect x="444" y="264" width="152" height="102" rx="4" fill="#0b1f33" stroke="#38bdf8"/>
+    <text x="520" y="320" text-anchor="middle" fill="#94a3b8" font-size="12">rank 3 interior</text>
+    <rect x="444" y="264" width="152" height="102" rx="4" fill="#34d399" opacity="0">
+      <animate attributeName="opacity" values="0;0;0.4;0;0" keyTimes="0;0.42;0.55;0.75;1" dur="7s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+  <text x="240" y="62" text-anchor="middle" fill="#64748b" font-size="11">dashed ring = ghost layer (copy of neighbor's edge)</text>
+  <!-- horizontal exchange chips, row 1 -->
+  <rect x="312" y="100" width="14" height="30" rx="3" fill="#fb923c" opacity="0">
+    <animate attributeName="x" values="312;312;436;436" keyTimes="0;0.04;0.28;1" calcMode="linear" dur="7s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.02;0.32" dur="7s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="434" y="145" width="14" height="30" rx="3" fill="#fbbf24" opacity="0">
+    <animate attributeName="x" values="434;434;312;312" keyTimes="0;0.04;0.28;1" calcMode="linear" dur="7s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.02;0.32" dur="7s" repeatCount="indefinite"/>
+  </rect>
+  <!-- horizontal exchange chips, row 2 -->
+  <rect x="312" y="280" width="14" height="30" rx="3" fill="#fb923c" opacity="0">
+    <animate attributeName="x" values="312;312;436;436" keyTimes="0;0.04;0.28;1" calcMode="linear" dur="7s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.02;0.32" dur="7s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="434" y="325" width="14" height="30" rx="3" fill="#fbbf24" opacity="0">
+    <animate attributeName="x" values="434;434;312;312" keyTimes="0;0.04;0.28;1" calcMode="linear" dur="7s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.02;0.32" dur="7s" repeatCount="indefinite"/>
+  </rect>
+  <!-- vertical exchange chips, column 1 -->
+  <rect x="195" y="188" width="30" height="14" rx="3" fill="#fb923c" opacity="0">
+    <animate attributeName="y" values="188;188;250;250" keyTimes="0;0.04;0.28;1" calcMode="linear" dur="7s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.02;0.32" dur="7s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="255" y="248" width="30" height="14" rx="3" fill="#fbbf24" opacity="0">
+    <animate attributeName="y" values="248;248;186;186" keyTimes="0;0.04;0.28;1" calcMode="linear" dur="7s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.02;0.32" dur="7s" repeatCount="indefinite"/>
+  </rect>
+  <!-- vertical exchange chips, column 2 -->
+  <rect x="475" y="188" width="30" height="14" rx="3" fill="#fb923c" opacity="0">
+    <animate attributeName="y" values="188;188;250;250" keyTimes="0;0.04;0.28;1" calcMode="linear" dur="7s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.02;0.32" dur="7s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="535" y="248" width="30" height="14" rx="3" fill="#fbbf24" opacity="0">
+    <animate attributeName="y" values="248;248;186;186" keyTimes="0;0.04;0.28;1" calcMode="linear" dur="7s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.02;0.32" dur="7s" repeatCount="indefinite"/>
+  </rect>
+  <!-- phase labels -->
+  <g opacity="0">
+    <text x="380" y="228" text-anchor="middle" fill="#fb923c" font-size="13" font-weight="600">① exchange ghost cells with neighbors (MPI_Isend / MPI_Irecv)</text>
+    <animate attributeName="opacity" calcMode="discrete" values="1;0" keyTimes="0;0.38" dur="7s" repeatCount="indefinite"/>
+  </g>
+  <g opacity="0">
+    <text x="380" y="228" text-anchor="middle" fill="#34d399" font-size="13" font-weight="600">② compute — interior can even start while halos are in flight (overlap)</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.38;0.85" dur="7s" repeatCount="indefinite"/>
+  </g>
+  <text x="380" y="410" text-anchor="middle" fill="#94a3b8" font-size="13">Compute scales with block volume, communication with block surface —</text>
+  <text x="380" y="428" text-anchor="middle" fill="#94a3b8" font-size="13">so bigger, cube-shaped blocks (3D decomposition) communicate proportionally less.</text>
+</svg>

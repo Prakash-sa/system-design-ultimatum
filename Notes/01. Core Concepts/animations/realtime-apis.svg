@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 440" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="760" height="440" rx="12" fill="#0f172a"/>
+  <text x="380" y="28" text-anchor="middle" fill="#e2e8f0" font-size="17" font-weight="600">Short Polling vs SSE vs WebSocket</text>
+  <line x1="262" y1="45" x2="262" y2="380" stroke="#334155"/>
+  <line x1="502" y1="45" x2="502" y2="380" stroke="#334155"/>
+  <!-- panel 1: short polling -->
+  <text x="150" y="58" text-anchor="middle" fill="#f87171" font-size="13" font-weight="600">Short polling</text>
+  <line x1="80" y1="90" x2="80" y2="340" stroke="#475569" stroke-width="2"/>
+  <line x1="225" y1="90" x2="225" y2="340" stroke="#475569" stroke-width="2"/>
+  <text x="80" y="82" text-anchor="middle" fill="#94a3b8" font-size="11">client</text>
+  <text x="225" y="82" text-anchor="middle" fill="#94a3b8" font-size="11">server</text>
+  <circle r="5" fill="#e2e8f0" opacity="0"><animateMotion path="M80,110 L225,110" keyPoints="0;0;1;1" keyTimes="0;0.02;0.08;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.02;0.09" dur="6s" repeatCount="indefinite"/></circle>
+  <circle r="5" fill="#64748b" opacity="0"><animateMotion path="M225,125 L80,125" keyPoints="0;0;1;1" keyTimes="0;0.1;0.16;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.1;0.17" dur="6s" repeatCount="indefinite"/></circle>
+  <text x="152" y="140" text-anchor="middle" fill="#64748b" font-size="9" opacity="0">empty<animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.1;0.2" dur="6s" repeatCount="indefinite"/></text>
+  <circle r="5" fill="#e2e8f0" opacity="0"><animateMotion path="M80,180 L225,180" keyPoints="0;0;1;1" keyTimes="0;0.28;0.34;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.28;0.35" dur="6s" repeatCount="indefinite"/></circle>
+  <circle r="5" fill="#64748b" opacity="0"><animateMotion path="M225,195 L80,195" keyPoints="0;0;1;1" keyTimes="0;0.36;0.42;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.36;0.43" dur="6s" repeatCount="indefinite"/></circle>
+  <text x="152" y="210" text-anchor="middle" fill="#64748b" font-size="9" opacity="0">empty<animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.36;0.46" dur="6s" repeatCount="indefinite"/></text>
+  <circle r="5" fill="#e2e8f0" opacity="0"><animateMotion path="M80,250 L225,250" keyPoints="0;0;1;1" keyTimes="0;0.54;0.6;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.54;0.61" dur="6s" repeatCount="indefinite"/></circle>
+  <circle r="6" fill="#34d399" opacity="0"><animateMotion path="M225,265 L80,265" keyPoints="0;0;1;1" keyTimes="0;0.62;0.68;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.62;0.69" dur="6s" repeatCount="indefinite"/></circle>
+  <text x="152" y="282" text-anchor="middle" fill="#34d399" font-size="9" opacity="0">data!<animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.62;0.74" dur="6s" repeatCount="indefinite"/></text>
+  <text x="150" y="362" text-anchor="middle" fill="#94a3b8" font-size="11">wasted round trips ·</text>
+  <text x="150" y="378" text-anchor="middle" fill="#94a3b8" font-size="11">latency ≈ poll interval</text>
+  <!-- panel 2: SSE -->
+  <text x="382" y="58" text-anchor="middle" fill="#38bdf8" font-size="13" font-weight="600">Server-Sent Events</text>
+  <line x1="312" y1="90" x2="312" y2="340" stroke="#475569" stroke-width="2"/>
+  <line x1="457" y1="90" x2="457" y2="340" stroke="#475569" stroke-width="2"/>
+  <text x="312" y="82" text-anchor="middle" fill="#94a3b8" font-size="11">client</text>
+  <text x="457" y="82" text-anchor="middle" fill="#94a3b8" font-size="11">server</text>
+  <circle r="5" fill="#e2e8f0" opacity="0"><animateMotion path="M312,110 L457,110" keyPoints="0;0;1;1" keyTimes="0;0.02;0.08;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.02;0.09" dur="6s" repeatCount="indefinite"/></circle>
+  <rect x="312" y="118" width="145" height="6" rx="3" fill="#38bdf8" fill-opacity="0.25" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.1" dur="6s" repeatCount="indefinite"/>
+  </rect>
+  <text x="384" y="136" text-anchor="middle" fill="#38bdf8" font-size="9" opacity="0">stream stays open<animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.1" dur="6s" repeatCount="indefinite"/></text>
+  <circle r="6" fill="#34d399" opacity="0"><animateMotion path="M457,170 L312,170" keyPoints="0;0;1;1" keyTimes="0;0.25;0.32;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.25;0.33" dur="6s" repeatCount="indefinite"/></circle>
+  <circle r="6" fill="#34d399" opacity="0"><animateMotion path="M457,225 L312,225" keyPoints="0;0;1;1" keyTimes="0;0.48;0.55;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.48;0.56" dur="6s" repeatCount="indefinite"/></circle>
+  <circle r="6" fill="#34d399" opacity="0"><animateMotion path="M457,285 L312,285" keyPoints="0;0;1;1" keyTimes="0;0.74;0.81;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.74;0.82" dur="6s" repeatCount="indefinite"/></circle>
+  <text x="382" y="362" text-anchor="middle" fill="#94a3b8" font-size="11">one HTTP connection ·</text>
+  <text x="382" y="378" text-anchor="middle" fill="#94a3b8" font-size="11">server → client push only · auto-reconnect</text>
+  <!-- panel 3: WebSocket -->
+  <text x="618" y="58" text-anchor="middle" fill="#a78bfa" font-size="13" font-weight="600">WebSocket</text>
+  <line x1="548" y1="90" x2="548" y2="340" stroke="#475569" stroke-width="2"/>
+  <line x1="693" y1="90" x2="693" y2="340" stroke="#475569" stroke-width="2"/>
+  <text x="548" y="82" text-anchor="middle" fill="#94a3b8" font-size="11">client</text>
+  <text x="693" y="82" text-anchor="middle" fill="#94a3b8" font-size="11">server</text>
+  <circle r="5" fill="#e2e8f0" opacity="0"><animateMotion path="M548,105 L693,105" keyPoints="0;0;1;1" keyTimes="0;0.02;0.08;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.02;0.09" dur="6s" repeatCount="indefinite"/></circle>
+  <text x="620" y="122" text-anchor="middle" fill="#a78bfa" font-size="9" opacity="0">HTTP upgrade ✓<animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.1" dur="6s" repeatCount="indefinite"/></text>
+  <circle r="6" fill="#fbbf24" opacity="0"><animateMotion path="M548,165 L693,165" keyPoints="0;0;1;1" keyTimes="0;0.22;0.29;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.22;0.30" dur="6s" repeatCount="indefinite"/></circle>
+  <circle r="6" fill="#34d399" opacity="0"><animateMotion path="M693,210 L548,210" keyPoints="0;0;1;1" keyTimes="0;0.4;0.47;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.4;0.48" dur="6s" repeatCount="indefinite"/></circle>
+  <circle r="6" fill="#fbbf24" opacity="0"><animateMotion path="M548,255 L693,255" keyPoints="0;0;1;1" keyTimes="0;0.58;0.65;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.58;0.66" dur="6s" repeatCount="indefinite"/></circle>
+  <circle r="6" fill="#34d399" opacity="0"><animateMotion path="M693,300 L548,300" keyPoints="0;0;1;1" keyTimes="0;0.76;0.83;1" calcMode="linear" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.76;0.84" dur="6s" repeatCount="indefinite"/></circle>
+  <text x="618" y="362" text-anchor="middle" fill="#94a3b8" font-size="11">full duplex · lowest latency ·</text>
+  <text x="618" y="378" text-anchor="middle" fill="#94a3b8" font-size="11">stateful (sticky sessions, harder to scale)</text>
+  <text x="380" y="412" text-anchor="middle" fill="#94a3b8" font-size="13">Choose: infrequent updates → polling · server-push feeds/notifications → SSE · chat/games/collab → WebSocket.</text>
+</svg>

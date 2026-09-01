@@ -49,6 +49,8 @@ Producers → [Brokers (1,2,3...)] ← Consumers
 
 ### 1. Topics and Partitions
 
+![Kafka partitioned log and consumer offsets (animated)](./animations/kafka-log.svg)
+
 **Topic**: A stream/channel of events (like a table in a database)
 
 <details>

@@ -235,6 +235,8 @@ If load is not evenly distributed across keys in a Redis cluster, you can run in
 
 ### Q1: Why is Redis single-threaded, and how can it still be so fast?
 
+![Redis single-threaded event loop (animated)](./animations/redis-eventloop.svg)
+
 **Answer:** Redis is single-threaded for its core data operations to avoid the overhead of context switching, locking, and synchronization that comes with multi-threading. It achieves high performance because:
 
 - All data is **in-memory**, so there's no disk I/O bottleneck for reads/writes

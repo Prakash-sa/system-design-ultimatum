@@ -250,6 +250,8 @@ Trade-offs:
 
 ### 4. Inverted Index (Core of Lucene)
 
+![Inverted index build and query (animated)](./animations/inverted-index.svg)
+
 **Inverted Index**: Maps terms → documents (enables fast search)
 
 <details>

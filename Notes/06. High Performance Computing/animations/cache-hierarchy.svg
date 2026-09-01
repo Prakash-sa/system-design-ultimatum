@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 360" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="760" height="360" rx="12" fill="#0f172a"/>
+  <text x="380" y="30" text-anchor="middle" fill="#e2e8f0" font-size="17" font-weight="600">Memory Hierarchy — watch how far a miss travels</text>
+  <!-- boxes -->
+  <rect x="300" y="55" width="160" height="32" rx="6" fill="#334155" stroke="#94a3b8"/><text x="380" y="76" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">Core (registers)</text>
+  <rect x="290" y="97" width="180" height="28" rx="6" fill="#1e3a5f" stroke="#38bdf8"/><text x="380" y="116" text-anchor="middle" fill="#e2e8f0" font-size="12">L1</text>
+  <rect x="270" y="135" width="220" height="30" rx="6" fill="#1e3a5f" stroke="#38bdf8" stroke-opacity="0.7"/><text x="380" y="155" text-anchor="middle" fill="#e2e8f0" font-size="12">L2</text>
+  <rect x="240" y="175" width="280" height="34" rx="6" fill="#1e3a5f" stroke="#38bdf8" stroke-opacity="0.4"/><text x="380" y="197" text-anchor="middle" fill="#e2e8f0" font-size="12">L3 (shared per socket)</text>
+  <rect x="200" y="219" width="360" height="40" rx="6" fill="#3b2f1e" stroke="#fb923c"/><text x="380" y="244" text-anchor="middle" fill="#e2e8f0" font-size="12">DRAM</text>
+  <!-- latency labels -->
+  <text x="580" y="115" fill="#94a3b8" font-size="12">~32 KB · ~1 ns</text>
+  <text x="580" y="154" fill="#94a3b8" font-size="12">~1 MB · ~4 ns</text>
+  <text x="580" y="196" fill="#94a3b8" font-size="12">~32 MB · ~15 ns</text>
+  <text x="580" y="243" fill="#94a3b8" font-size="12">~100s GB · ~100 ns</text>
+  <!-- L1 hit dot (fast loop) -->
+  <circle r="6" fill="#34d399">
+    <animateMotion path="M330,80 L330,111" keyPoints="0;1;0" keyTimes="0;0.5;1" calcMode="linear" dur="1.4s" repeatCount="indefinite"/>
+  </circle>
+  <text x="240" y="100" fill="#34d399" font-size="12" font-weight="600">L1 hit</text>
+  <!-- DRAM miss dot (slow loop) -->
+  <circle r="6" fill="#f87171">
+    <animateMotion path="M430,80 L430,239" keyPoints="0;1;0" keyTimes="0;0.5;1" calcMode="linear" dur="7s" repeatCount="indefinite"/>
+  </circle>
+  <text x="470" y="100" fill="#f87171" font-size="12" font-weight="600">miss → DRAM (fetches a whole 64 B line)</text>
+  <text x="380" y="300" text-anchor="middle" fill="#94a3b8" font-size="13">The green hit completes ~5 round trips while the red miss finishes one —</text>
+  <text x="380" y="320" text-anchor="middle" fill="#94a3b8" font-size="13">a DRAM miss costs ~100× an L1 hit. Locality (stride-1 loops, tiling) keeps you in the blue boxes.</text>
+</svg>

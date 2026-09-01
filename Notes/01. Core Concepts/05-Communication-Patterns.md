@@ -2,6 +2,8 @@
 
 ## Synchronous vs Asynchronous
 
+![Sync vs async communication (animated)](./animations/sync-vs-async.svg)
+
 | Aspect | Synchronous (HTTP/gRPC) | Asynchronous (Message Queue) | When to Use |
 |--------|------------------------|------------------------------|-------------|
 | **Coupling** | Tight (caller waits) | Loose (fire and forget) | Sync: real-time; Async: decouple services |

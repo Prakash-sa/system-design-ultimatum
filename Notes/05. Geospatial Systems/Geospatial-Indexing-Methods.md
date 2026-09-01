@@ -20,6 +20,8 @@
 
 ## 1. Quad Tree
 
+![Quad tree subdivision and range query (animated)](./animations/quadtree.svg)
+
 ### Concept
 Quad Tree is a recursive spatial partitioning structure that divides 2D space into four quadrants.
 
@@ -194,6 +196,8 @@ nearby = matcher.find_nearby_drivers(
 ---
 
 ## 2. Geohash
+
+![Geohash precision zoom (animated)](./animations/geohash.svg)
 
 ### Concept
 Geohash converts lat/lng to a string by recursively dividing the world into grids.

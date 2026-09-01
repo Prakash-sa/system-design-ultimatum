@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 430" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="760" height="430" rx="12" fill="#0f172a"/>
+  <text x="380" y="28" text-anchor="middle" fill="#e2e8f0" font-size="17" font-weight="600">ZooKeeper Leader Election — ephemeral sequential znodes</text>
+  <!-- clients -->
+  <g>
+    <rect x="60" y="80" width="130" height="55" rx="8" fill="#1e293b" stroke="#38bdf8">
+      <animate attributeName="stroke" calcMode="discrete" values="#38bdf8;#475569" keyTimes="0;0.5" dur="10s" repeatCount="indefinite"/>
+      <animate attributeName="fill" calcMode="discrete" values="#1e293b;#141a24" keyTimes="0;0.5" dur="10s" repeatCount="indefinite"/>
+    </rect>
+    <text x="125" y="105" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="600">service A</text>
+    <g opacity="0"><text x="125" y="124" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="700">👑 LEADER</text><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.2;0.5" dur="10s" repeatCount="indefinite"/></g>
+    <g opacity="0"><text x="125" y="124" text-anchor="middle" fill="#f87171" font-size="11" font-weight="600">✗ crashed / GC pause</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.5" dur="10s" repeatCount="indefinite"/></g>
+  </g>
+  <g>
+    <rect x="60" y="185" width="130" height="55" rx="8" fill="#1e293b" stroke="#34d399"/>
+    <text x="125" y="210" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="600">service B</text>
+    <g opacity="0"><text x="125" y="229" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="700">👑 LEADER</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.72" dur="10s" repeatCount="indefinite"/></g>
+  </g>
+  <g>
+    <rect x="60" y="290" width="130" height="55" rx="8" fill="#1e293b" stroke="#a78bfa"/>
+    <text x="125" y="315" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="600">service C</text>
+    <text x="125" y="334" text-anchor="middle" fill="#94a3b8" font-size="11">follower</text>
+  </g>
+  <!-- ZK box -->
+  <rect x="400" y="60" width="310" height="290" rx="10" fill="#1e293b" stroke="#475569"/>
+  <text x="555" y="84" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">ZooKeeper — /election/</text>
+  <g opacity="0">
+    <rect x="420" y="100" width="270" height="34" rx="6" fill="#0b1f33" stroke="#38bdf8"/>
+    <text x="432" y="122" fill="#e2e8f0" font-size="12" font-family="monospace">n-0000000001  (A, ephemeral)</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0.15" keyTimes="0;0.05;0.55" dur="10s" repeatCount="indefinite"/>
+  </g>
+  <g opacity="0">
+    <text x="555" y="122" text-anchor="middle" fill="#f87171" font-size="11" font-weight="700">session expired → znode auto-deleted</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.55;0.75" dur="10s" repeatCount="indefinite"/>
+  </g>
+  <g opacity="0">
+    <rect x="420" y="146" width="270" height="34" rx="6" fill="#0b1f33" stroke="#34d399"/>
+    <text x="432" y="168" fill="#e2e8f0" font-size="12" font-family="monospace">n-0000000002  (B, ephemeral)</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.1" dur="10s" repeatCount="indefinite"/>
+  </g>
+  <g opacity="0">
+    <rect x="420" y="192" width="270" height="34" rx="6" fill="#0b1f33" stroke="#a78bfa"/>
+    <text x="432" y="214" fill="#e2e8f0" font-size="12" font-family="monospace">n-0000000003  (C, ephemeral)</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.15" dur="10s" repeatCount="indefinite"/>
+  </g>
+  <!-- watch arrows -->
+  <g opacity="0">
+    <path d="M425,163 C405,150 405,130 425,117" stroke="#fbbf24" stroke-width="2" fill="none"/>
+    <text x="392" y="145" text-anchor="end" fill="#fbbf24" font-size="10">B watches 0001</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.25;0.72" dur="10s" repeatCount="indefinite"/>
+  </g>
+  <g opacity="0">
+    <path d="M425,209 C405,196 405,176 425,163" stroke="#94a3b8" stroke-width="2" fill="none"/>
+    <text x="392" y="191" text-anchor="end" fill="#94a3b8" font-size="10">C watches 0002</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.3" dur="10s" repeatCount="indefinite"/>
+  </g>
+  <!-- watch fire notification -->
+  <circle r="7" fill="#fbbf24" opacity="0">
+    <animateMotion path="M420,117 L190,205" keyPoints="0;0;1;1" keyTimes="0;0.58;0.68;1" calcMode="linear" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.58;0.69" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <g opacity="0">
+    <text x="300" y="165" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="600">watch fires: "0001 deleted"</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.6;0.75" dur="10s" repeatCount="indefinite"/>
+  </g>
+  <!-- step captions -->
+  <g opacity="0"><text x="380" y="388" text-anchor="middle" fill="#e2e8f0" font-size="13">① each candidate creates an EPHEMERAL SEQUENTIAL znode — lowest number wins</text><animate attributeName="opacity" calcMode="discrete" values="1;0" keyTimes="0;0.28" dur="10s" repeatCount="indefinite"/></g>
+  <g opacity="0"><text x="380" y="388" text-anchor="middle" fill="#e2e8f0" font-size="13">② everyone watches only its PREDECESSOR — no thundering herd on changes</text><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.28;0.5" dur="10s" repeatCount="indefinite"/></g>
+  <g opacity="0"><text x="380" y="388" text-anchor="middle" fill="#f87171" font-size="13">③ leader's session dies → its ephemeral znode vanishes automatically</text><animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.5;0.7" dur="10s" repeatCount="indefinite"/></g>
+  <g opacity="0"><text x="380" y="388" text-anchor="middle" fill="#34d399" font-size="13">④ only B (the next in line) is notified and takes over — automatic failover</text><animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.7" dur="10s" repeatCount="indefinite"/></g>
+  <text x="380" y="414" text-anchor="middle" fill="#94a3b8" font-size="12">Same recipe = distributed locks. Beware: a paused-then-resumed old leader must be fenced (check epoch/zxid).</text>
+</svg>

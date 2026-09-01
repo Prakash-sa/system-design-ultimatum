@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 440" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="760" height="440" rx="12" fill="#0f172a"/>
+  <text x="380" y="28" text-anchor="middle" fill="#e2e8f0" font-size="17" font-weight="600">Consistent Hashing — the token ring (RF = 3)</text>
+  <circle cx="280" cy="230" r="130" fill="none" stroke="#475569" stroke-width="3"/>
+  <!-- nodes -->
+  <circle cx="280" cy="100" r="18" fill="#1e293b" stroke="#38bdf8" stroke-width="2">
+    <animate attributeName="stroke-width" values="2;2;5;2;2;2;5;2" keyTimes="0;0.32;0.38;0.45;0.72;0.78;0.85;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <text x="280" y="105" text-anchor="middle" fill="#e2e8f0" font-size="11" font-weight="600">N1</text>
+  <circle cx="410" cy="230" r="18" fill="#1e293b" stroke="#38bdf8" stroke-width="2">
+    <animate attributeName="stroke" calcMode="discrete" values="#38bdf8;#34d399;#38bdf8" keyTimes="0;0.22;0.45" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="stroke-width" values="2;2;6;2;2;2;5;2" keyTimes="0;0.22;0.28;0.45;0.78;0.84;0.9;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <text x="410" y="235" text-anchor="middle" fill="#e2e8f0" font-size="11" font-weight="600">N2</text>
+  <circle cx="280" cy="360" r="18" fill="#1e293b" stroke="#38bdf8" stroke-width="2">
+    <animate attributeName="stroke-width" values="2;2;5;2;2" keyTimes="0;0.36;0.42;0.48;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <text x="280" y="365" text-anchor="middle" fill="#e2e8f0" font-size="11" font-weight="600">N3</text>
+  <circle cx="150" cy="230" r="18" fill="#1e293b" stroke="#38bdf8" stroke-width="2">
+    <animate attributeName="stroke" calcMode="discrete" values="#38bdf8;#34d399;#38bdf8" keyTimes="0;0.68;0.95" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="stroke-width" values="2;2;5;2;2;2;6;2;2" keyTimes="0;0.32;0.4;0.44;0.62;0.68;0.74;0.95;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <text x="150" y="235" text-anchor="middle" fill="#e2e8f0" font-size="11" font-weight="600">N4</text>
+  <!-- key 1: hashes between N1 and N2, walks clockwise to N2 -->
+  <circle r="8" fill="#fbbf24" opacity="0">
+    <animateMotion path="M372,138 A130,130 0 0 1 400,212" keyPoints="0;0;1;1" keyTimes="0;0.08;0.2;1" calcMode="linear" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.04;0.24" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <g opacity="0">
+    <text x="452" y="130" fill="#fbbf24" font-size="12" font-weight="600">hash("user:42")</text>
+    <text x="452" y="146" fill="#94a3b8" font-size="11">lands here → walk clockwise</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.04;0.3" dur="10s" repeatCount="indefinite"/>
+  </g>
+  <g opacity="0">
+    <text x="452" y="250" fill="#34d399" font-size="12" font-weight="600">N2 = coordinator/owner</text>
+    <text x="452" y="266" fill="#94a3b8" font-size="11">replicas: next nodes on the</text>
+    <text x="452" y="280" fill="#94a3b8" font-size="11">ring → N3, N4  (RF = 3)</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.24;0.5" dur="10s" repeatCount="indefinite"/>
+  </g>
+  <!-- key 2: hashes between N3 and N4 -->
+  <circle r="8" fill="#f87171" opacity="0">
+    <animateMotion path="M188,322 A130,130 0 0 1 158,262" keyPoints="0;0;1;1" keyTimes="0;0.55;0.66;1" calcMode="linear" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.52;0.7" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <g opacity="0">
+    <text x="452" y="320" fill="#f87171" font-size="12" font-weight="600">hash("order:7") → N4 owns it</text>
+    <text x="452" y="336" fill="#94a3b8" font-size="11">replicas: N1, N2</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.55;0.95" dur="10s" repeatCount="indefinite"/>
+  </g>
+  <text x="600" y="60" text-anchor="middle" fill="#94a3b8" font-size="11">each node owns the arc</text>
+  <text x="600" y="75" text-anchor="middle" fill="#94a3b8" font-size="11">before it (its token range)</text>
+  <text x="380" y="410 " text-anchor="middle" fill="#94a3b8" font-size="13">Add/remove a node → only ~1/N of keys move (vs rehashing everything with hash % N).</text>
+  <text x="380" y="430" text-anchor="middle" fill="#94a3b8" font-size="13">Real clusters use vnodes: each physical node holds many small token ranges for smoother balance.</text>
+</svg>

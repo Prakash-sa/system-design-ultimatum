@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="760" height="400" rx="12" fill="#0f172a"/>
+  <text x="380" y="28" text-anchor="middle" fill="#e2e8f0" font-size="17" font-weight="600">Amdahl's Law — 10% serial code caps speedup at 10×</text>
+  <!-- axis -->
+  <line x1="60" y1="320" x2="710" y2="320" stroke="#475569" stroke-width="2"/>
+  <text x="46" y="200" fill="#94a3b8" font-size="12" transform="rotate(-90 46 200)">runtime T(p)</text>
+  <!-- serial floor line -->
+  <line x1="60" y1="298" x2="710" y2="298" stroke="#f87171" stroke-width="1.5" stroke-dasharray="6 5">
+    <animate attributeName="stroke-opacity" values="0.4;1;0.4" keyTimes="0;0.5;1" dur="2.5s" repeatCount="indefinite"/>
+  </line>
+  <text x="700" y="290" text-anchor="end" fill="#f87171" font-size="11">runtime never drops below the serial part → S ≤ 1/f = 10</text>
+  <!-- p=1 -->
+  <g>
+    <rect x="90" y="100" width="70" height="198" fill="#38bdf8"/>
+    <rect x="90" y="298" width="70" height="22" fill="#f87171"/>
+    <text x="125" y="340" text-anchor="middle" fill="#e2e8f0" font-size="12">p=1</text>
+    <text x="125" y="90" text-anchor="middle" fill="#94a3b8" font-size="12">S=1.0</text>
+  </g>
+  <!-- p=2 -->
+  <g opacity="0">
+    <rect x="220" y="199" width="70" height="99" fill="#38bdf8"/>
+    <rect x="220" y="298" width="70" height="22" fill="#f87171"/>
+    <text x="255" y="340" text-anchor="middle" fill="#e2e8f0" font-size="12">p=2</text>
+    <text x="255" y="189" text-anchor="middle" fill="#94a3b8" font-size="12">S=1.8</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.12" dur="8s" repeatCount="indefinite"/>
+  </g>
+  <!-- p=4 -->
+  <g opacity="0">
+    <rect x="350" y="248" width="70" height="50" fill="#38bdf8"/>
+    <rect x="350" y="298" width="70" height="22" fill="#f87171"/>
+    <text x="385" y="340" text-anchor="middle" fill="#e2e8f0" font-size="12">p=4</text>
+    <text x="385" y="238" text-anchor="middle" fill="#94a3b8" font-size="12">S=3.1</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.26" dur="8s" repeatCount="indefinite"/>
+  </g>
+  <!-- p=8 -->
+  <g opacity="0">
+    <rect x="480" y="273" width="70" height="25" fill="#38bdf8"/>
+    <rect x="480" y="298" width="70" height="22" fill="#f87171"/>
+    <text x="515" y="340" text-anchor="middle" fill="#e2e8f0" font-size="12">p=8</text>
+    <text x="515" y="263" text-anchor="middle" fill="#94a3b8" font-size="12">S=4.7</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.40" dur="8s" repeatCount="indefinite"/>
+  </g>
+  <!-- p=16 -->
+  <g opacity="0">
+    <rect x="610" y="286" width="70" height="12" fill="#38bdf8"/>
+    <rect x="610" y="298" width="70" height="22" fill="#f87171"/>
+    <text x="645" y="340" text-anchor="middle" fill="#e2e8f0" font-size="12">p=16</text>
+    <text x="645" y="276" text-anchor="middle" fill="#94a3b8" font-size="12">S=6.4</text>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1" keyTimes="0;0.54" dur="8s" repeatCount="indefinite"/>
+  </g>
+  <!-- legend -->
+  <rect x="90" y="52" width="14" height="14" rx="3" fill="#38bdf8"/><text x="110" y="64" fill="#94a3b8" font-size="12">parallel part: shrinks as (1−f)/p</text>
+  <rect x="360" y="52" width="14" height="14" rx="3" fill="#f87171"/><text x="380" y="64" fill="#94a3b8" font-size="12">serial part f: never shrinks</text>
+  <text x="380" y="372" text-anchor="middle" fill="#94a3b8" font-size="13">S(p) = 1 / (f + (1−f)/p). Doubling from 8→16 cores only takes S from 4.7 to 6.4 — "just add nodes" fails.</text>
+</svg>
