@@ -2,7 +2,7 @@
 
 This is the entry point for the whole HPC note set. Start here, then go deeper with the focused files. Together these notes cover both the **platform/interview side** (Slurm, MPI, storage, cloud) and the **academic course side** (architecture, parallel programming, parallel algorithms, performance theory — the material in NPTEL HPC / parallel computing courses, CMU 15-418-style courses, and CUDA courses).
 
-> 🎬 These notes contain looping animations (in `animations/`). They play automatically in the VS Code markdown preview (`⌘⇧V`) and on GitHub.
+> 🎬 These notes contain looping animations (in `animations/`). They play automatically in the VS Code markdown preview (`⌘⇧V`), on GitHub, and on the published site.
 
 ## The Full Map
 

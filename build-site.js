@@ -443,6 +443,59 @@ const excalidrawFiles = allFiles
   .filter(f => f.endsWith('.excalidraw') && !f.includes('node_modules') && !isExcludedTopLevel(f))
   .sort();
 
+// ─── Media pipeline (note-adjacent images: animations, screenshots) ─────────
+// Page HTML is emitted flat into docs/, so a relative reference such as
+// ./animations/foo.svg must resolve to docs/animations/foo.svg. Copy every
+// locally-referenced image there, keeping the href intact.
+
+function copyReferencedMedia(mdFiles) {
+  const imageRefPattern = /!\[[^\]]*\]\(([^)\s]+)/g;
+  const claimed = new Map(); // dest -> source, for collision detection
+  const problems = [];
+  let copied = 0;
+
+  mdFiles.forEach(mdFile => {
+    const markdown = fs.readFileSync(mdFile, 'utf8');
+    let match;
+    while ((match = imageRefPattern.exec(markdown)) !== null) {
+      const href = match[1].trim();
+      if (/^(https?:|data:|mailto:|#|\/\/)/i.test(href)) continue; // external
+
+      const rel = href.replace(/^\.\//, '');
+      if (path.isAbsolute(rel) || rel.split('/').includes('..')) {
+        problems.push(`${mdFile}: unsupported image path "${href}" (flat output cannot host absolute or ../ paths)`);
+        continue;
+      }
+
+      const src = path.join(path.dirname(mdFile), rel);
+      if (!fs.existsSync(src)) {
+        problems.push(`${mdFile}: referenced image not found "${href}"`);
+        continue;
+      }
+
+      const dest = path.join(docsDir, rel);
+      const prior = claimed.get(dest);
+      if (prior) {
+        if (path.resolve(prior) !== path.resolve(src)) {
+          problems.push(`name collision for "${rel}": ${prior} vs ${src} — rename one of them`);
+        }
+        continue;
+      }
+
+      claimed.set(dest, src);
+      fs.mkdirSync(path.dirname(dest), { recursive: true });
+      fs.copyFileSync(src, dest);
+      copied++;
+    }
+  });
+
+  problems.forEach(p => console.log('  WARNING: ' + p));
+  return copied;
+}
+
+const mediaCount = copyReferencedMedia(markdownFiles);
+console.log(`  Media files copied: ${mediaCount}`);
+
 // ─── File Organization ──────────────────────────────────────────────────────
 
 function getFilesByFolder() {
