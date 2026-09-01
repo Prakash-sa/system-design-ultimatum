@@ -48,6 +48,9 @@
 - [Storage, Networking, and Operations](./HPC-03-Storage-Networking-Operations.md)
 - [Cloud HPC and AWS ParallelCluster](./HPC-04-Cloud-ParallelCluster.md)
 - [HPC Interview Prep](./HPC-05-Interviews.md)
+- [Computer Architecture for HPC](./HPC-06-Computer-Architecture.md) — pipelines, ILP, SIMD, caches, NUMA, coherence, roofline, interconnect topologies
+- [Parallel Programming Models](./HPC-07-Parallel-Programming.md) — Pthreads, OpenMP deep dive, advanced MPI, CUDA/GPU, hybrid, PGAS
+- [Parallel Algorithms and Performance](./HPC-08-Parallel-Algorithms-Performance.md) — PRAM, work-span, isoefficiency, canonical algorithms, load balancing, benchmarks
 
 ## What is HPC?
 

@@ -180,3 +180,4 @@ Good HPC answers about Slurm and MPI usually cover:
 - [HPC-01-Fundamentals.md](./HPC-01-Fundamentals.md)
 - [HPC-03-Storage-Networking-Operations.md](./HPC-03-Storage-Networking-Operations.md)
 - [HPC-05-Interviews.md](./HPC-05-Interviews.md)
+- [HPC-07-Parallel-Programming.md](./HPC-07-Parallel-Programming.md) — advanced MPI (derived datatypes, topologies, one-sided, MPI-IO) and hybrid MPI+OpenMP

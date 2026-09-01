@@ -132,3 +132,4 @@ Strong cloud HPC answers show:
 - [HPC-01-Fundamentals.md](./HPC-01-Fundamentals.md)
 - [HPC-03-Storage-Networking-Operations.md](./HPC-03-Storage-Networking-Operations.md)
 - [HPC-05-Interviews.md](./HPC-05-Interviews.md)
+- [HPC-08-Parallel-Algorithms-Performance.md](./HPC-08-Parallel-Algorithms-Performance.md) — scaling studies, benchmarks, checkpoint-interval math

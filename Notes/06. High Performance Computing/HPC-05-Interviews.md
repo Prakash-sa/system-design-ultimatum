@@ -96,3 +96,6 @@ Emphasize:
 - [HPC-01-Fundamentals.md](./HPC-01-Fundamentals.md)
 - [HPC-02-Slurm-MPI.md](./HPC-02-Slurm-MPI.md)
 - [HPC-04-Cloud-ParallelCluster.md](./HPC-04-Cloud-ParallelCluster.md)
+- [HPC-06-Computer-Architecture.md](./HPC-06-Computer-Architecture.md) — for architecture questions (caches, NUMA, false sharing, roofline)
+- [HPC-07-Parallel-Programming.md](./HPC-07-Parallel-Programming.md) — for coding questions (OpenMP clauses, MPI deadlocks, CUDA)
+- [HPC-08-Parallel-Algorithms-Performance.md](./HPC-08-Parallel-Algorithms-Performance.md) — for theory questions (Amdahl variants, isoefficiency, canonical algorithms)

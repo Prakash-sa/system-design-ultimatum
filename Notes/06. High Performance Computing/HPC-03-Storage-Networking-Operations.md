@@ -146,3 +146,5 @@ Strong answers on storage and operations usually show:
 - [HPC-01-Fundamentals.md](./HPC-01-Fundamentals.md)
 - [HPC-02-Slurm-MPI.md](./HPC-02-Slurm-MPI.md)
 - [HPC-04-Cloud-ParallelCluster.md](./HPC-04-Cloud-ParallelCluster.md)
+- [HPC-06-Computer-Architecture.md](./HPC-06-Computer-Architecture.md) — interconnect topologies, bisection bandwidth, α+βn cost model
+- [HPC-07-Parallel-Programming.md](./HPC-07-Parallel-Programming.md) — MPI-IO and parallel I/O patterns (HDF5, collective I/O)
