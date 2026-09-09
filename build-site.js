@@ -59,7 +59,14 @@ function markdownToHtml(markdown) {
   const headings = []; // collected for TOC
 
   const applyInline = (text = '') => {
-    let t = escapeHtml(text);
+    const codeSpans = [];
+    const withCodePlaceholders = String(text).replace(/`([^`]+)`/g, (_match, code) => {
+      const placeholder = `@@CODE${codeSpans.length}@@`;
+      codeSpans.push(code);
+      return placeholder;
+    });
+
+    let t = escapeHtml(withCodePlaceholders);
     t = t.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img alt="$1" src="$2" loading="lazy" />');
     t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_match, label, href) => {
       const external = /^https?:\/\//i.test(href);
@@ -69,19 +76,27 @@ function markdownToHtml(markdown) {
     t = t.replace(/__(.*?)__/g, '<strong>$1</strong>');
     t = t.replace(/\*(.*?)\*/g, '<em>$1</em>');
     t = t.replace(/_(.*?)_/g, '<em>$1</em>');
-    t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
+    t = t.replace(/@@CODE(\d+)@@/g, (_match, index) => `<code>${escapeHtml(codeSpans[Number(index)])}</code>`);
     return t;
   };
 
   // Strip inline markup for plain text (used in TOC)
-  const stripInline = (text = '') =>
-    text.replace(/!\[([^\]]*)\]\([^)]+\)/g, '$1')
+  const stripInline = (text = '') => {
+    const codeSpans = [];
+    const withCodePlaceholders = String(text).replace(/`([^`]+)`/g, (_match, code) => {
+      const placeholder = `@@CODE${codeSpans.length}@@`;
+      codeSpans.push(code);
+      return placeholder;
+    });
+
+    return withCodePlaceholders.replace(/!\[([^\]]*)\]\([^)]+\)/g, '$1')
       .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
       .replace(/\*\*(.*?)\*\*/g, '$1')
       .replace(/__(.*?)__/g, '$1')
       .replace(/\*(.*?)\*/g, '$1')
       .replace(/_(.*?)_/g, '$1')
-      .replace(/`([^`]+)`/g, '$1');
+      .replace(/@@CODE(\d+)@@/g, (_match, index) => codeSpans[Number(index)]);
+  };
 
   const lines = markdown.replace(/\r\n/g, '\n').split('\n');
   const html = [];
