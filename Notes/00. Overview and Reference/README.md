@@ -29,7 +29,8 @@ Notes/
 │   ├── 08-Architecture-Patterns.md
 │   ├── 09-REST-gRPC-Best-Practices.md
 │   ├── 11-Design-Patterns.md
-│   └── 12-Security-Best-Practices.md
+│   ├── 12-Security-Best-Practices.md
+│   └── 13-Distributed Systems for Practitioners.md
 ├── 02. Databases and Storage Engines/
 ├── 03. Streaming and Coordination/
 ├── 04. Cloud and Infrastructure/
@@ -203,6 +204,10 @@ Notes/
 [Scalability & Reliability](../01. Core Concepts/06-Scalability-Reliability.md)
 [Data Processing](../01. Core Concepts/07-Data-Processing.md)
 [Architecture Patterns](../01. Core Concepts/08-Architecture-Patterns.md)
+[REST & gRPC Best Practices](../01. Core Concepts/09-REST-gRPC-Best-Practices.md)
+[Design Patterns](../01. Core Concepts/11-Design-Patterns.md)
+[Security Best Practices](../01. Core Concepts/12-Security-Best-Practices.md)
+[Distributed Systems for Practitioners](../01. Core Concepts/13-Distributed Systems for Practitioners.md)
 [HPC Master Guide](../06. High Performance Computing/HPC.md)
 [HPC Fundamentals](../06. High Performance Computing/HPC-01-Fundamentals.md)
 [HPC Slurm and MPI](../06. High Performance Computing/HPC-02-Slurm-MPI.md)

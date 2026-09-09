@@ -108,3 +108,20 @@ CQRS, Event Sourcing, Saga Pattern, Circuit Breaker, Bulkhead, Retry with expone
 - Sharding strategies for scalability
 - Migration patterns (strangler fig)
 - Multi-tenancy isolation levels
+
+### 12. [Security Best Practices](../01. Core Concepts/12-Security-Best-Practices.md)
+Authentication and authorization, API and network security, encryption, secrets management, infrastructure hardening, compliance, and security-focused interview scenarios
+
+**Key topics:**
+- Password, MFA, token, and authorization design
+- API, application, data, and network security
+- Encryption, key management, audit logging, and privacy controls
+
+### 13. [Distributed Systems for Practitioners](../01. Core Concepts/13-Distributed Systems for Practitioners.md)
+Practical distributed-systems reasoning from failure models and partitioning through replication, consistency, transactions, consensus, clocks, coordination, resilience, and observability
+
+**Key topics:**
+- Partitioning, replication, quorums, CAP, and consistency models
+- Isolation, distributed transactions, sagas, consensus, Raft, and Paxos
+- Ordering, fencing, idempotency, backpressure, recovery, and tracing
+- Production case studies and system-design interview questions

@@ -55,8 +55,31 @@ console.log(`  Assets: ${ASSETS.cssHref}, ${ASSETS.jsHref}`);
 
 // ─── Markdown to HTML (with heading IDs + TOC extraction) ───────────────────
 
-function markdownToHtml(markdown) {
+function markdownToHtml(markdown, sourcePath = '') {
   const headings = []; // collected for TOC
+
+  const rewriteLocalHref = (href = '') => {
+    if (!sourcePath || /^(?:[a-z][a-z0-9+.-]*:|\/\/|#|\/)/i.test(href)) return href;
+
+    const match = href.match(/^([^?#]+)([?#].*)?$/);
+    if (!match) return href;
+
+    const target = match[1];
+    const suffix = match[2] || '';
+    const extension = target.endsWith('.md')
+      ? '.md'
+      : target.endsWith('.excalidraw')
+        ? '.excalidraw'
+        : null;
+
+    if (!extension) return href;
+
+    let decodedTarget = target;
+    try { decodedTarget = decodeURI(target); } catch (_err) { /* Keep the original target. */ }
+
+    const resolvedTarget = path.normalize(path.join(path.dirname(sourcePath), decodedTarget));
+    return toHtmlFileName(resolvedTarget, extension) + suffix;
+  };
 
   const applyInline = (text = '') => {
     const codeSpans = [];
@@ -70,7 +93,10 @@ function markdownToHtml(markdown) {
     t = t.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img alt="$1" src="$2" loading="lazy" />');
     t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_match, label, href) => {
       const external = /^https?:\/\//i.test(href);
-      return `<a href="${href}"${external ? ' target="_blank" rel="noopener noreferrer"' : ''}>${label}</a>`;
+      const rewrittenHref = rewriteLocalHref(href);
+      // Protect underscores in generated filenames from the later emphasis pass.
+      const escapedHref = escapeHtml(rewrittenHref).replace(/_/g, '&#95;');
+      return `<a href="${escapedHref}"${external ? ' target="_blank" rel="noopener noreferrer"' : ''}>${label}</a>`;
     });
     t = t.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     t = t.replace(/__(.*?)__/g, '<strong>$1</strong>');
@@ -862,7 +888,7 @@ markdownFiles.forEach(filePath => {
 
   try {
     const content = fs.readFileSync(filePath, 'utf8');
-    const { html: htmlContent, headings } = markdownToHtml(content);
+    const { html: htmlContent, headings } = markdownToHtml(content, filePath);
     const toc = generateTocHtml(headings);
     const breadcrumb = generateBreadcrumb(folder, filename);
     const prevNext = generatePrevNext(htmlFileName);
