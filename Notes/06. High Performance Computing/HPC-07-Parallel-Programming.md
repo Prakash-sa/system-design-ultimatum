@@ -33,6 +33,20 @@ Core concepts (apply to all threading):
 
 OpenMP is built on top of this machinery; use Pthreads directly only when you need custom runtime behavior.
 
+## Shared-Memory Synchronization Patterns
+
+| Primitive | Meaning | Good use | Main hazard |
+|---|---|---|---|
+| mutex | one owner enters a critical region | compound state updates | contention, deadlock |
+| semaphore | counter controls how many workers enter/use a resource | bounded pools and producer/consumer flow | missed posts, difficult ownership |
+| condition variable | sleep until a protected predicate may be true | queues and phase changes | lost-wakeup bugs if predicate/lock protocol is wrong |
+| atomic | indivisible read/modify/write with memory-order rules | counters, flags, lock-free building blocks | contention and subtle ordering |
+| barrier | every participant reaches a phase boundary | bulk-synchronous iterations | fastest rank waits for slowest |
+
+Deadlock requires mutual exclusion, hold-and-wait, no preemption, and a wait cycle. Break it with a global lock order, try-lock/backoff, or by reducing lock scope. Livelock means threads keep reacting without progress; starvation means a participant never gets service.
+
+**Lock-free** means system-wide progress is guaranteed even if one thread stalls; **wait-free** means every operation completes in bounded steps. Both require atomic operations plus correct memory ordering and safe memory reclamation (for example hazard pointers or epochs). They are not automatically faster than a well-scoped mutex.
+
 ## OpenMP Deep Dive
 
 OpenMP = compiler directives + runtime library + env vars for shared-memory parallelism. **Fork-join model**: master thread forks a team at a parallel region, joins at the end.
@@ -97,7 +111,7 @@ Loop index variables are automatically private. Everything else you write inside
 | `ordered` | force loop-order execution of a block |
 | locks | `omp_set_lock` etc. for data-structure-level control |
 
-Cost intuition: `reduction` > `atomic` > `critical` (fastest to slowest for accumulations).
+Cost intuition for accumulations: a tree/private `reduction` is usually fastest, then an `atomic`, then a contended `critical` region.
 
 ### Tasks (OpenMP 3.0+)
 
@@ -116,6 +130,24 @@ For recursion, graphs, linked lists — things `for` can't split:
 ```
 
 `taskloop` splits a loop into tasks; `depend(in/out:...)` builds task DAGs.
+
+## Task Parallelism and Runtimes
+
+A task graph represents units of work as nodes and dependencies as edges. A task becomes runnable when all of its input dependencies are satisfied. OpenMP tasks, Cilk, Intel oneTBB, HPX, PaRSEC, StarPU, Legion, and Kokkos task facilities apply this model at different scopes.
+
+### Scheduling and granularity
+
+- **Work stealing** gives each worker a local deque; idle workers steal from others. It balances irregular recursive work while preserving locality for the common case.
+- **Dynamic load balancing** adapts when task costs are unknown or evolve, but scheduling and migration add overhead.
+- **Granularity** must amortize task creation, queueing, dependency tracking, and cache misses. Coarsen tiny tasks; split long tasks that create a critical-path bottleneck.
+- **Asynchronous tasks/futures** let useful work continue while a dependency, transfer, or I/O operation completes.
+- **Hierarchical scheduling** maps coarse tasks across nodes/devices and fine tasks within a NUMA domain or accelerator.
+
+The work-span bound explains the limit: `T_p <= T_1/p + T_infinity`. More workers cannot shorten the critical path. Profile task runtime distribution, ready-queue depth, steal rate, dependency stalls, and data movement—not merely worker utilization.
+
+### Data-aware task placement
+
+Task runtimes can choose CPU/GPU implementations, move or replicate data, and schedule near the current data owner. This is powerful for heterogeneous nodes, but hidden transfers can dominate. Express access modes precisely, keep data resident across related tasks, and use priorities only when they shorten a real critical path.
 
 ### Affinity and environment
 

@@ -773,6 +773,29 @@ function generateTocHtml(headings) {
   return html;
 }
 
+// Turn the HPC coverage index into a scannable working surface while keeping
+// the source as ordinary Markdown. Each H2 becomes a domain card and the
+// generated jump bar mirrors those sections for quick keyboard/touch access.
+function enhanceHpcRoadmap(html, headings) {
+  const withoutSourceTitle = html.replace(/^<h1\b[^>]*>[\s\S]*?<\/h1>\s*/i, '');
+  const firstSection = withoutSourceTitle.search(/<h2\b/i);
+  if (firstSection === -1) return withoutSourceTitle;
+
+  const intro = withoutSourceTitle.slice(0, firstSection);
+  const sectionHtml = withoutSourceTitle.slice(firstSection);
+  const sections = sectionHtml.match(/<h2\b[\s\S]*?(?=<h2\b|$)/gi) || [];
+  const domains = headings.filter(heading => heading.level === 2);
+  const jumpBar = domains.length
+    ? '<nav class="roadmap-jumpbar" aria-label="HPC roadmap domains">' +
+      domains.map((domain, index) =>
+        `<a href="#${escapeHtml(domain.id)}"><span>${String(index + 1).padStart(2, '0')}</span>${escapeHtml(domain.text.replace(/^\d+\.?\s*/, ''))}</a>`
+      ).join('') +
+      '</nav>'
+    : '';
+
+  return `<div class="roadmap-intro">${intro}</div>${jumpBar}<div class="roadmap-grid">${sections.map(section => `<section class="roadmap-domain">${section}</section>`).join('')}</div>`;
+}
+
 // ─── Prev/Next Navigation ───────────────────────────────────────────────────
 
 function generatePrevNext(currentHtmlFile) {
@@ -812,7 +835,7 @@ function generateBreadcrumb(folder, name) {
 
 // ─── Page Template ──────────────────────────────────────────────────────────
 
-function generatePageTemplate(title, content, { toc = '', breadcrumb = '', prevNext = '', isHome = false } = {}) {
+function generatePageTemplate(title, content, { toc = '', breadcrumb = '', prevNext = '', isHome = false, pageClass = '' } = {}) {
   const safeTitle = escapeHtml(title);
   const themeInit = `<script>(function(){try{var t=localStorage.getItem('theme');if(!t)t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);if(localStorage.getItem('sidebar:compact')==='true')document.documentElement.classList.add('nav-compact');}catch(e){}})();</script>`;
   const topbar = `
@@ -841,7 +864,7 @@ function generatePageTemplate(title, content, { toc = '', breadcrumb = '', prevN
   <link rel="stylesheet" href="${ASSETS.cssHref}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
 </head>
-<body>
+<body${pageClass ? ` class="${escapeHtml(pageClass)}"` : ''}>
 <a class="skip-link" href="#main">Skip to content</a>
 <div class="progress-bar"><div class="progress-fill"></div></div>
 ${topbar}
@@ -888,18 +911,30 @@ markdownFiles.forEach(filePath => {
 
   try {
     const content = fs.readFileSync(filePath, 'utf8');
-    const { html: htmlContent, headings } = markdownToHtml(content, filePath);
+    const { html: parsedHtml, headings } = markdownToHtml(content, filePath);
+    const isHpcRoadmap = filename === 'HPC-00-Learning-Roadmap';
+    const pageTitle = headings.find(heading => heading.level === 1)?.text || filename;
+    // The semantic document title belongs in the page header. Removing the
+    // matching source H1 avoids the old filename + title double-heading.
+    const htmlContent = isHpcRoadmap
+      ? enhanceHpcRoadmap(parsedHtml, headings)
+      : parsedHtml.replace(/^<h1\b[^>]*>[\s\S]*?<\/h1>\s*/i, '');
     const toc = generateTocHtml(headings);
-    const breadcrumb = generateBreadcrumb(folder, filename);
+    const breadcrumb = generateBreadcrumb(folder, pageTitle);
     const prevNext = generatePrevNext(htmlFileName);
 
-    const fullHtml = generatePageTemplate(filename, htmlContent, { toc, breadcrumb, prevNext });
+    const fullHtml = generatePageTemplate(pageTitle, htmlContent, {
+      toc,
+      breadcrumb,
+      prevNext,
+      pageClass: isHpcRoadmap ? 'hpc-roadmap-page' : '',
+    });
     fs.writeFileSync(path.join(docsDir, htmlFileName), fullHtml);
 
     // Add to search index (first 500 chars of plain text)
     const plainText = content.replace(/^#{1,6}\s+/gm, '').replace(/[*_`#\[\]()>|]/g, '').replace(/\n+/g, ' ').trim();
     searchIndex.push({
-      name: filename,
+      name: pageTitle,
       href: htmlFileName,
       folder: displayFolderName(folder),
       type: 'note',

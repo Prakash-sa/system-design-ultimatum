@@ -43,6 +43,7 @@
 
 ### Focused HPC Files
 
+- [HPC Learning Roadmap](./HPC-00-Learning-Roadmap.md) — visual coverage map and recommended study order
 - [HPC Fundamentals](./HPC-01-Fundamentals.md)
 - [Slurm and MPI](./HPC-02-Slurm-MPI.md)
 - [Storage, Networking, and Operations](./HPC-03-Storage-Networking-Operations.md)
@@ -51,6 +52,10 @@
 - [Computer Architecture for HPC](./HPC-06-Computer-Architecture.md) — pipelines, ILP, SIMD, caches, NUMA, coherence, roofline, interconnect topologies
 - [Parallel Programming Models](./HPC-07-Parallel-Programming.md) — Pthreads, OpenMP deep dive, advanced MPI, CUDA/GPU, hybrid, PGAS
 - [Parallel Algorithms and Performance](./HPC-08-Parallel-Algorithms-Performance.md) — PRAM, work-span, isoefficiency, canonical algorithms, load balancing, benchmarks
+- [Compilers, Profiling, and Code Tuning](./HPC-09-Compilers-Profiling-Tuning.md) — optimization passes, vectorization, counters, roofline-guided tuning
+- [Numerical Methods and Scientific Simulations](./HPC-10-Numerical-Methods-Scientific-Simulations.md) — solvers, PDEs, Monte Carlo, CFD, molecular dynamics, weather, astrophysics
+- [Data, I/O, Distributed Systems, and Resilience](./HPC-11-Data-I-O-Distributed-Resilience.md) — schedulers, distributed state, parallel I/O, compression, checkpoint/restart
+- [Emerging Architectures, Edge, and Green Computing](./HPC-12-Emerging-Architectures-Green-Computing.md) — accelerators, quantum, neuromorphic, edge, energy and carbon
 
 ## What is HPC?
 
