@@ -75,6 +75,8 @@ Use this as the coverage map for the HPC notes. Start with architecture and para
 
 [Study GPU and hybrid models →](./HPC-07-Parallel-Programming.md)
 
+[Go deeper with the GPU MODE lecture series (60 lectures, 8 tracks) →](./GPU%20MODE%20Lectures/GPU-00-Study-Plan.md)
+
 ## 05. Numerical Methods
 
 ### Linear algebra and differential equations
