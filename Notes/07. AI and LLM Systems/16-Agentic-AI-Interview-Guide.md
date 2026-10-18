@@ -2034,6 +2034,14 @@ Useful observability tools:
 - Langfuse
 - OpenLIT or OpenTelemetry-based tracing
 
+**Interview follow-up: recovering an operator's run inspector**
+
+After reconnecting, an inspector receives a duplicate event and a child span before its parent. How should it reconcile the trace without duplicating rows or falsely showing that it is up to date?
+
+Deduplicate by stable event ID within the run, update spans by span ID, and retain unresolved parent references until the parent arrives. If the event contract provides a per-run sequence, distinguish the highest observed sequence from the last contiguous position applied: a later event must not advance the resume cursor past a gap. Resume from the server-issued cursor for that safe position; request replay or a fresh snapshot if history is missing. Show connection freshness separately from the run's lifecycle status.
+
+Optional worked practice: [AI Agent Run Inspector](https://frontendatlas.com/system-design/ai-agent-run-inspector) (free question and full reference answer), covering event reconciliation, reconnects, and approval races.
+
 ### Evaluation and testing stack
 
 Metrics to track:
